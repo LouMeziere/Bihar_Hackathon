@@ -1,22 +1,22 @@
-S.No.,City,Port,FTAs,% Share
-1,Delhi,Airport,"28,85,663",38.2
-2,Mumbai,Airport,"14,34,278",19
-3,Chennai,Airport,"7,93,410",10.5
-4,Bengaluru,Airport,"5,74,468",7.6
-5,Hyderabad,Airport,"3,55,536",4.7
-6,Cochin,Airport,"3,50,237",4.6
-7,Kolkata,Airport,"3,11,482",4.1
-8,Ahmedabad,Airport,"2,05,283",2.7
-9,Dabolim (Goa),Airport,"1,31,285",1.7
-10,Amritsar,Airport,"1,19,426",1.6
-11,Tiruchirappalli,Airport,"1,08,793",1.4
-12,Trivandrum,Airport,"97,411",1.3
-13,Gaya,Airport,"47,261",0.6
-14,Calicut,Airport,"30,473",0.4
-15,MOPA (Goa),Airport,"21,181",0.3
-16,Coimbatore,Airport,"14,071",0.2
-17,Lucknow,Airport,"12,518",0.2
-18,Jaipur,Airport,"11,323",0.2
-19,Madurai,Airport,"9,740",0.1
-20,Nagpur,Airport,"85,88",0.1
-,Others,,"32,359",0.4
+S.No.,City,Port,Latitude,Longitude,FTAs,% Share
+1,Delhi,Airport,28.5561,77.1,"28,85,663",38.2
+2,Mumbai,Airport,19.0902,72.8628,"14,34,278",19
+3,Chennai,Airport,12.994,80.1707,"7,93,410",10.5
+4,Bengaluru,Airport,13.1989,77.7069,"5,74,468",7.6
+5,Hyderabad,Airport,17.2403,78.4294,"3,55,536",4.7
+6,Cochin,Airport,10.1532,76.3933,"3,50,237",4.6
+7,Kolkata,Airport,22.6536,88.4451,"3,11,482",4.1
+8,Ahmedabad,Airport,23.0764,72.631,"2,05,283",2.7
+9,Goa Dabolim,Airport,15.3805,73.8332,"1,31,285",1.7
+10,Amritsar,Airport,31.7056,74.8069,"1,19,426",1.6
+11,Tiruchirappalli,Airport,10.7652,78.7156,"1,08,793",1.4
+12,Trivandrum,Airport,8.4871,76.922,"97,411",1.3
+13,Gaya,Airport,24.7488,84.9437,"47,261",0.6
+14,Calicut,Airport,11.1364,75.9545,"30,473",0.4
+15,Goa MOPA,Airport,15.7377,73.8694,"21,181",0.3
+16,Coimbatore,Airport,11.0304,77.0391,"14,071",0.2
+17,Lucknow,Airport,26.7617,80.8856,"12,518",0.2
+18,Jaipur,Airport,26.8283,75.806,"11,323",0.2
+19,Madurai,Airport,9.8382,78.0895,"9,740",0.1
+20,Nagpur,Airport,21.0902,79.0548,"85,88",0.1
+,Others,,,,"32,359",0.4
