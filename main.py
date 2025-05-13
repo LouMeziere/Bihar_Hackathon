@@ -10,9 +10,12 @@ import numpy as np
 from PIL import Image
 import streamlit.components.v1 as components
 import re
+import plotly.express as px
 
 st.title("🧭 Reimagining Tourism in Bihar: A Call for Responsible Travel")
 
+
+'''Part 1: '''
 
 FEEs_tourism = pd.read_csv("datasets/FEEs_tourism.csv")
 
@@ -47,8 +50,76 @@ st.markdown("📈 **Post-COVID tourism revenue in USD** has shown strong recover
 
 
 
+import pandas as pd
+import plotly.graph_objects as go
+import streamlit as st
+
+# Load and clean the data
+GVA_GDP_df = pd.read_csv("datasets/GVA_GDP.csv")
+
+# Fix column names
+GVA_GDP_df.columns = [
+    'Year', 'Total GVA', 'Total GDP',
+    'Direct GVA', 'Direct GDP',
+    'Direct GVA %', 'Direct GDP %',
+    'GVA Multiplier',
+    'Total GVA %', 'Total GDP %'
+]
+
+# Fix malformed value in Direct GVA
+GVA_GDP_df['Direct GVA'] = GVA_GDP_df['Direct GVA'].replace('5,14,1,6', '5,14,116')
+
+# Remove commas and convert relevant columns to float
+cols_to_numeric = ['Total GVA', 'Total GDP', 'Direct GVA', 'Direct GDP']
+for col in cols_to_numeric:
+    GVA_GDP_df[col] = GVA_GDP_df[col].astype(str).str.replace(',', '').astype(float)
+
+# Calculate Indirect GVA
+GVA_GDP_df['Indirect GVA'] = GVA_GDP_df['Direct GVA'] * (GVA_GDP_df['GVA Multiplier'] - 1)
+
+# Create the stacked area chart
+fig = go.Figure()
+
+fig.add_trace(go.Scatter(
+    x=GVA_GDP_df['Year'],
+    y=GVA_GDP_df['Direct GVA'],
+    name='Direct Tourism GVA',
+    mode='lines',
+    stackgroup='one',
+    line=dict(width=0.5, color='#4CAF50')
+))
+
+fig.add_trace(go.Scatter(
+    x=GVA_GDP_df['Year'],
+    y=GVA_GDP_df['Indirect GVA'],
+    name='Indirect Tourism GVA',
+    mode='lines',
+    stackgroup='one',
+    line=dict(width=0.5, color='#81C784')
+))
+
+fig.update_layout(
+    title='Tourism Contribution to GVA in India (Direct + Indirect)',
+    xaxis_title='Year',
+    yaxis_title='Gross Value Added (₹ Crore)',
+    legend_title='Component',
+    hovermode='x unified',
+    template='plotly_white'
+)
+
+# Show in Streamlit
+st.plotly_chart(fig)
 
 
+
+
+
+
+
+
+
+
+'''Part 2: '''
 
 airport_tourism = pd.read_csv("datasets/FTAs_airport.csv")
 # Remove commas from 'FTAs' and convert to int
@@ -68,6 +139,84 @@ chart = alt.Chart(airport_tourism).mark_bar().encode(
 )
 
 st.altair_chart(chart)
+
+
+
+
+
+
+
+
+
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+
+# Load and clean data
+df = pd.read_csv("datasets/FTAs_airport.csv")
+
+# Clean FTAs column: remove commas and convert to int
+df['FTAs'] = df['FTAs'].astype(str).str.replace(",", "").astype(int)
+
+# Create enhanced bubble map
+fig = px.scatter_geo(
+    df,
+    lat='Latitude',
+    lon='Longitude',
+    text='City',
+    size='FTAs',
+    hover_name='City',
+    hover_data={'FTAs': True, 'Latitude': False, 'Longitude': False},
+    size_max=50,
+    color_discrete_sequence=['#F57C00'],  # Warm orange for visibility
+    projection='natural earth',
+    title='✈️ Where Do Tourists Land? Foreign Tourist Arrivals by Airport in India',
+)
+
+# Refine map layout and center on India
+fig.update_geos(
+    visible=False, 
+    resolution=50,
+    showcountries=True,
+    countrycolor="#ffffff",
+    showland=True,
+    landcolor="#A9A9A9",
+    fitbounds="locations",  # Fit map bounds to data points
+    lonaxis_range=[65, 100],
+    lataxis_range=[5, 38]
+)
+
+# Style the markers (bubbles)
+fig.update_traces(
+    marker=dict(
+        opacity=0.75,
+        line=dict(width=1, color='white')
+    )
+)
+
+# Update overall layout
+fig.update_layout(
+    title_font=dict(size=20, family='Arial'),
+    geo=dict(bgcolor='rgba(0,0,0,0)'),  # Transparent map background
+    margin=dict(l=0, r=0, t=50, b=0),
+    width=900,   # Wider
+    height=450   # Shorter
+)
+
+# Show in Streamlit
+st.plotly_chart(fig, use_container_width=False)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
