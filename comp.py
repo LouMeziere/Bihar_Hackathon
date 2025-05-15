@@ -9,33 +9,77 @@ import altair as alt
 import plotly.graph_objects as go
 
 
-"""1. Benefits of Tourism"""
 
-###### Allows tourists to discover your country's culture and art
+# --- 1. Page Setup ---
+st.set_page_config(page_title="India Cultural Experience Explorer", layout="wide")
 
+# --- 2. Title and Intro ---
+st.title("🇮🇳 India’s Cultural, Artistic & Heritage Explorer")
 
-import pandas as pd
-import streamlit as st
-import folium
-from folium.plugins import MarkerCluster
-from streamlit_folium import st_folium
+st.markdown("""
+Welcome to the **India Cultural Experience Explorer** — your interactive gateway to the **art, heritage, and cultural richness** of India.
 
-# Load and clean data
+🎨 **What can you explore?**
+- 📍 Discover famous monuments, art centers, and cultural events across Indian states.
+- 📆 Understand the best times to visit using climate data, tourist season insights, and festivals.
+- 🌱 Get personalized recommendations for responsible travel.
+
+Start by selecting the **states** and **months** you’re interested in to tailor the report to your preferences.
+""")
+
+# --- 3. Load and Clean Data ---
 df = pd.read_csv("datasets/cultural_sites.csv", encoding="windows-1252")
 df = df.dropna(subset=['latitude', 'longitude'])
 
-# Title and description
-st.title("🗺️ Cultural Heritage Sites in India")
-st.markdown("Scroll and click on each point to explore visitor counts.")
+# --- 4. Sidebar: Filters ---
+with st.sidebar:
+    st.header("🎛️ Customize Your Exploration")
 
-# Initialize Folium map centered on India
+    # State Filter
+    states = df['state'].dropna().unique()
+    selected_states = st.multiselect("🗺️ Select State(s):", sorted(states), default=None, placeholder="All States")
+
+    # Month Filter (purely for user preference – not applied to the dataset yet)
+    all_months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+    selected_months = st.multiselect(
+        "📅 Select Month(s):",
+        all_months,
+        default=None,
+        placeholder="All Months"
+    )
+
+# --- 5. Apply Filters ---
+# --- 5. Apply Filters ---
+if selected_states:
+    filtered_df = df[df['state'].isin(selected_states)]
+else:
+    filtered_df = df.copy()  # No selection = show all
+
+selected_months = selected_months if selected_months else all_months
+
+# Note: If no month filter is applied or column doesn't exist, keep data as is
+
+# --- 6. Show Filter Summary ---
+st.markdown(f"""
+### 🎯 Your Current View
+- **Selected State(s):** {', '.join(selected_states) if selected_states else 'All'}
+- **Selected Month(s):** {', '.join(selected_months) if selected_months else 'All'}
+""")
+
+# --- 7. Prompt for Next Sections ---
+st.markdown("👇 Scroll down to explore detailed **maps, climate graphs**, and **seasonal recommendations** based on your choices.")
+
+
+
+# --- 4. Initialize Folium Map ---
 m = folium.Map(location=[22.9734, 78.6569], zoom_start=5, tiles='CartoDB positron')
-
-# Add marker cluster
 marker_cluster = MarkerCluster().add_to(m)
 
-# Add markers without images
-for i, row in df.iterrows():
+# --- 5. Add Markers for Selected Monuments ---
+for _, row in filtered_df.iterrows():
     html = f"""
     <div style="width:220px">
         <h4>{row['monument']}</h4>
@@ -52,28 +96,140 @@ for i, row in df.iterrows():
         icon=folium.Icon(color="green", icon="university", prefix="fa")
     ).add_to(marker_cluster)
 
-# Display map in Streamlit
+# --- 6. Display Map in Streamlit ---
 st_data = st_folium(m, width=800, height=600)
 
 
 
-####### Top 5 most visited sites
-
-top_5_monuments = df.sort_values('2023-24 total visitors', ascending=False).head(5)
 
 
-st.subheader("🏆 Top 5 Most Visited Monuments (2023-24)")
 
-for _, row in top_5_monuments.iterrows():
+
+# --- 7. Top 3 Most Visited Monuments (Filtered) ---
+st.subheader("🏆 Top 3 Most Visited Monuments (2023-24)")
+
+# Sort and select top 3 from filtered data
+top_3_monuments = filtered_df.sort_values('2023-24 total visitors', ascending=False).head(3)
+
+for _, row in top_3_monuments.iterrows():
     col1, col2 = st.columns([1, 2])
     with col1:
-        st.image(row['image_url'], width=150, caption=row['monument'])  # Make sure your CSV has an 'image_url' column
+        # Check if image URL exists
+        if pd.notna(row.get('image_url')):
+            st.image(row['image_url'], width=150, caption=row['monument'])
+        else:
+            st.markdown("🖼️ *No image available*")
     with col2:
         st.markdown(f"**{row['monument']}**")
         st.markdown(f"📍 {row['city']}, {row['state']}")
         st.markdown(f"👥 **{row['2023-24 total visitors']:,} visitors**")
         st.markdown(f"📈 Domestic Growth: {row['% domestic growth']}%")
     st.markdown("---")
+
+
+
+
+
+
+# --- Load and prepare data ---
+weather_df = pd.read_csv("datasets/patna_weather.csv")
+
+# Define month orders
+month_order = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+]
+month_abbr_order = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+month_abbr_map = dict(zip(month_order, month_abbr_order))
+
+# Prepare columns
+weather_df["month"] = pd.Categorical(weather_df["month"], categories=month_order, ordered=True)
+weather_df = weather_df.sort_values("month").reset_index(drop=True)
+weather_df["month_abbr"] = weather_df["month"].map(month_abbr_map)
+
+# --- Prepare temperature data ---
+gradient_df = weather_df[["month_abbr", "high temperature (°C)", "low temperature (°C)"]].copy()
+gradient_df.rename(columns={"high temperature (°C)": "high", "low temperature (°C)": "low"}, inplace=True)
+gradient_df["month_abbr"] = pd.Categorical(gradient_df["month_abbr"], categories=month_abbr_order, ordered=True)
+gradient_df = gradient_df.sort_values("month_abbr").reset_index(drop=True)
+
+# Melt data for temperature lines
+line_df = pd.melt(
+    gradient_df,
+    id_vars="month_abbr",
+    value_vars=["high", "low"],
+    var_name="Temperature Type",
+    value_name="Value"
+)
+
+# --- Prepare rainfall data ---
+rainfall_df = weather_df[["month_abbr", "rainfall (mm)"]].copy()
+rainfall_df["month_abbr"] = pd.Categorical(rainfall_df["month_abbr"], categories=month_abbr_order, ordered=True)
+rainfall_df = rainfall_df.sort_values("month_abbr").reset_index(drop=True)
+
+# --- Create charts ---
+
+# Rainfall area (secondary axis)
+rainfall_area = alt.Chart(rainfall_df).mark_area(
+    opacity=0.2,
+    color="#1f77b4"
+).encode(
+    x=alt.X("month_abbr:N", sort=month_abbr_order, title="Month"),
+    y=alt.Y("rainfall (mm):Q", axis=alt.Axis(title="Rainfall (mm)", titleColor="#1f77b4"))
+)
+
+# Temperature area between high and low
+area = alt.Chart(gradient_df).mark_area(
+    interpolate='linear',
+    opacity=0.3
+).encode(
+    x=alt.X("month_abbr:N", title="Month", sort=month_abbr_order),
+    y=alt.Y("low:Q", scale=alt.Scale(domain=[10, 45]), axis=alt.Axis(title="Temperature (°C)", titleColor="#FF5733")),
+    y2=alt.Y2("high:Q"),
+    tooltip=["month_abbr", "low", "high"]
+)
+
+# Line colors
+line_colors = alt.Scale(domain=["high", "low"], range=["#FF5733", "#1F77B4"])
+
+# Temperature lines
+lines = alt.Chart(line_df).mark_line(point=True).encode(
+    x=alt.X("month_abbr:N", sort=month_abbr_order),
+    y=alt.Y("Value:Q"),
+    color=alt.Color("Temperature Type:N", scale=line_colors),
+    tooltip=["month_abbr", "Temperature Type", "Value"]
+)
+
+# Combine all
+combined_chart = alt.layer(
+    rainfall_area,
+    area,
+    lines
+).resolve_scale(
+    y='independent'
+).properties(
+    title="Monthly Temperatures and Rainfall in Patna",
+    width=700,
+    height=400
+)
+
+# --- Streamlit Display ---
+st.title("📊 Climate Overview of Patna")
+
+st.subheader("Combined Temperature and Rainfall Chart")
+st.write("**Best time to visit Patna** is from **October to April** with comfortable temperatures and minimal rainfall.")
+st.altair_chart(combined_chart, use_container_width=True)
+
+# Optional: Extra insights or notes
+st.caption("Rainfall peaks during July and August. Plan your travel accordingly to avoid monsoon disruptions.")
+
+
+
+
+
+
+
 
 
 
