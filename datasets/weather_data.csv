@@ -1,0 +1,313 @@
+city,state,month,Avg. Temperature (°C),Min Temperature (°C),Max Temperature (°C),Rainfall (mm),Humidity (%),Rainy days (d),avg. Sun hours (hours)
+Itanagar,Arunachal Pradesh,January,14.5,10.4,19.0,32.0,74.0,5,8.0
+Itanagar,Arunachal Pradesh,February,16.2,12.3,20.4,75.0,73.0,8,8.0
+Itanagar,Arunachal Pradesh,March,18.8,14.9,22.7,166.0,73.0,11,8.0
+Itanagar,Arunachal Pradesh,April,20.9,17.9,24.0,327.0,82.0,15,7.0
+Itanagar,Arunachal Pradesh,May,23.0,20.5,26.0,406.0,85.0,17,8.0
+Itanagar,Arunachal Pradesh,June,24.7,22.8,27.3,501.0,88.0,20,8.0
+Itanagar,Arunachal Pradesh,July,25.2,23.4,27.6,453.0,89.0,21,8.0
+Itanagar,Arunachal Pradesh,August,25.4,23.4,28.0,370.0,88.0,20,8.0
+Itanagar,Arunachal Pradesh,September,24.6,22.4,27.3,305.0,87.0,18,8.0
+Itanagar,Arunachal Pradesh,October,22.3,19.2,25.8,118.0,81.0,9,9.0
+Itanagar,Arunachal Pradesh,November,18.8,15.0,23.1,20.0,74.0,3,8.0
+Itanagar,Arunachal Pradesh,December,15.7,11.8,20.3,16.0,74.0,2,8.0
+Patna,Bihar,January,16.2,10.6,22.1,17.0,69.0,2,9.0
+Patna,Bihar,February,19.9,13.6,26.2,17.0,60.0,2,10.0
+Patna,Bihar,March,25.6,18.4,32.5,10.0,43.0,2,11.0
+Patna,Bihar,April,30.6,23.4,37.6,12.0,36.0,2,11.0
+Patna,Bihar,May,31.9,25.9,37.7,32.0,50.0,4,11.0
+Patna,Bihar,June,31.2,27.0,35.7,175.0,65.0,11,10.0
+Patna,Bihar,July,28.8,26.3,32.0,323.0,81.0,19,8.0
+Patna,Bihar,August,28.6,26.1,31.8,281.0,83.0,20,8.0
+Patna,Bihar,September,27.8,25.2,31.1,197.0,83.0,15,8.0
+Patna,Bihar,October,25.8,21.7,30.1,52.0,77.0,4,9.0
+Patna,Bihar,November,22.0,16.5,27.7,6.0,65.0,1,9.0
+Patna,Bihar,December,17.9,12.2,23.8,8.0,67.0,1,9.0
+Chandigarh,Chandigarh,January,12.2,6.4,18.5,40.0,71.0,3,8.0
+Chandigarh,Chandigarh,February,15.4,8.9,21.9,50.0,63.0,4,9.0
+Chandigarh,Chandigarh,March,20.8,13.0,28.0,39.0,48.0,4,11.0
+Chandigarh,Chandigarh,April,27.5,18.6,35.1,25.0,29.0,4,12.0
+Chandigarh,Chandigarh,May,31.3,23.0,38.3,28.0,29.0,5,12.0
+Chandigarh,Chandigarh,June,31.7,25.7,36.9,89.0,45.0,8,12.0
+Chandigarh,Chandigarh,July,28.8,25.5,32.4,195.0,75.0,16,10.0
+Chandigarh,Chandigarh,August,27.7,24.7,31.2,193.0,80.0,16,10.0
+Chandigarh,Chandigarh,September,26.7,22.3,31.2,100.0,73.0,8,10.0
+Chandigarh,Chandigarh,October,23.7,16.9,30.6,14.0,54.0,2,10.0
+Chandigarh,Chandigarh,November,18.8,12.2,26.0,6.0,55.0,1,9.0
+Chandigarh,Chandigarh,December,14.0,7.9,20.9,13.0,65.0,2,9.0
+Dispur,Assam,January,16.8,10.9,22.3,13.0,72.0,2,7.0
+Dispur,Assam,February,19.4,13.1,25.2,26.0,65.0,4,9.0
+Dispur,Assam,March,23.3,17.0,29.1,68.0,56.0,7,10.0
+Dispur,Assam,April,24.8,20.2,29.6,179.0,71.0,14,8.0
+Dispur,Assam,May,25.7,22.3,29.6,323.0,82.0,20,8.0
+Dispur,Assam,June,26.7,24.3,29.8,551.0,87.0,20,8.0
+Dispur,Assam,July,26.9,24.8,29.8,690.0,89.0,21,8.0
+Dispur,Assam,August,27.0,24.6,30.1,618.0,88.0,21,8.0
+Dispur,Assam,September,26.3,23.6,29.5,398.0,87.0,19,8.0
+Dispur,Assam,October,24.5,20.6,28.3,141.0,83.0,11,8.0
+Dispur,Assam,November,21.2,16.1,26.0,21.0,76.0,2,8.0
+Dispur,Assam,December,18.1,12.5,23.3,10.0,74.0,2,8.0
+Gandhinagar,Gujarat,January,20.0,13.5,27.3,1.0,43.0,0,10.0
+Gandhinagar,Gujarat,February,22.6,15.4,30.0,1.0,39.0,0,10.0
+Gandhinagar,Gujarat,March,27.1,19.3,34.7,1.0,30.0,0,11.0
+Gandhinagar,Gujarat,April,31.3,23.4,38.9,1.0,29.0,0,11.0
+Gandhinagar,Gujarat,May,33.2,26.4,40.2,2.0,40.0,0,11.0
+Gandhinagar,Gujarat,June,32.0,27.5,37.2,73.0,56.0,5,9.0
+Gandhinagar,Gujarat,July,28.5,25.9,31.7,323.0,76.0,15,7.0
+Gandhinagar,Gujarat,August,27.3,24.9,30.3,238.0,80.0,16,6.0
+Gandhinagar,Gujarat,September,27.9,24.3,31.9,108.0,73.0,7,8.0
+Gandhinagar,Gujarat,October,27.8,21.8,34.2,17.0,51.0,2,10.0
+Gandhinagar,Gujarat,November,24.8,18.5,31.7,3.0,45.0,1,10.0
+Gandhinagar,Gujarat,December,21.1,14.9,28.3,1.0,46.0,0,10.0
+Shillong,Meghalaya,January,12.1,7.4,16.9,25.0,73.0,4,7.0
+Shillong,Meghalaya,February,14.1,9.1,19.0,48.0,70.0,7,8.0
+Shillong,Meghalaya,March,16.9,11.9,21.7,128.0,68.0,12,8.0
+Shillong,Meghalaya,April,18.9,15.0,22.9,296.0,81.0,19,7.0
+Shillong,Meghalaya,May,20.3,17.4,23.7,454.0,87.0,21,6.0
+Shillong,Meghalaya,June,21.5,19.5,24.3,709.0,90.0,21,4.0
+Shillong,Meghalaya,July,21.7,19.9,24.4,714.0,90.0,22,4.0
+Shillong,Meghalaya,August,21.7,19.7,24.4,562.0,90.0,22,5.0
+Shillong,Meghalaya,September,21.0,18.7,23.9,391.0,89.0,20,5.0
+Shillong,Meghalaya,October,19.1,15.9,22.6,238.0,85.0,15,7.0
+Shillong,Meghalaya,November,16.0,12.0,20.2,52.0,78.0,6,7.0
+Shillong,Meghalaya,December,13.3,9.1,17.8,19.0,75.0,2,7.0
+Chandigarh,Chandigarh,January,12.2,6.4,18.5,40.0,71.0,3,8.0
+Chandigarh,Chandigarh,February,15.4,8.9,21.9,50.0,63.0,4,9.0
+Chandigarh,Chandigarh,March,20.8,13.0,28.0,39.0,48.0,4,11.0
+Chandigarh,Chandigarh,April,27.5,18.6,35.1,25.0,29.0,4,12.0
+Chandigarh,Chandigarh,May,31.3,23.0,38.3,28.0,29.0,5,12.0
+Chandigarh,Chandigarh,June,31.7,25.7,36.9,89.0,45.0,8,12.0
+Chandigarh,Chandigarh,July,28.8,25.5,32.4,195.0,75.0,16,10.0
+Chandigarh,Chandigarh,August,27.7,24.7,31.2,193.0,80.0,16,10.0
+Chandigarh,Chandigarh,September,26.7,22.3,31.2,100.0,73.0,8,10.0
+Chandigarh,Chandigarh,October,23.7,16.9,30.6,14.0,54.0,2,10.0
+Chandigarh,Chandigarh,November,18.8,12.2,26.0,6.0,55.0,1,9.0
+Chandigarh,Chandigarh,December,14.0,7.9,20.9,13.0,65.0,2,9.0
+Ranchi,Jharkhand,January,15.5,9.5,22.1,15.0,59.0,2,9.0
+Ranchi,Jharkhand,February,19.4,13.1,25.9,21.0,51.0,2,10.0
+Ranchi,Jharkhand,March,23.9,17.1,30.6,21.0,38.0,3,11.0
+Ranchi,Jharkhand,April,28.6,21.4,35.5,23.0,32.0,4,11.0
+Ranchi,Jharkhand,May,29.8,23.8,36.1,56.0,44.0,7,11.0
+Ranchi,Jharkhand,June,27.9,24.3,32.4,245.0,66.0,14,9.0
+Ranchi,Jharkhand,July,25.1,23.0,28.2,354.0,86.0,20,6.0
+Ranchi,Jharkhand,August,24.7,22.6,27.9,314.0,87.0,20,6.0
+Ranchi,Jharkhand,September,24.4,21.9,27.8,212.0,85.0,16,7.0
+Ranchi,Jharkhand,October,22.6,18.6,27.0,75.0,75.0,7,8.0
+Ranchi,Jharkhand,November,19.3,14.2,24.8,12.0,65.0,2,9.0
+Ranchi,Jharkhand,December,16.1,10.5,22.2,10.0,62.0,2,9.0
+Raipur,Chhattisgarh,January,20.0,13.3,26.7,15.0,53.0,2,9.0
+Raipur,Chhattisgarh,February,23.6,16.7,30.3,11.0,46.0,2,10.0
+Raipur,Chhattisgarh,March,28.0,20.7,34.9,12.0,35.0,2,11.0
+Raipur,Chhattisgarh,April,32.6,25.4,39.3,16.0,29.0,3,11.0
+Raipur,Chhattisgarh,May,35.1,28.7,41.2,22.0,29.0,4,12.0
+Raipur,Chhattisgarh,June,31.1,27.2,35.7,213.0,55.0,13,10.0
+Raipur,Chhattisgarh,July,26.8,24.6,29.8,398.0,81.0,19,8.0
+Raipur,Chhattisgarh,August,26.3,24.1,29.4,379.0,84.0,19,7.0
+Raipur,Chhattisgarh,September,26.7,23.8,30.4,241.0,81.0,14,8.0
+Raipur,Chhattisgarh,October,25.6,21.2,30.4,69.0,70.0,6,9.0
+Raipur,Chhattisgarh,November,22.7,17.1,28.6,13.0,61.0,2,9.0
+Raipur,Chhattisgarh,December,20.0,13.8,26.5,12.0,57.0,1,9.0
+Mumbai,Maharashtra,January,23.9,18.8,29.4,0.0,58.0,0,10.0
+Mumbai,Maharashtra,February,24.7,19.6,30.2,1.0,59.0,0,10.0
+Mumbai,Maharashtra,March,26.7,21.7,32.0,0.0,60.0,0,10.0
+Mumbai,Maharashtra,April,28.2,24.0,32.8,0.0,68.0,0,11.0
+Mumbai,Maharashtra,May,29.0,26.2,32.4,27.0,72.0,3,10.0
+Mumbai,Maharashtra,June,27.4,25.9,29.5,487.0,83.0,18,9.0
+Mumbai,Maharashtra,July,25.9,24.9,27.3,661.0,89.0,22,9.0
+Mumbai,Maharashtra,August,25.6,24.5,27.2,459.0,89.0,22,9.0
+Mumbai,Maharashtra,September,26.1,24.4,28.2,300.0,86.0,17,9.0
+Mumbai,Maharashtra,October,27.3,24.0,31.0,66.0,74.0,6,10.0
+Mumbai,Maharashtra,November,27.0,22.4,31.8,6.0,60.0,1,10.0
+Mumbai,Maharashtra,December,25.1,20.1,30.5,5.0,57.0,1,10.0
+Hyderabad,Telangana,January,22.2,16.0,28.6,7.0,50.0,2,9.0
+Hyderabad,Telangana,February,24.9,18.4,31.4,3.0,43.0,1,10.0
+Hyderabad,Telangana,March,28.2,21.4,34.6,10.0,37.0,2,11.0
+Hyderabad,Telangana,April,30.7,24.4,36.9,19.0,38.0,3,11.0
+Hyderabad,Telangana,May,32.0,26.6,37.8,27.0,37.0,4,11.0
+Hyderabad,Telangana,June,27.9,24.3,32.3,101.0,62.0,10,10.0
+Hyderabad,Telangana,July,25.6,22.9,28.9,159.0,74.0,13,8.0
+Hyderabad,Telangana,August,24.9,22.4,28.1,162.0,77.0,13,8.0
+Hyderabad,Telangana,September,25.0,22.1,28.7,129.0,78.0,11,8.0
+Hyderabad,Telangana,October,24.7,20.6,29.3,98.0,69.0,9,9.0
+Hyderabad,Telangana,November,23.2,18.0,28.6,26.0,59.0,3,9.0
+Hyderabad,Telangana,December,21.8,15.9,27.9,4.0,53.0,1,9.0
+Panaji,Goa,January,25.5,20.7,30.6,1.0,60.0,0,10.0
+Panaji,Goa,February,26.0,21.0,31.0,0.0,63.0,0,10.0
+Panaji,Goa,March,27.2,22.9,31.5,5.0,70.0,1,10.0
+Panaji,Goa,April,28.6,25.1,32.3,6.0,72.0,1,10.0
+Panaji,Goa,May,28.8,26.2,31.9,83.0,74.0,6,9.0
+Panaji,Goa,June,26.2,25.0,28.0,718.0,88.0,20,7.0
+Panaji,Goa,July,25.3,24.3,26.7,868.0,90.0,22,8.0
+Panaji,Goa,August,25.1,24.0,26.7,578.0,90.0,22,8.0
+Panaji,Goa,September,25.6,23.9,27.6,272.0,88.0,18,8.0
+Panaji,Goa,October,26.5,24.0,29.5,137.0,82.0,12,9.0
+Panaji,Goa,November,26.7,23.1,31.0,27.0,69.0,3,10.0
+Panaji,Goa,December,26.1,21.8,31.1,5.0,60.0,1,10.0
+Thiruvananthapuram,Kerala,January,25.6,22.2,29.6,34.0,72.0,4,10.0
+Thiruvananthapuram,Kerala,February,26.1,22.6,30.1,57.0,74.0,7,9.0
+Thiruvananthapuram,Kerala,March,26.6,23.7,30.0,125.0,80.0,14,9.0
+Thiruvananthapuram,Kerala,April,26.9,24.8,29.6,190.0,84.0,19,8.0
+Thiruvananthapuram,Kerala,May,26.6,24.9,28.8,236.0,85.0,19,7.0
+Thiruvananthapuram,Kerala,June,25.4,24.0,27.4,319.0,89.0,20,6.0
+Thiruvananthapuram,Kerala,July,25.0,23.6,27.1,224.0,88.0,20,7.0
+Thiruvananthapuram,Kerala,August,25.0,23.5,27.1,186.0,87.0,18,7.0
+Thiruvananthapuram,Kerala,September,25.3,23.6,27.6,172.0,86.0,16,7.0
+Thiruvananthapuram,Kerala,October,25.4,23.5,27.9,317.0,86.0,19,7.0
+Thiruvananthapuram,Kerala,November,25.4,23.1,28.1,252.0,84.0,16,8.0
+Thiruvananthapuram,Kerala,December,25.5,22.6,28.7,85.0,77.0,8,9.0
+Shimla,Himachal Pradesh,January,4.4,-1.7,11.2,84.0,69.0,7,8.0
+Shimla,Himachal Pradesh,February,6.4,0.0,13.0,116.0,67.0,8,9.0
+Shimla,Himachal Pradesh,March,10.6,3.3,17.3,117.0,60.0,10,10.0
+Shimla,Himachal Pradesh,April,15.5,7.8,22.1,100.0,50.0,9,11.0
+Shimla,Himachal Pradesh,May,19.0,11.6,25.2,79.0,50.0,10,12.0
+Shimla,Himachal Pradesh,June,20.6,15.1,25.3,167.0,64.0,13,10.0
+Shimla,Himachal Pradesh,July,20.3,17.3,23.6,393.0,87.0,20,7.0
+Shimla,Himachal Pradesh,August,19.7,16.9,23.0,361.0,89.0,20,6.0
+Shimla,Himachal Pradesh,September,17.8,13.6,22.3,199.0,83.0,14,8.0
+Shimla,Himachal Pradesh,October,14.0,7.9,20.1,35.0,69.0,4,9.0
+Shimla,Himachal Pradesh,November,10.0,3.6,17.1,23.0,66.0,3,9.0
+Shimla,Himachal Pradesh,December,6.5,0.1,13.9,35.0,66.0,4,9.0
+Amravati,Maharashtra,January,20.9,14.2,27.7,7.0,48.0,1,10.0
+Amravati,Maharashtra,February,24.3,17.3,31.2,8.0,40.0,1,10.0
+Amravati,Maharashtra,March,28.3,20.8,35.4,12.0,29.0,2,11.0
+Amravati,Maharashtra,April,32.8,25.1,39.7,4.0,22.0,1,11.0
+Amravati,Maharashtra,May,34.9,28.7,40.9,9.0,26.0,2,12.0
+Amravati,Maharashtra,June,30.7,26.7,35.2,151.0,53.0,10,10.0
+Amravati,Maharashtra,July,26.4,24.1,29.3,333.0,78.0,16,8.0
+Amravati,Maharashtra,August,25.6,23.4,28.4,292.0,82.0,16,7.0
+Amravati,Maharashtra,September,26.1,23.0,29.9,163.0,79.0,11,8.0
+Amravati,Maharashtra,October,25.8,20.5,31.2,53.0,61.0,4,10.0
+Amravati,Maharashtra,November,23.5,17.3,29.5,14.0,54.0,2,10.0
+Amravati,Maharashtra,December,21.0,14.4,27.6,6.0,51.0,1,10.0
+Bengaluru,Karnataka,January,20.7,14.6,27.4,4.0,56.0,1,9.0
+Bengaluru,Karnataka,February,22.8,16.1,29.6,7.0,46.0,1,10.0
+Bengaluru,Karnataka,March,25.4,18.7,32.1,16.0,41.0,2,10.0
+Bengaluru,Karnataka,April,26.6,20.8,32.8,45.0,51.0,5,11.0
+Bengaluru,Karnataka,May,25.5,21.0,31.2,131.0,65.0,11,10.0
+Bengaluru,Karnataka,June,23.2,20.2,27.5,126.0,76.0,14,7.0
+Bengaluru,Karnataka,July,22.4,19.8,26.4,134.0,78.0,15,6.0
+Bengaluru,Karnataka,August,22.2,19.4,26.1,137.0,79.0,15,6.0
+Bengaluru,Karnataka,September,22.4,19.0,26.7,125.0,78.0,12,6.0
+Bengaluru,Karnataka,October,22.0,18.4,26.4,147.0,78.0,13,7.0
+Bengaluru,Karnataka,November,20.9,16.7,25.7,65.0,72.0,7,7.0
+Bengaluru,Karnataka,December,20.1,15.1,25.8,23.0,65.0,3,7.0
+Bhopal,Madhya Pradesh,January,17.8,11.3,24.6,8.0,50.0,2,9.0
+Bhopal,Madhya Pradesh,February,21.1,14.2,28.1,12.0,42.0,1,10.0
+Bhopal,Madhya Pradesh,March,26.0,18.6,33.1,9.0,29.0,1,11.0
+Bhopal,Madhya Pradesh,April,31.3,23.8,38.1,4.0,21.0,1,11.0
+Bhopal,Madhya Pradesh,May,33.8,27.7,39.9,10.0,26.0,2,12.0
+Bhopal,Madhya Pradesh,June,30.6,26.5,35.4,136.0,51.0,10,10.0
+Bhopal,Madhya Pradesh,July,25.8,23.7,28.8,378.0,81.0,17,6.0
+Bhopal,Madhya Pradesh,August,24.9,22.9,27.7,326.0,85.0,18,5.0
+Bhopal,Madhya Pradesh,September,25.6,22.4,29.4,145.0,77.0,10,8.0
+Bhopal,Madhya Pradesh,October,25.3,19.8,30.9,24.0,54.0,3,10.0
+Bhopal,Madhya Pradesh,November,22.4,16.4,28.7,12.0,47.0,2,10.0
+Bhopal,Madhya Pradesh,December,18.8,12.5,25.6,10.0,50.0,1,9.0
+Aizawl,Mizoram,January,15.5,8.7,22.2,9.0,72.0,2,9.0
+Aizawl,Mizoram,February,18.4,11.5,25.2,23.0,62.0,3,10.0
+Aizawl,Mizoram,March,22.1,15.4,28.6,59.0,58.0,5,10.0
+Aizawl,Mizoram,April,24.4,19.0,30.5,89.0,68.0,9,10.0
+Aizawl,Mizoram,May,24.6,20.9,29.6,238.0,81.0,16,8.0
+Aizawl,Mizoram,June,24.5,22.0,28.3,307.0,88.0,20,7.0
+Aizawl,Mizoram,July,24.1,22.0,27.5,319.0,89.0,21,7.0
+Aizawl,Mizoram,August,24.1,21.8,27.6,314.0,90.0,22,7.0
+Aizawl,Mizoram,September,23.7,21.2,27.5,272.0,91.0,20,7.0
+Aizawl,Mizoram,October,22.4,19.1,26.9,160.0,90.0,15,7.0
+Aizawl,Mizoram,November,19.4,14.4,24.9,44.0,83.0,4,8.0
+Aizawl,Mizoram,December,16.4,10.3,22.6,15.0,78.0,2,8.0
+Bhubaneswar,Odisha,January,21.1,15.3,27.3,10.0,66.0,2,9.0
+Bhubaneswar,Odisha,February,24.6,18.8,31.1,19.0,62.0,2,9.0
+Bhubaneswar,Odisha,March,28.2,22.9,34.8,25.0,62.0,3,10.0
+Bhubaneswar,Odisha,April,30.4,25.8,36.8,28.0,66.0,4,10.0
+Bhubaneswar,Odisha,May,31.4,27.4,37.0,61.0,69.0,4,10.0
+Bhubaneswar,Odisha,June,29.9,27.1,33.8,241.0,76.0,14,10.0
+Bhubaneswar,Odisha,July,27.9,25.9,30.8,401.0,85.0,20,9.0
+Bhubaneswar,Odisha,August,27.6,25.5,30.5,371.0,86.0,20,8.0
+Bhubaneswar,Odisha,September,27.4,25.1,30.6,268.0,86.0,18,8.0
+Bhubaneswar,Odisha,October,26.4,23.1,30.3,149.0,81.0,10,8.0
+Bhubaneswar,Odisha,November,23.7,19.1,28.6,40.0,73.0,3,9.0
+Bhubaneswar,Odisha,December,21.1,15.7,26.8,15.0,68.0,2,9.0
+Jaipur,Rajasthan,January,14.6,8.0,21.6,9.0,53.0,1,9.0
+Jaipur,Rajasthan,February,18.3,11.2,25.5,11.0,43.0,2,10.0
+Jaipur,Rajasthan,March,24.1,16.4,31.6,7.0,30.0,2,11.0
+Jaipur,Rajasthan,April,30.0,21.9,37.5,6.0,21.0,2,11.0
+Jaipur,Rajasthan,May,33.6,26.4,40.3,12.0,24.0,3,12.0
+Jaipur,Rajasthan,June,33.0,27.8,38.3,60.0,41.0,6,12.0
+Jaipur,Rajasthan,July,29.1,25.8,33.0,178.0,67.0,13,9.0
+Jaipur,Rajasthan,August,27.4,24.5,31.0,170.0,76.0,14,8.0
+Jaipur,Rajasthan,September,27.8,23.4,32.5,62.0,62.0,7,10.0
+Jaipur,Rajasthan,October,26.1,19.7,32.9,11.0,41.0,2,10.0
+Jaipur,Rajasthan,November,21.2,14.7,28.2,7.0,43.0,1,10.0
+Jaipur,Rajasthan,December,16.2,9.7,23.3,3.0,51.0,1,9.0
+Gangtok,Sikkim,January,9.4,5.6,13.4,256.0,81.0,19,4.0
+Gangtok,Sikkim,February,10.9,6.3,15.0,278.0,81.0,18,5.0
+Gangtok,Sikkim,March,13.7,8.5,18.3,259.0,77.0,19,7.0
+Gangtok,Sikkim,April,16.6,11.6,21.1,221.0,78.0,18,8.0
+Gangtok,Sikkim,May,18.7,15.0,22.3,297.0,83.0,21,7.0
+Gangtok,Sikkim,June,20.3,18.0,23.3,620.0,89.0,21,6.0
+Gangtok,Sikkim,July,20.3,18.4,23.0,1118.0,94.0,22,4.0
+Gangtok,Sikkim,August,20.4,18.1,23.4,908.0,92.0,22,5.0
+Gangtok,Sikkim,September,19.6,17.2,22.6,491.0,89.0,20,6.0
+Gangtok,Sikkim,October,17.3,13.9,20.7,228.0,82.0,17,7.0
+Gangtok,Sikkim,November,13.9,10.4,17.3,188.0,80.0,16,6.0
+Gangtok,Sikkim,December,11.1,7.8,14.6,182.0,80.0,17,5.0
+Lucknow,Uttar Pradesh,January,14.9,9.1,21.3,19.0,67.0,2,8.0
+Lucknow,Uttar Pradesh,February,18.6,12.2,25.2,25.0,60.0,2,10.0
+Lucknow,Uttar Pradesh,March,24.3,16.9,31.5,14.0,44.0,2,11.0
+Lucknow,Uttar Pradesh,April,30.3,22.6,37.7,9.0,30.0,2,11.0
+Lucknow,Uttar Pradesh,May,32.8,26.1,39.2,17.0,38.0,3,12.0
+Lucknow,Uttar Pradesh,June,32.3,27.5,37.1,129.0,54.0,8,11.0
+Lucknow,Uttar Pradesh,July,29.0,26.2,32.3,310.0,79.0,18,8.0
+Lucknow,Uttar Pradesh,August,28.4,25.8,31.7,265.0,82.0,18,8.0
+Lucknow,Uttar Pradesh,September,27.7,24.5,31.4,165.0,80.0,13,8.0
+Lucknow,Uttar Pradesh,October,25.5,20.0,31.1,34.0,66.0,2,10.0
+Lucknow,Uttar Pradesh,November,21.2,14.9,27.7,2.0,58.0,1,10.0
+Lucknow,Uttar Pradesh,December,16.4,10.3,23.1,10.0,64.0,1,9.0
+Kolkata,West Bengal,January,19.0,12.9,25.3,12.0,64.0,2,9.0
+Kolkata,West Bengal,February,22.7,16.5,29.0,27.0,61.0,2,9.0
+Kolkata,West Bengal,March,27.1,21.4,33.3,35.0,59.0,3,10.0
+Kolkata,West Bengal,April,29.9,25.5,35.7,63.0,67.0,6,10.0
+Kolkata,West Bengal,May,30.6,26.9,35.4,127.0,73.0,9,9.0
+Kolkata,West Bengal,June,29.5,27.0,33.1,277.0,81.0,16,9.0
+Kolkata,West Bengal,July,28.1,26.1,31.1,365.0,85.0,21,8.0
+Kolkata,West Bengal,August,27.9,25.8,31.0,312.0,86.0,21,8.0
+Kolkata,West Bengal,September,27.6,25.3,30.8,260.0,87.0,18,8.0
+Kolkata,West Bengal,October,26.3,23.0,30.2,135.0,82.0,10,8.0
+Kolkata,West Bengal,November,23.3,18.4,28.5,32.0,70.0,2,9.0
+Kolkata,West Bengal,December,20.1,14.5,25.9,11.0,65.0,1,9.0
+Agartala,Tripura,January,18.5,12.2,24.6,6.0,67.0,1,9.0
+Agartala,Tripura,February,21.7,15.3,27.9,22.0,60.0,2,9.0
+Agartala,Tripura,March,25.6,19.7,31.4,101.0,60.0,6,9.0
+Agartala,Tripura,April,27.4,23.1,32.1,218.0,74.0,11,8.0
+Agartala,Tripura,May,27.6,24.4,31.5,342.0,82.0,17,7.0
+Agartala,Tripura,June,27.5,25.2,30.6,340.0,86.0,20,7.0
+Agartala,Tripura,July,27.1,25.2,30.0,300.0,86.0,20,7.0
+Agartala,Tripura,August,27.3,25.1,30.4,228.0,85.0,20,7.0
+Agartala,Tripura,September,27.0,24.6,30.4,240.0,86.0,18,8.0
+Agartala,Tripura,October,25.9,22.5,29.8,155.0,84.0,10,8.0
+Agartala,Tripura,November,22.7,17.7,27.9,29.0,74.0,2,9.0
+Agartala,Tripura,December,19.5,13.9,25.3,10.0,71.0,1,8.0
+Dehradun,Uttarakhand,January,10.8,4.1,17.4,43.0,73.0,4,9.0
+Dehradun,Uttarakhand,February,13.5,6.4,20.3,66.0,67.0,5,9.0
+Dehradun,Uttarakhand,March,18.3,10.2,25.5,42.0,55.0,4,11.0
+Dehradun,Uttarakhand,April,23.9,15.3,31.4,28.0,39.0,4,11.0
+Dehradun,Uttarakhand,May,27.2,19.0,33.9,34.0,42.0,6,12.0
+Dehradun,Uttarakhand,June,27.9,21.8,32.7,142.0,58.0,10,11.0
+Dehradun,Uttarakhand,July,25.8,22.8,28.9,435.0,85.0,20,8.0
+Dehradun,Uttarakhand,August,25.2,22.3,28.3,424.0,87.0,20,8.0
+Dehradun,Uttarakhand,September,23.9,19.7,27.9,187.0,83.0,14,9.0
+Dehradun,Uttarakhand,October,20.5,14.2,26.6,17.0,70.0,2,10.0
+Dehradun,Uttarakhand,November,16.1,9.5,23.0,5.0,68.0,1,9.0
+Dehradun,Uttarakhand,December,12.1,5.6,19.1,18.0,72.0,2,9.0
+Chennai,Tamil Nadu,January,24.3,20.8,28.0,17.0,74.0,2,7.0
+Chennai,Tamil Nadu,February,25.3,21.0,29.9,9.0,73.0,2,8.0
+Chennai,Tamil Nadu,March,27.4,23.1,32.4,11.0,72.0,2,9.0
+Chennai,Tamil Nadu,April,29.6,26.2,34.3,18.0,73.0,2,10.0
+Chennai,Tamil Nadu,May,31.3,28.0,36.3,48.0,66.0,4,11.0
+Chennai,Tamil Nadu,June,30.8,27.7,35.3,68.0,62.0,8,11.0
+Chennai,Tamil Nadu,July,30.0,27.0,34.2,70.0,63.0,10,11.0
+Chennai,Tamil Nadu,August,29.2,26.4,33.2,99.0,68.0,11,11.0
+Chennai,Tamil Nadu,September,28.7,26.0,32.5,110.0,73.0,12,10.0
+Chennai,Tamil Nadu,October,27.3,24.6,30.6,223.0,80.0,14,8.0
+Chennai,Tamil Nadu,November,25.7,23.3,28.5,228.0,80.0,13,7.0
+Chennai,Tamil Nadu,December,24.6,22.0,27.5,113.0,77.0,8,7.0
