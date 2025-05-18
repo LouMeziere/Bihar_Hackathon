@@ -270,18 +270,33 @@ else:
 
 
 st.subheader("🎨 Traditional Art Forms")
-arts_filtered = df_art.copy()
+arts_filtered = df_art.sort_values(by="state").copy()
 if selected_states:
     arts_filtered = arts_filtered[df_art['state'].isin(selected_states)]
 
 
-for _, row in arts_filtered.iterrows():
-    st.markdown(f"#### {row['name']}")
-    st.markdown(f"**State:** {row['state']}")
-    if pd.notnull(row["image_url"]):
-        image_path = f"images/arts/{row['image_url']}"
-        st.image(image_path, width=400)
-    st.markdown("---")
+# Display message if nothing matches
+if arts_filtered.empty:
+    st.info("No traditional art forms found for the selected state(s).")
+else:
+    # Display in a grid format (3 columns per row)
+    cols_per_row = 3
+    rows = range(0, len(arts_filtered), cols_per_row)
+
+    for i in rows:
+        row_data = arts_filtered.iloc[i:i + cols_per_row]
+        cols = st.columns(cols_per_row)
+
+        for col, (_, art) in zip(cols, row_data.iterrows()):
+            with col:
+                st.markdown(f"### 🎭 {art['name']}")
+                st.markdown(f"📍 **State:** {art['state']}")
+                if pd.notnull(art["image_url"]):
+                    image_path = f"images/arts/{art['image_url']}"
+                    st.image(image_path, use_column_width=True)
+                else:
+                    st.markdown("*No image available*")
+                st.markdown("---")
 
 
 
