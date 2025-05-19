@@ -139,6 +139,10 @@ st.markdown("""
 
 # --- 7. Top 3 Most Visited Monuments (Filtered) ---
 st.subheader("🏆 Top 3 Most Visited Monuments (2023-24)")
+st.markdown(
+    "*While some destinations in India receive an overwhelming share of tourism, many culturally rich states remain underexplored. These places offer equally profound heritage experiences yet often go unnoticed by the mainstream travel circuit. " \
+    "👉 To discover hidden cultural gems, try selecting states like Bihar using the filter on the left.*"
+)
 
 # Sort and select top 3 from filtered data
 top_3_monuments = df_culture.sort_values('2023-24 total visitors', ascending=False).head(3)
@@ -268,35 +272,50 @@ else:
 
 
 
+from PIL import Image
+import streamlit as st
+from streamlit_carousel import carousel
 
 st.subheader("🎨 Traditional Art Forms")
+st.markdown(
+    "*Purchase handicrafts and souvenirs directly from the local community or non-profit cooperatives. "
+    "This helps support the destination's economy and encourages artisans to preserve and share their cultural heritage.*"
+)
+
 arts_filtered = df_art.sort_values(by="state").copy()
 if selected_states:
-    arts_filtered = arts_filtered[df_art['state'].isin(selected_states)]
+    arts_filtered = arts_filtered[arts_filtered["state"].isin(selected_states)]
 
-
-# Display message if nothing matches
 if arts_filtered.empty:
     st.info("No traditional art forms found for the selected state(s).")
 else:
-    # Display in a grid format (3 columns per row)
-    cols_per_row = 3
-    rows = range(0, len(arts_filtered), cols_per_row)
+    items = []
+    for _, row in arts_filtered.iterrows():
+        if pd.notnull(row["image_url"]):
+            image_path = f"images/arts/{row['image_url']}"
+            try:
+                with Image.open(image_path) as img:
+                    # Resize image to desired height while maintaining aspect ratio
+                    desired_height = 400
+                    aspect_ratio = img.width / img.height
+                    new_width = int(desired_height * aspect_ratio)
+                    resized_img = img.resize((new_width, desired_height))
+                    # Save or process the resized image as needed
+                    # For demonstration, we'll assume the image is saved and accessible via a URL
+                    resized_image_url = f"resized_images/{row['image_url']}"
+            except Exception as e:
+                resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
+        else:
+            resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
 
-    for i in rows:
-        row_data = arts_filtered.iloc[i:i + cols_per_row]
-        cols = st.columns(cols_per_row)
+        items.append({
+            "title": f"{row['name']}",
+            "text": f"📍 {row['state']}",
+            "img": resized_image_url
+        })
 
-        for col, (_, art) in zip(cols, row_data.iterrows()):
-            with col:
-                st.markdown(f"### 🎭 {art['name']}")
-                st.markdown(f"📍 **State:** {art['state']}")
-                if pd.notnull(art["image_url"]):
-                    image_path = f"images/arts/{art['image_url']}"
-                    st.image(image_path, use_column_width=True)
-                else:
-                    st.markdown("*No image available*")
-                st.markdown("---")
+    carousel(items)
+
 
 
 
