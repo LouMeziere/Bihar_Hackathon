@@ -20,17 +20,20 @@ st.markdown("""
 Welcome to the **India Cultural Experience Explorer** — your interactive gateway to the **art, heritage, and cultural richness** of India.
 
 🎨 **What can you explore?**
-- 📍 Discover famous monuments, art centers, and cultural events across Indian states.
+- 📍 Discover famous monuments, art, and cultural events across Indian states.
 - 📆 Understand the best times to visit using climate data, tourist season insights, and festivals.
 - 🌱 Get personalized recommendations for responsible travel.
 
 Start by selecting the **states** and **months** you’re interested in to tailor the report to your preferences.
+
+---           
 """)
 
 # Load datasets
 df_culture = pd.read_csv("datasets/cultural_sites.csv", encoding='windows-1252')
 df_festival = pd.read_csv("datasets/festivals.csv", encoding='windows-1252')
 df_art = pd.read_csv("datasets/arts.csv", encoding='windows-1252')
+#df_ITA = pd.read_csv("datasets/monthwise_ITAs.csv", encoding='windows-1252')
 df_weather = pd.read_csv("datasets/weather_data.csv")
 
 df_culture = df_culture.dropna(subset=['latitude', 'longitude'])
@@ -42,7 +45,7 @@ months = df_weather['month'].dropna().unique()  # or just use your predefined al
 print(states)
 print(months)
 with st.sidebar:
-    st.header("🎛️ Customize Your Exploration")
+    st.header("Customize Your Exploration")
 
     selected_states = st.multiselect(
         "🗺️ Select State(s):", 
@@ -69,24 +72,51 @@ if selected_states:
 if selected_months:
     df_weather = df_weather[df_weather['month'].isin(selected_months)]
 
-# --- 6. Show Filter Summary ---
-st.markdown(f"""
-### 🎯 Your Current View
-- **Selected State(s):** {', '.join(selected_states) if selected_states else 'All'}
-- **Selected Month(s):** {', '.join(selected_months) if selected_months else 'All'}
-""")
 
-# --- 7. Prompt for Next Sections ---
-st.markdown("👇 Scroll down to explore detailed **maps, climate graphs**, and **seasonal recommendations** based on your choices.")
+
 
 # --- 4. Initialize Folium Map ---
+
+st.subheader("🗺️ Explore All Cultural Sites Across India")
+
+st.markdown("""
+India is home to thousands of monuments — but not all of them receive equal attention. 
+Highly popular sites, especially in states like Uttar Pradesh, Delhi, or Rajasthan, attract **huge crowds**, which can:
+- Strain local infrastructure
+- Damage fragile heritage sites
+- Make the experience less enjoyable for visitors
+
+On the other hand, **culturally rich but less-visited states** like **Bihar**, **Odisha**, or **Chhattisgarh** offer authentic, meaningful experiences — without the crowds.
+
+---
+
+💡 **Scroll through the map below to explore cultural sites by region.**
+- Click on a site to learn more about it.
+- Marker colors indicate visitor volume (🟢 low, 🟠 medium, 🔴 high).
+
+""")
+
+
 m = folium.Map(location=[22.9734, 78.6569], zoom_start=5, tiles='CartoDB positron')
 marker_cluster = MarkerCluster().add_to(m)
 
-# --- 5. Add Markers for Selected Monuments ---
+# Define color mapping based on visitor count
+def get_marker_color(visitors):
+    try:
+        visitors = int(visitors)
+        if visitors >= 500_000:
+            return "red"
+        elif visitors >= 150_000:
+            return "orange"
+        else:
+            return "green"
+    except:
+        return "blue"  # fallback if missing
+
+# Add markers
 for _, row in df_culture.iterrows():
-    # Assuming 'image_url' contains the relative or absolute path to the image
-    # Add some inline styling to limit image width or height so popup looks good
+    color = get_marker_color(row['2023-24 total visitors'])
+
     img_html = f'<img src="{row["image_url"]}" alt="{row["monument"]}" style="width:100%; max-height:120px; object-fit:cover; margin-bottom:8px;" />'
 
     html = f"""
@@ -95,15 +125,16 @@ for _, row in df_culture.iterrows():
         <h4>{row['monument']}</h4>
         <b>City:</b> {row['city']}<br>
         <b>State:</b> {row['state']}<br>
-        <b>2023-24 Total Visitors:</b> {row['2023-24 total visitors']}<br>
+        <b>2023-24 Visitors:</b> {row['2023-24 total visitors']:,}<br>
         <b>% Domestic Growth:</b> {row['% domestic growth']}%
     </div>
     """
     popup = folium.Popup(html, max_width=250)
+
     folium.Marker(
         location=[row['latitude'], row['longitude']],
         popup=popup,
-        icon=folium.Icon(color="green", icon="university", prefix="fa")
+        icon=folium.Icon(color=color, icon="university", prefix="fa")
     ).add_to(marker_cluster)
 
 # --- 6. Display Map in Streamlit ---
@@ -137,12 +168,15 @@ st.markdown("""
 
 
 
+
 # --- 7. Top 3 Most Visited Monuments (Filtered) ---
 st.subheader("🏆 Top 3 Most Visited Monuments (2023-24)")
-st.markdown(
-    "*While some destinations in India receive an overwhelming share of tourism, many culturally rich states remain underexplored. These places offer equally profound heritage experiences yet often go unnoticed by the mainstream travel circuit. " \
-    "👉 To discover hidden cultural gems, try selecting states like Bihar using the filter on the left.*"
-)
+st.markdown("""
+Here are the **most visited cultural sites** based on your current state selection — or for **all of India** if no filter is applied.
+These monuments are popular for a reason — they’re iconic, historically significant, and architecturally stunning. But here’s your opportunity to go beyond the obvious. 
+
+👉 **Use the filters on your left to discover high-value sites in lesser-visited states** like **Bihar** or **Odisha** — where your visit can have a *greater local impact* and offer a *deeper cultural experience*.
+""")
 
 # Sort and select top 3 from filtered data
 top_3_monuments = df_culture.sort_values('2023-24 total visitors', ascending=False).head(3)
@@ -173,8 +207,67 @@ for _, row in top_3_monuments.iterrows():
 
 
 
+from PIL import Image
+import streamlit as st
+from streamlit_carousel import carousel
+
+st.subheader("🎨 Traditional Art Forms")
+st.markdown(
+    "*While traveling, it is recommended to purchase handicrafts and souvenirs directly from the local community or non-profit cooperatives. "
+    "This helps support the destination's economy and encourages artisans to preserve and share their cultural heritage.*"
+)
+
+arts_filtered = df_art.sort_values(by="state").copy()
+if selected_states:
+    arts_filtered = arts_filtered[arts_filtered["state"].isin(selected_states)]
+
+if arts_filtered.empty:
+    st.info("No traditional art forms found for the selected state(s).")
+else:
+    items = []
+    for _, row in arts_filtered.iterrows():
+        if pd.notnull(row["image_url"]):
+            image_path = f"images/arts/{row['image_url']}"
+            try:
+                with Image.open(image_path) as img:
+                    # Resize image to desired height while maintaining aspect ratio
+                    desired_height = 400
+                    aspect_ratio = img.width / img.height
+                    new_width = int(desired_height * aspect_ratio)
+                    resized_img = img.resize((new_width, desired_height))
+                    # Save or process the resized image as needed
+                    # For demonstration, we'll assume the image is saved and accessible via a URL
+                    resized_image_url = f"resized_images/{row['image_url']}"
+            except Exception as e:
+                resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
+        else:
+            resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
+
+        items.append({
+            "title": f"{row['name']}",
+            "text": f"📍 {row['state']}",
+            "img": resized_image_url
+        })
+
+    carousel(items)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import calendar
 
+st.subheader("Experiences of a life time")
 
 # Ensure datetime columns
 df_festival["start date"] = pd.to_datetime(df_festival["start date"], errors="coerce")
@@ -207,6 +300,12 @@ grouped = (
 
 # Sort by start date
 grouped = grouped.sort_values(by="start date")
+
+
+
+
+
+
 
 
 import calendar
@@ -246,14 +345,14 @@ if available_months:
 
         for col, (_, row) in zip(cols, row_festivals.iterrows()):
             with col:
-                st.markdown(f"### 🪅 {row['festival']}")
+                st.markdown(f"### {row['festival']}")
                 start = row['start date'].date()
                 end = row['end date'].date() if pd.notnull(row['end date']) else None
                 date_str = f"{start}" if not end or start == end else f"{start} → {end}"
                 st.markdown(f"**📍 State(s):** {row['state']}")
-                st.markdown(f"**📆 Date(s):** {date_str}")
+                st.markdown(f"**📆 Date:** {date_str}")
 
-                with st.expander(f"Details for {row['festival']}"):
+                with st.expander(f"Details"):
                     st.markdown(row['description'])
                 st.markdown("---")
 else:
@@ -270,51 +369,183 @@ else:
 
 
 
+st.subheader("🌍 Hidden Gems: Why Some Culturally Rich States Are Overlooked")
+st.markdown("""
+States like **Bihar**, **Odisha**, and **Chhattisgarh** are home to **ancient empires**, **sacred sites**, and **rich artisanal traditions** — yet they receive only a fraction of India’s tourist footfall.
+
+Why?
+
+- Limited tourism infrastructure
+- Low media visibility
+- Safety or accessibility perceptions
+- Over-concentration of promotion in states like Rajasthan or Kerala
+
+🛤️ But things are changing.
+
+Responsible tourism and community-led initiatives are helping these regions gain visibility — not just as “hidden gems,” but as **essential stops for conscious travelers**.
+
+👉 *If you're looking to experience India's cultural soul without the crowds, these states are worth your attention.*
+""")
 
 
-from PIL import Image
-import streamlit as st
-from streamlit_carousel import carousel
 
-st.subheader("🎨 Traditional Art Forms")
-st.markdown(
-    "*Purchase handicrafts and souvenirs directly from the local community or non-profit cooperatives. "
-    "This helps support the destination's economy and encourages artisans to preserve and share their cultural heritage.*"
+
+
+
+
+
+
+st.subheader("📅 When to Visit: Monthly Travel Trends & Insights")
+st.markdown("""
+To help travelers make informed and responsible choices, we analyzed **historical weather data (1991–2022)** alongside **monthly visitor trends (2021–2023)**.  
+This allows us to identify months that offer **comfortable weather** while avoiding overcrowded periods — promoting a more **sustainable and enjoyable travel experience**.
+
+""")
+
+# Load data
+monthwise_ITAs = pd.read_csv("datasets/monthwise_ITAs.csv")
+
+# Clean and reshape
+for year in ["2021", "2022", "2023"]:
+    monthwise_ITAs[year] = monthwise_ITAs[year].replace(",", "", regex=True).astype(float)
+
+monthwise_ITAs_melted = monthwise_ITAs.melt(
+    id_vars=["Months"], value_vars=["2021", "2022", "2023"],
+    var_name="Year", value_name="ITAs"
 )
 
-arts_filtered = df_art.sort_values(by="state").copy()
-if selected_states:
-    arts_filtered = arts_filtered[arts_filtered["state"].isin(selected_states)]
+# Remove NaNs/zero
+monthwise_ITAs_melted = monthwise_ITAs_melted[monthwise_ITAs_melted["ITAs"] > 0]
 
-if arts_filtered.empty:
-    st.info("No traditional art forms found for the selected state(s).")
+# Month mapping: full to abbreviated
+month_abbrev = {
+    "January": "Jan", "February": "Feb", "March": "Mar", "April": "Apr",
+    "May": "May", "June": "Jun", "July": "Jul", "August": "Aug",
+    "September": "Sep", "October": "Oct", "November": "Nov", "December": "Dec"
+}
+
+# Filter and apply abbreviation
+monthwise_ITAs_melted = monthwise_ITAs_melted[
+    monthwise_ITAs_melted["Months"].isin(months)
+].copy()
+monthwise_ITAs_melted["Months"] = monthwise_ITAs_melted["Months"].map(month_abbrev)
+
+# Set month order with abbreviations
+month_order = [month_abbrev[m] for m in months]
+monthwise_ITAs_melted["Months"] = pd.Categorical(monthwise_ITAs_melted["Months"], categories=month_order, ordered=True)
+
+# Calculate mean and std per month
+avg_visitors = (
+    monthwise_ITAs_melted.groupby("Months").agg(
+        average=("ITAs", "mean"),
+        stddev=("ITAs", "std")
+    ).reset_index()
+)
+avg_visitors["lower"] = avg_visitors["average"] - avg_visitors["stddev"]
+avg_visitors["upper"] = avg_visitors["average"] + avg_visitors["stddev"]
+
+# Categorize visitor levels
+def categorize_visitors(avg):
+    if avg >= avg_visitors["average"].quantile(0.66):
+        return "High"
+    elif avg >= avg_visitors["average"].quantile(0.33):
+        return "Medium"
+    else:
+        return "Low"
+
+avg_visitors["visitor_category"] = avg_visitors["average"].apply(categorize_visitors)
+
+# Map the selected full month names from the sidebar
+selected_months_abbrev = [month_abbrev[m] for m in selected_months if m in month_abbrev]
+
+# X-axis domain helper
+def rotate_month_order(center_month, months):
+    n = len(months)
+    center_idx = months.index(center_month)
+    left_count = n // 2 - 1
+    rotated = months[center_idx - left_count:] + months[:center_idx - left_count]
+    return rotated
+
+# Determine domain
+if selected_months_abbrev:
+    first_selected = selected_months_abbrev[0]
+    x_domain = rotate_month_order(first_selected, month_order)
 else:
-    items = []
-    for _, row in arts_filtered.iterrows():
-        if pd.notnull(row["image_url"]):
-            image_path = f"images/arts/{row['image_url']}"
-            try:
-                with Image.open(image_path) as img:
-                    # Resize image to desired height while maintaining aspect ratio
-                    desired_height = 400
-                    aspect_ratio = img.width / img.height
-                    new_width = int(desired_height * aspect_ratio)
-                    resized_img = img.resize((new_width, desired_height))
-                    # Save or process the resized image as needed
-                    # For demonstration, we'll assume the image is saved and accessible via a URL
-                    resized_image_url = f"resized_images/{row['image_url']}"
-            except Exception as e:
-                resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
-        else:
-            resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
+    x_domain = month_order
 
-        items.append({
-            "title": f"{row['name']}",
-            "text": f"📍 {row['state']}",
-            "img": resized_image_url
-        })
+# Max y scale and padding
+max_upper = avg_visitors["upper"].max()
+max_upper_padded = max_upper * 1.125
+padding = max_upper * 0.2  # 25% padding on top and bottom
 
-    carousel(items)
+avg_visitors["lower_padded"] = avg_visitors["lower"] - padding
+avg_visitors["upper_padded"] = avg_visitors["upper"] + padding
+
+# Prepare highlight outlines (boxes)
+highlight_outlines = alt.Chart(avg_visitors[avg_visitors["Months"].isin(selected_months_abbrev)]).mark_rect(
+    fill=None,
+    stroke="#60a5fa",
+    strokeWidth=2
+).encode(
+    x=alt.X("Months:N", scale=alt.Scale(domain=x_domain)),
+    y=alt.Y("lower_padded:Q", scale=alt.Scale(domain=[0, max_upper_padded])),
+    y2="upper_padded:Q"
+) if selected_months_abbrev else alt.Chart().mark_rect().encode()
+
+# Std Deviation area
+std_area = alt.Chart(avg_visitors).mark_area(opacity=0.35, color="#60a5fa").encode(
+    x=alt.X("Months:N", scale=alt.Scale(domain=x_domain)),
+    y="lower:Q",
+    y2="upper:Q"
+)
+
+# Base line
+base = alt.Chart(avg_visitors).mark_line(
+    point=alt.OverlayMarkDef(opacity=0.3),
+    color="lightgray"
+).encode(
+    x=alt.X("Months:N", title="Month", scale=alt.Scale(domain=x_domain)),
+    y=alt.Y("average:Q", title="Avg. Tourist Arrivals"),
+    tooltip=["Months", "average", "stddev"]
+)
+
+# Highlighted line
+highlight_df = avg_visitors[avg_visitors["Months"].isin(selected_months_abbrev)].copy()
+highlight_line = alt.Chart(highlight_df).mark_line(point=True, color="#F97316").encode(
+    x=alt.X("Months:N", scale=alt.Scale(domain=x_domain)),
+    y="average:Q",
+    detail="Months:N"
+)
+
+# Add text labels above boxes
+highlight_df["text_y"] = highlight_df["upper_padded"] + padding * 0.1
+highlight_text = alt.Chart(highlight_df).mark_text(
+    align="center",
+    dy=-10,
+    fontWeight="bold",
+    color="#F97316"
+).encode(
+    x=alt.X("Months:N", scale=alt.Scale(domain=x_domain)),
+    y=alt.Y("text_y:Q"),
+    text="visitor_category:N"
+)
+
+# Compose final chart
+chart = alt.layer(
+    highlight_outlines,
+    std_area,
+    base,
+    highlight_line,
+    highlight_text
+).properties(
+    width=700,
+    height=400,
+    title="📈 Avg. Monthly Tourist Arrivals in India (2021–2023)"
+).configure_axisX(labelAngle=0)
+
+# Render in Streamlit
+st.altair_chart(chart, use_container_width=True)
+
 
 
 
