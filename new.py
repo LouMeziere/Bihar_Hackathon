@@ -29,6 +29,13 @@ Start by selecting the **states** and **months** you’re interested in to tailo
 ---           
 """)
 
+
+
+
+
+
+
+
 # Load datasets
 df_culture = pd.read_csv("datasets/cultural_sites.csv", encoding='windows-1252')
 df_festival = pd.read_csv("datasets/festivals.csv", encoding='windows-1252')
@@ -75,13 +82,28 @@ if selected_months:
 
 
 
+
+# --- Load the CSV with UNESCO site counts per country ---
+unesco_df = pd.read_csv("datasets/unesco_sites_per_country.csv", encoding='windows-1252')
+
+# Get India's UNESCO site count and global rank
+unesco_df_sorted = unesco_df.sort_values("site amount", ascending=False).reset_index(drop=True)
+india_row = unesco_df_sorted[unesco_df_sorted["countries"] == "India"].reset_index()
+india_site_count = int(india_row.at[0, "site amount"])
+india_rank = india_row.at[0, "index"] + 1
+
+
+
+
+
 # --- 4. Initialize Folium Map ---
 
 st.subheader("🗺️ Explore All Cultural Sites Across India")
 
-st.markdown("""
-India is home to thousands of monuments — but not all of them receive equal attention. 
-Highly popular sites, especially in states like Uttar Pradesh, Delhi, or Rajasthan, attract **huge crowds**, which can:
+st.markdown(f"""
+India is home to **{india_site_count} UNESCO World Heritage Sites**, ranking **#{india_rank} globally** for the highest number of listed cultural and natural heritage locations.  
+From ancient temples and royal forts to unique architectural marvels, these sites are a testament to India’s rich history and cultural legacy.  
+However, not all of them receive equal attention. Highly popular sites, especially in states like Uttar Pradesh, Delhi, or Rajasthan, attract **huge crowds**, which can:
 - Strain local infrastructure
 - Damage fragile heritage sites
 - Make the experience less enjoyable for visitors
@@ -96,11 +118,11 @@ On the other hand, **culturally rich but less-visited states** like **Bihar**, *
 
 """)
 
-
+# --- Map Setup ---
 m = folium.Map(location=[22.9734, 78.6569], zoom_start=5, tiles='CartoDB positron')
 marker_cluster = MarkerCluster().add_to(m)
 
-# Define color mapping based on visitor count
+# --- Define marker color based on visitors ---
 def get_marker_color(visitors):
     try:
         visitors = int(visitors)
@@ -111,20 +133,25 @@ def get_marker_color(visitors):
         else:
             return "green"
     except:
-        return "blue"  # fallback if missing
+        return "blue"
 
-# Add markers
+# --- Add markers with UNESCO tag ---
 for _, row in df_culture.iterrows():
     color = get_marker_color(row['2023-24 total visitors'])
 
     img_html = f'<img src="{row["image_url"]}" alt="{row["monument"]}" style="width:100%; max-height:120px; object-fit:cover; margin-bottom:8px;" />'
 
+    # UNESCO badge if applicable
+    unesco_label = ""
+    if str(row.get("unesco", "")).lower() == "true":
+        unesco_label = '<span style="background-color:#d4af37; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px;"><img src="images/UNESCO_logo.png" alt="unesco logo" width="10" height="12"> UNESCO Site</span><br>'
+
     html = f"""
     <div style="width:220px">
         {img_html}
         <h4>{row['monument']}</h4>
-        <b>City:</b> {row['city']}<br>
-        <b>State:</b> {row['state']}<br>
+        {unesco_label}
+        <b>Location:</b> {row['city']}, {row['state']}<br>
         <b>2023-24 Visitors:</b> {row['2023-24 total visitors']:,}<br>
         <b>% Domestic Growth:</b> {row['% domestic growth']}%
     </div>
@@ -137,10 +164,11 @@ for _, row in df_culture.iterrows():
         icon=folium.Icon(color=color, icon="university", prefix="fa")
     ).add_to(marker_cluster)
 
-# --- 6. Display Map in Streamlit ---
+# --- Display Map ---
 with st.container():
     st_data = st_folium(m, width=800, height=600)
 
+# --- Style Fix for iframe height ---
 st.markdown("""
     <style>
     iframe {
