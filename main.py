@@ -16,6 +16,39 @@ import plotly.graph_objects as go
 
 
 
+import toml
+import snowflake.connector
+
+# Load secrets.toml
+secrets = toml.load('/Users/loumeziere/Desktop/secret_files/secrets.toml')
+
+# Extract your connection details
+conn_info = secrets['connections']['my_example_connection']
+
+# Connect to Snowflake
+conn = snowflake.connector.connect(
+    account=conn_info['account'],
+    user=conn_info['user'],
+    password=conn_info['password'],
+    role=conn_info['role'],
+    warehouse=conn_info['warehouse'],
+    database=conn_info['database'],
+    schema=conn_info['schema']
+)
+
+cursor = conn.cursor()
+
+# Query to check images exist
+try:
+    cursor.execute("SELECT image_name, LENGTH(image_content) FROM cultural_images_stages LIMIT 2")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(f"Image: {row[0]}, Size: {row[1]} bytes")
+except Exception as e:
+    print("Error querying images:", e)
+
+cursor.close()
+conn.close()
 
 
 

@@ -10,6 +10,10 @@ import altair as alt
 import plotly.graph_objects as go
 
 
+
+
+
+
 # --- 1. Page Setup ---
 st.set_page_config(page_title="India Cultural Experience Explorer", layout="wide")
 
@@ -55,7 +59,7 @@ with st.sidebar:
     st.header("Customize Your Exploration")
 
     selected_states = st.multiselect(
-        "🗺️ Select State(s):", 
+        "🗺️ Select State/UT(s):", 
         sorted(states), 
         default=None, 
         placeholder="All States"
@@ -135,25 +139,33 @@ def get_marker_color(visitors):
     except:
         return "blue"
 
+# --- Setup GitHub base path once ---
+GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
+
+# --- Construct image_url column once ---
+df_culture["image_url"] = df_culture["image_url"].apply(lambda x: f"{GITHUB_BASE}/{x}")
+df_art["image_url"] = df_art["image_url"].apply(lambda x: f"{GITHUB_BASE}/images/arts/{x}")
+
 # --- Add markers with UNESCO tag ---
 for _, row in df_culture.iterrows():
     color = get_marker_color(row['2023-24 total visitors'])
-
+    
     img_html = f'<img src="{row["image_url"]}" alt="{row["monument"]}" style="width:100%; max-height:120px; object-fit:cover; margin-bottom:8px;" />'
 
     # UNESCO badge if applicable
     unesco_label = ""
     if str(row.get("unesco", "")).lower() == "true":
-        unesco_label = '<span style="background-color:#d4af37; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px;"><img src="images/UNESCO_logo.png" alt="unesco logo" width="10" height="12"> UNESCO Site</span><br>'
+        unesco_label = '<span style="background-color:#d4af37; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px;"><img src="https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/UNESCO_logo.png" alt="" width="17" height="20"> UNESCO Site</span><br>'
 
     html = f"""
     <div style="width:220px">
         {img_html}
         <h4>{row['monument']}</h4>
         {unesco_label}
-        <b>Location:</b> {row['city']}, {row['state']}<br>
-        <b>2023-24 Visitors:</b> {row['2023-24 total visitors']:,}<br>
-        <b>% Domestic Growth:</b> {row['% domestic growth']}%
+        <b>City:</b> {row['city']}<br>
+        <b>State:</b> {row['state']}<br>
+        <b>Visitors (2023-24):</b> {row['2023-24 total visitors']:,}<br>
+        <b>Domestic Growth:</b> {row['% domestic growth']}%
     </div>
     """
     popup = folium.Popup(html, max_width=250)
@@ -214,10 +226,10 @@ for _, row in top_3_monuments.iterrows():
     col1, col2 = st.columns([1, 2])
     with col1:
         # Clean relative image path (remove leading slash/backslash if any)
-        image_path = os.path.normpath(row['image_url'].lstrip('/\\'))
+        image_url = row['image_url'] # already the full raw GitHub URL
 
-        if os.path.exists(image_path):
-            st.image(image_path, width=150, caption=row['monument'])
+        if image_url:  # simple check in case it's empty or None
+            st.image(image_url, width=150, caption=row['monument'])
         else:
             st.markdown("🖼️ *Image not found*")
     with col2:
@@ -235,14 +247,19 @@ for _, row in top_3_monuments.iterrows():
 
 
 
-from PIL import Image
+
 import streamlit as st
 from streamlit_carousel import carousel
 
 st.subheader("🎨 Traditional Art Forms")
 st.markdown(
-    "*While traveling, it is recommended to purchase handicrafts and souvenirs directly from the local community or non-profit cooperatives. "
-    "This helps support the destination's economy and encourages artisans to preserve and share their cultural heritage.*"
+    """
+    *Travel is more than just seeing new places — it's about connecting with the heart of a culture.*  
+    Whenever possible, choose to buy handicrafts and souvenirs directly from **local artisans** or **non-profit cooperatives**.
+
+    Your choices help sustain centuries-old traditions, empower communities, and breathe life into regional art forms.  
+    Let's make every purchase count. 💫
+    """
 )
 
 arts_filtered = df_art.sort_values(by="state").copy()
@@ -254,27 +271,15 @@ if arts_filtered.empty:
 else:
     items = []
     for _, row in arts_filtered.iterrows():
-        if pd.notnull(row["image_url"]):
-            image_path = f"images/arts/{row['image_url']}"
-            try:
-                with Image.open(image_path) as img:
-                    # Resize image to desired height while maintaining aspect ratio
-                    desired_height = 400
-                    aspect_ratio = img.width / img.height
-                    new_width = int(desired_height * aspect_ratio)
-                    resized_img = img.resize((new_width, desired_height))
-                    # Save or process the resized image as needed
-                    # For demonstration, we'll assume the image is saved and accessible via a URL
-                    resized_image_url = f"resized_images/{row['image_url']}"
-            except Exception as e:
-                resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
-        else:
-            resized_image_url = "https://via.placeholder.com/400x300?text=No+Image"
+        image_url = row['image_url']
+        # fallback if image_url empty
+        if not image_url:
+            image_url = "https://via.placeholder.com/400x300?text=No+Image"
 
         items.append({
             "title": f"{row['name']}",
             "text": f"📍 {row['state']}",
-            "img": resized_image_url
+            "img": image_url
         })
 
     carousel(items)
@@ -282,6 +287,52 @@ else:
 
 
 
+
+
+df_benefits = pd.read_csv("datasets/person_benefited_handicraft.csv")
+df_benefits.columns = df_benefits.columns.str.strip()  # Clean column names
+
+benefits_map = dict(zip(df_benefits["State/UTs"], df_benefits["Total no. of Persons Benefitted"]))
+
+
+st.markdown("### 👥 Impact of Supporting Local Artisans")
+st.markdown(
+    """
+    Purchasing local crafts across India supports thousands of artisans and their families.
+    For example:\n
+    """
+)
+
+if selected_states:
+    total_beneficiaries = 0
+    for state in selected_states:
+        if state in benefits_map:
+            st.markdown(f"• **{state}**: {benefits_map[state]:,} artisans and community members benefited.")
+            total_beneficiaries += benefits_map[state]
+    st.markdown(
+        f"""
+        When you support local crafts in these selected states, "
+        you contribute to the livelihood of over **{total_beneficiaries:,}** people. 💚 
+        
+        <br><br>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        "- **Andhra Pradesh**: 18,457 people benefited\n"
+        "- **Arunachal Pradesh**: 5,126 people benefited\n"
+        "- **A & N Islands**: 8,938 people benefited\n"
+    )
+    st.markdown(
+    """
+    Every purchase from a local artisan strengthens their community,  
+    preserves cultural traditions, and fosters sustainable tourism. 🌿
+    
+    <br><br>
+    """,
+    unsafe_allow_html=True
+)
 
 
 
