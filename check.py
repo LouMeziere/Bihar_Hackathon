@@ -1,4 +1,3 @@
-
 # main.py
 import streamlit as st
 import pandas as pd
@@ -17,7 +16,7 @@ import toml
 import snowflake.connector
 
 # Load secrets.toml
-secrets = toml.load('secrets.toml')
+secrets = toml.load('/Users/loumeziere/Desktop/secret_files/secrets.toml')
 
 # Extract your connection details
 conn_info = secrets['connections']['my_example_connection']
