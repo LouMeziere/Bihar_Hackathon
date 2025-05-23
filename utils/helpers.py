@@ -10,7 +10,7 @@ def load_art_data():
 @st.cache_data
 def load_all_data():
     df_culture = pd.read_csv("datasets/cultural_sites.csv", encoding='windows-1252')
-    df_festival = pd.read_csv("datasets/festivals.csv", encoding='windows-1252')
+    df_festival = pd.read_csv("datasets/festivals_data.csv")
     df_art = pd.read_csv("datasets/arts.csv")
     df_weather = pd.read_csv("datasets/weather_data.csv")
     return df_culture, df_festival, df_art, df_weather
