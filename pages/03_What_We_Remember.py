@@ -11,6 +11,15 @@ selected_states, selected_months = render_sidebar()
 st.markdown(
     """
     <style>
+    h1 {
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+        font-size: 2.5rem;
+        text-align: center;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
     .experience-section {
         position: relative;
         margin: 40px 0;
@@ -61,6 +70,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown("<h1>What We Remember</h1>", unsafe_allow_html=True)
+
 # Section background with overlay
 st.markdown("""
 <div class="experience-section" style="background-image: url('https://images.unsplash.com/photo-1578926375605-9d3f5dcfac96');">
@@ -68,6 +79,7 @@ st.markdown("""
     <div class="experience-title">A Date</div>
     <div class="experience-subtitle">When India comes alive with colors, lights, and rhythm.</div>
 """, unsafe_allow_html=True)
+
 
 # Expand to show festival details
 if st.button("Explore Festivals", key="festivals_btn", use_container_width=True):
@@ -363,5 +375,73 @@ if st.session_state.get("show_ashrams", False):
     st.components.v1.html(carousel_html, height=600, scrolling=False)
 
 
+
+st.markdown("</div></div>", unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+# Initialize session state if not already set
+if "show_railways" not in st.session_state:
+    st.session_state.show_railways = False
+
+# A Journey Section
+st.markdown("""
+<div class="experience-section" style="background-image: url('https://images.unsplash.com/photo-1516974409141-cc9fafe61c18');">
+  <div class="experience-overlay">
+    <div class="experience-title">A Journey</div>
+    <div class="experience-subtitle">Tracing India’s heartbeat through the world’s second largest rail network.</div>
+""", unsafe_allow_html=True)
+
+if st.button("Explore Railways", key="rail_btn", use_container_width=True):
+    st.session_state.show_railways = not st.session_state.show_railways
+
+if st.session_state.show_railways:
+    import json
+    import pydeck as pdk
+
+    with open("datasets/railway/railways_lines.geojson") as f:
+        lines_data = json.load(f)
+
+    with open("datasets/railway/railways_points.geojson") as f:
+        points_data = json.load(f)
+
+    rail_layer = pdk.Layer(
+        "GeoJsonLayer",
+        lines_data,
+        get_line_color=[255, 0, 0],
+        get_line_width=2,
+        pickable=True
+    )
+
+    points_layer = pdk.Layer(
+        "GeoJsonLayer",
+        points_data,
+        get_fill_color=[0, 0, 255, 160],
+        get_radius=1000,
+        point_radius_min_pixels=2,
+        point_radius_max_pixels=10,
+        pickable=True
+    )
+
+    view_state = pdk.ViewState(
+        latitude=22.9734,
+        longitude=78.6569,
+        zoom=4,
+        pitch=0
+    )
+
+    st.pydeck_chart(pdk.Deck(
+        layers=[rail_layer, points_layer],
+        initial_view_state=view_state,
+        tooltip={"text": "{name}"}
+    ))
 
 st.markdown("</div></div>", unsafe_allow_html=True)
