@@ -1,4 +1,5 @@
 import re
+import csv
 import html
 import asyncio
 import pandas as pd
@@ -147,8 +148,8 @@ async def main():
 
 
 
-    # Save to CSV
-    df.to_csv("festivals_data.csv", index=False)
+    
+    df.to_csv("festivals_data_clean.csv", index=False, encoding='utf-8', quoting=csv.QUOTE_NONE, escapechar='\\')
     print("Saved all data to festivals_data.csv")
 
 if __name__ == "__main__":

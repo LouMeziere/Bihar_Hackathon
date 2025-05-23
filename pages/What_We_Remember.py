@@ -173,3 +173,88 @@ if available_months:
                 )
 else:
     st.info("No festival data available.")
+
+
+
+
+
+
+
+
+
+
+# Load ashram data
+df = pd.read_csv("datasets/ashrams.csv", encoding='windows-1252')
+df.dropna(inplace=True)
+
+# Streamlit setup
+#st.set_page_config(layout="wide")
+st.markdown("""
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+        }
+        .ashram-card {
+            position: relative;
+            margin-bottom: 40px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        .ashram-bg {
+            position: relative;
+            height: 350px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+        }
+        .ashram-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+            padding: 30px;
+            width: 100%;
+        }
+        .ashram-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: rgba(255,255,255,0.15);
+            position: absolute;
+            top: 20px;
+            left: 30px;
+        }
+        .ashram-name {
+            font-size: 26px;
+            font-weight: bold;
+            color: #F59C23;
+        }
+        .ashram-meta {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .ashram-desc {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("<h2 style='color:#F59C23; text-align:center;'>Sacred Spaces Across India</h2>", unsafe_allow_html=True)
+
+# Display each ashram
+for idx, row in df.iterrows():
+    image_path = f"images/{row['image_url']}"
+    html = f"""
+    <div class="ashram-card">
+        <div class="ashram-bg" style="background-image: url('{image_path}');">
+            <div class="ashram-number">0{idx+1}</div>
+            <div class="ashram-overlay">
+                <div class="ashram-name">{row['name']}, {row['state']}</div>
+                <div class="ashram-meta">{row['phone']} | {row['email']}</div>
+                <div class="ashram-desc">{row['description']}</div>
+            </div>
+        </div>
+    </div>
+    """
+    st.markdown(html, unsafe_allow_html=True)
