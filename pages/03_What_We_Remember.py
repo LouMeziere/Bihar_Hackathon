@@ -6,8 +6,7 @@ from utils.helpers import render_sidebar
 # Sidebar filters
 selected_states, selected_months = render_sidebar()
 
-
-
+# Inject custom CSS
 st.markdown(
     """
     <style>
@@ -33,7 +32,7 @@ st.markdown(
     }
 
     .experience-overlay {
-        background: rgba(0, 0, 0, 0.55);
+        background: rgba(4, 28, 28, 0.75);
         padding: 60px 20px;
         border-radius: 16px;
     }
@@ -46,48 +45,57 @@ st.markdown(
 
     .experience-subtitle {
         font-size: 22px;
-        color: #F59C23;
+        color: #34f4a4;
         margin-bottom: 30px;
     }
 
     .experience-button {
-        background-color: #F59C23;
+        background-color: #041c1c;
         color: #fff;
-        border: none;
+        border: 2px solid #1c4c54 ;
         padding: 10px 22px;
-        border-radius: 6px;
+        border-radius: 8px;
         font-size: 16px;
-        font-weight: 600;
-        margin-top: 20px;
+       
         cursor: pointer;
+        width: 100%;
     }
 
     .experience-button:hover {
-        background-color: #dd8800;
+        color: #34f4a4;
+        border: 1px solid #34f4a4;
+    }
+
+    .button-container {
+        padding: 0 40px;
+        margin-top: -20px;
+        margin-bottom: 30px;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
+# Page title
 st.markdown("<h1>What We Remember</h1>", unsafe_allow_html=True)
 
-
-
-# Section background with overlay
+# Hero section
 st.markdown("""
 <div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_date.jpg');">
   <div class="experience-overlay">
     <div class="experience-title">A Date</div>
     <div class="experience-subtitle">When India comes alive with colors, lights, and rhythm.</div>
+  </div>
+</div>
 """, unsafe_allow_html=True)
 
 
-# Expand to show festival details
+
+# Handle query param using updated API
 if st.button("Explore Festivals", key="festivals_btn", use_container_width=True):
     st.session_state.show_festivals = not st.session_state.get("show_festivals", False)
 
-if st.session_state.get("show_festivals", False):
+if st.session_state.get("show_festivals"):
     st.markdown(
         """
         <style>
@@ -99,11 +107,11 @@ if st.session_state.get("show_festivals", False):
         }
         /* Container for festival cards */
         .festival-card {
-            background: #262730;
+            background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 1.5rem;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            box-shadow: 4px 4px 12px rgba(40, 36, 52, 0.8); /* subtle grey shadow */
             transition: transform 0.25s ease, box-shadow 0.25s ease;
             animation: fadeIn 0.7s ease forwards;
             opacity: 0;
@@ -119,7 +127,7 @@ if st.session_state.get("show_festivals", False):
         /* Headers */
         h1, h2, h3 {
             font-weight: 700;
-            color: #2c3e50;
+            color: #1c4c54;
             margin-bottom: 0.3rem;
         }
         h1 {
@@ -134,11 +142,14 @@ if st.session_state.get("show_festivals", False):
             margin-top: 1rem;
             margin-bottom: 1.2rem;
         }
+        .festival-card p {
+            color: #93aca4 ;
+        }
         /* Details summary styling */
         details summary {
             cursor: pointer;
             font-weight: 600;
-            color: #2980b9;
+            color: #34f4a4 ;
             outline: none;
             margin-top: 1rem;
         }
@@ -152,7 +163,7 @@ if st.session_state.get("show_festivals", False):
         }
         details p {
             margin-top: 0.5rem;
-            color: #34495e;
+            color: #93aca4 ;
             font-size: 0.95rem;
             line-height: 1.3;
         }
@@ -282,7 +293,6 @@ if st.session_state.get("show_ashrams", False):
     />
     <style>
         body {
-            background-color: #000;
             color: white;
         }
         .swiper {
@@ -293,29 +303,31 @@ if st.session_state.get("show_ashrams", False):
         .swiper-slide {
             background-position: center;
             background-size: cover;
-            width: 350px;
+            width: 320px;
             height: 400px;
             border-radius: 16px;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 0 20px rgba(255,255,255,0.15);
+            box-shadow: none;
         }
         .ashram-overlay {
-            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.2));
+            background: linear-gradient(to top, rgba(4, 28, 28, 0.7), rgba(28, 76, 84, 0.7));
             position: absolute;
             bottom: 0;
             padding: 20px;
             width: 100%;
-            color: white;
         }
         .ashram-name {
             font-size: 22px;
             font-weight: bold;
-            color: #F59C23;
+            color: #34f4a4 !important;
+            text-shadow: none;
+            opacity: 1 ;
+            
         }
         .ashram-meta {
             font-size: 13px;
-            opacity: 0.8;
+            opacity: 1;
             margin-top: 5px;
         }
         .ashram-desc {
@@ -323,6 +335,21 @@ if st.session_state.get("show_ashrams", False):
             margin-top: 10px;
             line-height: 1.4;
         }
+        .swiper-button-next, .swiper-button-prev {
+            color: #34f4a4; 
+        }
+        /* Change inactive pagination bullets */
+        .swiper-pagination-bullet {
+        background: #1c4c54 !important;
+        opacity: 0.6;
+        }
+
+        /* Change active pagination bullet */
+        .swiper-pagination-bullet-active {
+        background: #34f4a4 !important;
+        opacity: 1;
+        }
+       
     </style>
 
     <div class="swiper mySwiper">
@@ -373,7 +400,7 @@ if st.session_state.get("show_ashrams", False):
     """
 
     # Show it in Streamlit
-    st.markdown("<h2 style='color:#F59C23; text-align:center;'>Sacred Spaces Across India</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; margin_bottom: 0px; padding-bottom: 0px; padding-top: 70px;'>Sacred Spaces Across India</h2>", unsafe_allow_html=True)
     st.components.v1.html(carousel_html, height=600, scrolling=False)
 
 
@@ -406,6 +433,108 @@ if st.button("Explore Railways", key="rail_btn", use_container_width=True):
     st.session_state.show_railways = not st.session_state.show_railways
 
 if st.session_state.show_railways:
+
+    import streamlit as st
+    import pandas as pd
+    import altair as alt
+
+    # Load CSV
+    df = pd.read_csv('datasets/co2_emissions_transports.csv')
+
+    # Clean column names
+    df.columns = df.columns.str.strip()
+
+    
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background-color: #101414;
+            color: #93aca4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .title {
+            color: #34f4a4;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 0.25rem;
+        }
+        .subtitle {
+            margin-top: 0;
+            color: #93aca4;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<h1 class="title">India\'s Railway & Transport CO₂ Emissions Overview</h1>', unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <p class="subtitle">
+        India’s extensive railway network is the world’s <strong>second largest</strong>, carrying millions of passengers daily.<br>
+        It blends modern upgrades and luxury carriages with iconic historic routes like the UNESCO-listed mountain railways of Darjeeling, Nilgiri, and Kalka-Shimla.<br><br>
+        Traveling by train is not only one of the most authentic ways to experience India’s diverse landscapes and culture but also a <strong>greener alternative</strong> to flying, producing far less carbon emissions.
+        </p>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Define color mapping matching your palette
+    color_map = {
+        'Rail': '#34f4a4',          # Light green
+        'Road': '#1c4c54 ',          # Grey
+        'Shipping': '#282434',          # Light green
+        'Passenger Cars': '#041c1c',# Dark green
+        'Airways': '#1e2f2f'        # Flashy green
+    }
+
+    # Build bar chart
+    bar_chart = (
+        alt.Chart(df)
+        .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
+        .encode(
+            y=alt.Y('Mode:N', sort='-x', title=None,
+                    axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
+            x=alt.X('Transport (gm/tkm):Q', title='CO₂ Emissions (gm/tkm)', 
+                    axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
+            color=alt.Color('Mode:N', scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())), legend=None),
+            tooltip=['Mode', 'Category', alt.Tooltip('Transport (gm/tkm):Q', format='.0f')]
+        )
+        .properties(height=300, width=700)
+        .configure_view(strokeWidth=0)
+    )
+
+    st.altair_chart(bar_chart, use_container_width=True)
+
+    # Insight box styled with your dark green background and flashy green text
+    st.markdown(
+        """
+        <div style="
+            background-color:#041c1c;
+            border-left: 6px solid #34f4a4;
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 20px;
+            color: #93aca4;
+            font-size: 16px;
+            font-weight: 600;
+        ">
+            <strong style="color:#34f4a4;">Insight:</strong> Rail transport (both freight and passenger) produces <span style="color:#1c4c54;">significantly lower CO₂ emissions</span> compared to road freight, passenger cars, and airways.<br>
+            Choosing trains supports sustainable travel and reduces environmental impact across India.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+
+
+
+
     import json
     import pydeck as pdk
 
@@ -426,7 +555,7 @@ if st.session_state.show_railways:
     points_layer = pdk.Layer(
         "GeoJsonLayer",
         points_data,
-        get_fill_color=[0, 0, 255, 160],
+        get_fill_color=[52, 244, 164, 160],  # changed to green
         get_radius=1000,
         point_radius_min_pixels=2,
         point_radius_max_pixels=10,
@@ -445,5 +574,6 @@ if st.session_state.show_railways:
         initial_view_state=view_state,
         tooltip={"text": "{name}"}
     ))
+
 
 st.markdown("</div></div>", unsafe_allow_html=True)
