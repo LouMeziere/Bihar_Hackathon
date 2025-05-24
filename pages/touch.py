@@ -5,6 +5,11 @@ from utils.helpers import render_sidebar
 
 selected_states, selected_months = render_sidebar()
 
+st.markdown("<h1>What We Touch -- Made from Artisans</h1>", unsafe_allow_html=True)
+
+
+
+
 # 🎨 Intro section
 st.subheader("🎨 Traditional Art Forms")
 st.markdown(
