@@ -34,7 +34,7 @@ st.markdown(f"""
 <div style="max-width: 900px; margin: auto; padding: 20px; border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   <h2 style="color:#ffffff; font-weight: 900; font-size: 3rem; margin-bottom: 0;">India: A Visual Wonderland</h2>
   <p style="font-size: 1.2rem; color:#93aca4; margin-top: 8px;">
-    India is a top destination for travelers drawn by its rich tapestry of sights — from stunning temples and majestic forts to breathtaking natural landscapes.
+    India is not just a destination — it is an experience. With one of the world’s highest concentrations of UNESCO World Heritage sites, it’s a place where culture comes alive.
   </p>
   
   <!-- Big stats -->
@@ -176,67 +176,122 @@ for _, row in df_culture.iterrows():
         icon=folium.Icon(color=color, icon="university", prefix="fa")
     ).add_to(marker_cluster)
 
-# --- Display Map ---
-container_style = """
-    max-width: 900px; 
-    margin: 30px auto; 
-    padding: 24px 28px; 
-    border-radius: 12px; 
-    background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 100%);
-    background-color: #041c1c;  /* fallback */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
-    color: #93aca4; 
-    font-size: 1.15rem; 
-    line-height: 1.6;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --- Journey through India ---
+st.title("A Journey Through India’s Timeless Heritage")
+
+
+# --- HIGH VISITOR VOLUMES ---
+# Group by state and sum visitors for 2023-24
+state_visitors = df_culture.groupby('state')['2023-24 total visitors'].sum().reset_index()
+
+# Sort and get top 3 states
+top_3_states = state_visitors.sort_values('2023-24 total visitors', ascending=False).head(3)
+
+# Calculate total visitors for all states
+total_visitors = state_visitors['2023-24 total visitors'].sum()
+
+# Calculate combined percentage for top 3 states
+combined_visitors = top_3_states['2023-24 total visitors'].sum()
+combined_percentage = round((combined_visitors / total_visitors) * 100, 1)
+
+# Get list of top 3 state names, comma separated
+top_3_state_names = ", ".join(top_3_states['state'].tolist())
+
+visitor_volume_html = f"""
+<div style="background: linear-gradient(to right, #1e2f2f, #1c4c54);
+            padding: 40px;
+            border-radius: 16px;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+            margin: 40px auto;
+            max-width: 900px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+
+  <!-- Left side: Description -->
+  <div style="flex: 1; min-width: 300px;">
+    <div style="font-size: 24px; font-weight: 800; margin-bottom: 16px;">
+      Avoid High Visitor Volumes
+    </div>
+    <div style="font-size: 16px; color: #d0d0d0; margin-bottom: 12px;">
+      Highly popular destinations attract significant visitor numbers, which can:
+    </div>
+    <ul style="list-style: none; padding-left: 0; font-size: 16px; line-height: 1.6; color: #b1c1b7;">
+      <li>🚧 Strains local infrastructure</li>
+      <li>🏛️ Damages heritage sites</li>
+      <li>😓 Makes visits less enjoyable</li>
+    </ul>
+  </div>
+
+  <!-- Right side: Stats -->
+  <div style="flex: 0.6; text-align: center;">
+    <div style="font-size: 18px; font-weight: 600; color: #9ee0cc; margin-bottom: 8px;">
+      Uttar Pradesh, Maharashtra, Delhi
+    </div>
+    <div style="font-size: 60px; font-weight: 900; color: #34f4a4; margin-bottom: 6px;">
+      {combined_percentage:.1f}%
+    </div>
+    <div style="font-size: 18px; font-weight: 500; color: #ffffff;">
+      of total visitors (2023–24)
+    </div>
+  </div>
+
+</div>
 """
 
-# Use st.markdown for the green container background only for the text
-with st.container():
-    st.markdown(f'<div style="{container_style}">', unsafe_allow_html=True)
+st.markdown(visitor_volume_html, unsafe_allow_html=True)
+
+
+
+
+st.markdown("""
+    <hr style="border: 0; border-top: 1px solid #2f5b63; margin: 24px 0;">
     
-    st.markdown("""
-        <p>India's cultural richness is globally acknowledged, reflected in its many UNESCO World Heritage sites.  
-        Explore the map below to uncover the full spectrum of these treasured landmarks across the country.</p>
+    <p style="font-weight: 600; color: #34f4a4; font-size: 1.2rem;">
+    💡 Scroll through the map below to explore cultural sites by region.
+    </p>
+    <p>Keep in mind to avoid highly popular destinations and priorities <strong>culturally rich but less-visited states</strong> like <strong>Bihar</strong>, <strong>Odisha</strong>, and <strong>Chhattisgarh</strong> offer authentic and meaningful experiences — <em>without the crowds.</em></p>
+    
+    <ul style="padding-left: 20px; color: #b1c1b7;">
+    <li>Click on any site to learn more.</li>
+    <li>UNESCO sites are indicated.</li>
+    <li>Marker colors indicate visitor volume: 🟢 low, 🟠 medium, 🔴 high.</li>
+    </ul>
+""", unsafe_allow_html=True)
 
-        <p>However, not all sites receive equal attention. Highly popular destinations, especially in states like <strong>Uttar Pradesh</strong>, <strong>Delhi</strong>, and <strong>Rajasthan</strong>, attract <strong>huge crowds</strong>, which can:</p>
 
-        <ul style="padding-left: 20px; color: #b1c1b7;">
-          <li>Strain local infrastructure</li>
-          <li>Damage fragile heritage sites</li>
-          <li>Make visits less enjoyable for tourists</li>
-        </ul>
+st.markdown('</div>', unsafe_allow_html=True)
 
-        <p>Conversely, <strong>culturally rich but less-visited states</strong> like <strong>Bihar</strong>, <strong>Odisha</strong>, and <strong>Chhattisgarh</strong> offer authentic and meaningful experiences — <em>without the crowds.</em></p>
-        <hr style="border: 0; border-top: 1px solid #2f5b63; margin: 24px 0;">
-        <p style="font-weight: 600; color: #34f4a4; font-size: 1.2rem;">
-        💡 Scroll through the map below to explore cultural sites by region.
-        </p>
+# Add some vertical spacing between text and map
+st.markdown('<div style="margin-top:20px;"></div>', unsafe_allow_html=True)
 
-        <ul style="padding-left: 20px; color: #b1c1b7;">
-          <li>Click on any site to learn more.</li>
-          <li>UNESCO sites are marked with their official logo.</li>
-          <li>Marker colors indicate visitor volume: 🟢 low, 🟠 medium, 🔴 high.</li>
-        </ul>
-    """, unsafe_allow_html=True)
+# Wrap the map in a smaller container with margin to create green space around
+map_container_style = """
+    max-width: 750px;
+    margin: 0 auto 40px auto;  /* center horizontally + bottom margin */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    background-color: #0a2a2a;  /* slightly different dark bg for map container */
+"""
+st.markdown(f'<div style="{map_container_style}">', unsafe_allow_html=True)
+st_folium(m, width=750, height=600)
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Add some vertical spacing between text and map
-    st.markdown('<div style="margin-top:20px;"></div>', unsafe_allow_html=True)
-
-    # Wrap the map in a smaller container with margin to create green space around
-    map_container_style = """
-        max-width: 750px;
-        margin: 0 auto 40px auto;  /* center horizontally + bottom margin */
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        background-color: #0a2a2a;  /* slightly different dark bg for map container */
-    """
-    st.markdown(f'<div style="{map_container_style}">', unsafe_allow_html=True)
-    st_folium(m, width=750, height=600)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 
@@ -249,7 +304,6 @@ top_3_monuments = df_culture.sort_values('2023-24 total visitors', ascending=Fal
 st.subheader("🏆 Top 3 Most Visited Monuments (2023-24)")
 st.markdown("""
 Here are the **most visited cultural sites** based on your current state selection — or for **all of India** if no filter is applied.
-These monuments are popular for a reason — they’re iconic, historically significant, and architecturally stunning. But here’s your opportunity to go beyond the obvious. 
 
 👉 **Use the filters on your left to discover high-value sites in lesser-visited states** like **Bihar** or **Odisha** — where your visit can have a *greater local impact* and offer a *deeper cultural experience*.
 """)
@@ -258,7 +312,7 @@ html_content = ""
 for i, (_, row) in enumerate(top_3_monuments.iterrows(), start=1):
     html_content += f"""
     <div style="
-        background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
+        background: linear-gradient(to right, #041c1c, #1c4c54);
         padding: 20px 30px;
         border-radius: 10px;
         color: #93aca4;
@@ -298,7 +352,7 @@ for i, (_, row) in enumerate(top_3_monuments.iterrows(), start=1):
             </div>
         </div>
         <!-- Right side: Image -->
-        <div style="flex-shrink: 0;">
+        <div style="flex-shrink: 0; align-self: flex-start; margin-left: auto;">
             <img src="{row['image_url']}" width="150" style="border-radius: 8px;" />
         </div>
     </div>
