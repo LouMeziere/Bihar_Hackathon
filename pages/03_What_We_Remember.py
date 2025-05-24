@@ -72,9 +72,11 @@ st.markdown(
 
 st.markdown("<h1>What We Remember</h1>", unsafe_allow_html=True)
 
+
+
 # Section background with overlay
 st.markdown("""
-<div class="experience-section" style="background-image: url('https://images.unsplash.com/photo-1578926375605-9d3f5dcfac96');">
+<div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_date.jpg');">
   <div class="experience-overlay">
     <div class="experience-title">A Date</div>
     <div class="experience-subtitle">When India comes alive with colors, lights, and rhythm.</div>
@@ -254,7 +256,7 @@ st.markdown("</div></div>", unsafe_allow_html=True)
 
 
 st.markdown("""
-<div class="experience-section" style="background-image: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0');">
+<div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_feeling.jpg');">
   <div class="experience-overlay">
     <div class="experience-title">A Feeling</div>
     <div class="experience-subtitle">A moment of stillness, a breath in the sacred hush.</div>
@@ -394,7 +396,7 @@ if "show_railways" not in st.session_state:
 
 # A Journey Section
 st.markdown("""
-<div class="experience-section" style="background-image: url('https://images.unsplash.com/photo-1516974409141-cc9fafe61c18');">
+<div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_journey.jpg');">
   <div class="experience-overlay">
     <div class="experience-title">A Journey</div>
     <div class="experience-subtitle">Tracing India’s heartbeat through the world’s second largest rail network.</div>
