@@ -1,23 +1,25 @@
 import streamlit as st
 import pandas as pd
-import calendar
+
 from utils.helpers import render_sidebar
+import streamlit.components.v1 as components
 
 # Sidebar filters
 selected_states, selected_months = render_sidebar()
+
+# Section title
+st.markdown("""
+<div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
+  <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">HOW </span>
+  <span style="color: white; font-size: 58px; font-weight: 600;">the journey goes</span>
+</div>
+""", unsafe_allow_html=True)
+
 
 # Inject custom CSS
 st.markdown(
     """
     <style>
-    h1 {
-        font-weight: 700;
-        margin-bottom: 0.3rem;
-        font-size: 2.5rem;
-        text-align: center;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
 
     .experience-section {
         position: relative;
@@ -76,9 +78,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Page title
-st.markdown("<h1>What We Remember</h1>", unsafe_allow_html=True)
-
 # Hero section
 st.markdown("""
 <div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_date.jpg');">
@@ -96,169 +95,250 @@ if st.button("Explore Festivals", key="festivals_btn", use_container_width=True)
     st.session_state.show_festivals = not st.session_state.get("show_festivals", False)
 
 if st.session_state.get("show_festivals"):
-    st.markdown(
-        """
-        <style>
-        /* Page background and font */
-        .main {
-            background-color: #f9f9f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #222222;
-        }
-        /* Container for festival cards */
-        .festival-card {
-            background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 1.5rem;
-            box-shadow: 4px 4px 12px rgba(40, 36, 52, 0.8); /* subtle grey shadow */
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            animation: fadeIn 0.7s ease forwards;
-            opacity: 0;
-        }
-        .festival-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
-        /* Fade in keyframes */
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        /* Headers */
-        h1, h2, h3 {
-            font-weight: 700;
-            color: #1c4c54;
-            margin-bottom: 0.3rem;
-        }
-        h1 {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-        h2 {
-            font-size: 1.8rem;
-            text-align: center;
-            margin-top: 1rem;
-            margin-bottom: 1.2rem;
-        }
-        .festival-card p {
-            color: #93aca4 ;
-        }
-        /* Details summary styling */
-        details summary {
-            cursor: pointer;
-            font-weight: 600;
-            color: #34f4a4 ;
-            outline: none;
-            margin-top: 1rem;
-        }
-        details[open] summary::after {
-            content: "▲";
-            float: right;
-        }
-        details summary::after {
-            content: "▼";
-            float: right;
-        }
-        details p {
-            margin-top: 0.5rem;
-            color: #93aca4 ;
-            font-size: 0.95rem;
-            line-height: 1.3;
-        }
-        /* Responsive columns for cards */
-        .stColumns > div {
-            padding: 0 8px !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    st.markdown("<h1>What We Touch -- Made from Artisans</h1>", unsafe_allow_html=True)
 
-    # Your existing data loading and filtering code remains unchanged:
-    df_festival = pd.read_csv("datasets/festivals_data.csv", encoding='utf-8')
-    df_festival = df_festival.dropna(subset=['state'])
-    df_festival["start_date"] = pd.to_datetime(df_festival["start_date"], format='%d %b %Y', errors="coerce")
-    df_festival["end_date"] = pd.to_datetime(df_festival["end_date"], format='%d %b %Y', errors="coerce")
-    df_festival = df_festival[(df_festival["start_date"].dt.year >= 2025) & (df_festival["start_date"].dt.month >= 5)]
+    # Load and filter art data
+    df_art = pd.read_csv("datasets/arts.csv", encoding='windows-1252')
+    GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
+    df_art["image_url"] = df_art["image_url"].apply(lambda x: f"{GITHUB_BASE}/images/arts_out/{x}")
 
-    filtered_festivals = df_festival.copy()
+    # Load people benefited data and clean it
+    df_benefit = pd.read_csv("datasets/person_benefited_handicraft.csv", encoding='windows-1252')
+    df_benefit.columns = df_benefit.columns.str.strip().str.lower().str.replace(" ", "_")
+    df_benefit.rename(columns={"state/uts": "state", "total_no._of_persons_benefitted": "benefited"}, inplace=True)
+
+    # Merge datasets on 'state'
+    arts_filtered = df_art.merge(df_benefit[["state", "benefited"]], on="state", how="left").sort_values(by="state").copy()
+
+    # Filter by selected states
     if selected_states:
-        filtered_festivals = filtered_festivals[filtered_festivals["state"].isin(selected_states)]
-    if selected_months:
-        month_number_map = {
-            "January": 1, "February": 2, "March": 3, "April": 4,
-            "May": 5, "June": 6, "July": 7, "August": 8,
-            "September": 9, "October": 10, "November": 11, "December": 12
-        }
-        selected_month_nums = [month_number_map[m] for m in selected_months]
-        filtered_festivals = filtered_festivals[
-            filtered_festivals["start_date"].dt.month.isin(selected_month_nums)
-        ]
+        arts_filtered = arts_filtered[arts_filtered["state"].isin(selected_states)]
 
-    grouped = (
-        filtered_festivals
-        .groupby(["festival_name", "start_date", "end_date", "description", "genre", "city"], dropna=False)
-        .agg({"state": lambda x: ", ".join(sorted(set(x.dropna())))})
-        .reset_index()
-    )
-    grouped = grouped.sort_values(by="start_date")
-    available_months = sorted(grouped["start_date"].dropna().apply(lambda d: (d.year, d.month)).unique())
+    # Generate carousel items
+    carousel_items = ""
+    for _, row in arts_filtered.iterrows():
+        item_html = f"""
+        <div class="carousel-item" data-benefit="{row['benefited']}" data-state="{row['state']}">
+            <img src="{row['image_url']}" alt="{row['name']}">
+            <div class="carousel-title">{row['name']}</div>
+            <div class="carousel-text">📍 {row['state']}</div>
+        </div>
+        """
+        carousel_items += item_html
 
-    if "month_index" not in st.session_state:
-        st.session_state.month_index = 0
+    carousel_html = f"""
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: auto; position: relative;">
 
-    col1, col2, col3 = st.columns([1, 3, 1])
-    with col1:
-        if st.button("← Previous"):
-            if st.session_state.month_index > 0:
-                st.session_state.month_index -= 1
-    with col3:
-        if st.button("Next →"):
-            if st.session_state.month_index < len(available_months) - 1:
-                st.session_state.month_index += 1
+    <style>
+        .buy-local-card {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(to right, #2f5454, #1e2f2f);
+        padding: 24px 32px;
+        border-radius: 12px;
+        color: #ffffff;
+        margin: 20px 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }}
+        .buy-local-left {{
+        max-width: 55%;
+        }}
+        .buy-local-title {{
+        font-size: 26px;
+        font-weight: 700;
+        color: #34f4a4;
+        margin-bottom: 12px;
+        }}
+        .buy-local-text {{
+        font-size: 16px;
+        line-height: 1.5;
+        color: #b1c1b7;
+        }}
+        .buy-local-right {{
+        text-align: center;
+        max-width: 40%;
+        }}
+        .buy-local-number {{
+        font-size: 50px;
+        font-weight: 900;
+        color: #34f4a4;
+        margin-bottom: 6px;
+        }}
+        .buy-local-label {{
+        font-weight: 600;
+        font-size: 18px;
+        color: #ffffff;
+        }}
 
-    if available_months:
-        selected_year, selected_month = available_months[st.session_state.month_index]
+        .carousel-wrapper {{
+        overflow: hidden;
+        width: 100%;
+        position: relative;
+        height: 420px;  /* bigger height to fit bigger image */
+        margin-bottom: 20px;
+        }}
+        .carousel-track {{
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+        height: 100%;
+        }}
+        .carousel-item {{
+        flex: 0 0 100%;
+        box-sizing: border-box;
+        padding: 20px;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        }}
+        .carousel-item img {{
+        max-height: 550px;   /* bigger image */
+        max-width: 105%;     /* wider image */
+        width: auto;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        object-fit: contain;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        user-select: none;
+        pointer-events: none;
+        }}
+        .carousel-title, .carousel-text {{
+            position: absolute;
+            left: 20px;
+            color: #34f4a4;
+            text-shadow: 0 0 6px rgba(0,0,0,0.7);
+            z-index: 12;
+            max-width: 70%;
+            pointer-events: none;
+        }}
+        .carousel-title {{
+        top: 20px;
+        font-size: 28px;
+        font-weight: 700;
+        color: #34f4a4;
+        margin-bottom: 8px;
+        }}
+        .carousel-text {{
+        top: 60px;
+        font-size: 18px;
+        font-weight: 500;
+        color: #b1c1b7;
+        }}
 
-        st.markdown(
-            f"<h2>📅 Festivals in {calendar.month_name[selected_month]} {selected_year}</h2>",
-            unsafe_allow_html=True,
-        )
+        /* Hide default buttons container */
+        .carousel-buttons {{
+        display: none;
+        }}
 
-        this_month = grouped[
-            (grouped["start_date"].dt.year == selected_year) &
-            (grouped["start_date"].dt.month == selected_month)
-        ].reset_index(drop=True)
+        /* Arrow buttons styles */
+        .carousel-arrow {{
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.7);
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        user-select: none;
+        z-index: 10;
+        }}
+        .carousel-arrow:hover {{
+        background: rgba(0,0,0,0.9);
+        }}
+        .carousel-arrow svg {{
+        fill: #34f4a4;
+        width: 24px;
+        height: 24px;
+        }}
 
-        cards_per_row = 3
-        for i in range(0, len(this_month), cards_per_row):
-            row_festivals = this_month.iloc[i : i + cards_per_row]
-            cols = st.columns(cards_per_row)
-            for col, (_, row) in zip(cols, row_festivals.iterrows()):
-                with col:
-                    start = row['start_date'].date()
-                    end = row['end_date'].date() if pd.notnull(row['end_date']) else None
-                    date_str = f"{start}" if not end or start == end else f"{start} → {end}"
-                    st.markdown(
-                        f"""
-                        <div class="festival-card">
-                            <h3>{row['festival_name']}</h3>
-                            <p><strong>📍 City:</strong> {row['city']}</p>
-                            <p><strong>📍 State(s):</strong> {row['state']}</p>
-                            <p><strong>🎵 Genre:</strong> {row['genre']}</p>
-                            <p><strong>📆 Date:</strong> {date_str}</p>
-                            <details>
-                                <summary>Details</summary>
-                                <p>{row['description']}</p>
-                            </details>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-    else:
-        st.info("No festival data available.")
+        .arrow-left {{
+        left: 12px;
+        }}
+        .arrow-right {{
+        right: 12px;
+        }}
+    </style>
+
+    <div class="buy-local-card">
+        <div class="buy-local-left">
+        <div class="buy-local-title">Buy Local</div>
+        <div class="buy-local-text">
+            Purchasing local crafts across India supports thousands of artisans and their families.<br><br>
+            Every purchase from a local artisan strengthens their community, preserves cultural <br>
+            traditions, and fosters sustainable tourism. 🌿
+        </div>
+        </div>
+        <div class="buy-local-right">
+        <div class="buy-local-number" id="benefitNumber">{arts_filtered.iloc[0]['benefited']}</div>
+        <div class="buy-local-label" id="benefitLabel">people benefited in <br>{arts_filtered.iloc[0]['state']}</div>
+        </div>
+    </div>
+
+    <div class="carousel-wrapper">
+        <div class="carousel-track" id="carouselTrack">
+        {carousel_items}
+        </div>
+
+        <!-- Left arrow -->
+        <div class="carousel-arrow arrow-left" onclick="prev()" role="button" aria-label="Previous">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </div>
+
+        <!-- Right arrow -->
+        <div class="carousel-arrow arrow-right" onclick="next()" role="button" aria-label="Next">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+        </div>
+    </div>
+
+    <script>
+        const track = document.getElementById("carouselTrack");
+        const items = document.querySelectorAll(".carousel-item");
+        let currentIndex = 0;
+
+        function updateStats(index) {{
+        const benefit = items[index].dataset.benefit;
+        const state = items[index].dataset.state;
+        document.getElementById("benefitNumber").textContent = benefit;
+        document.getElementById("benefitLabel").innerHTML = `people benefited in <br>${{state}}`;
+        }}
+
+        function next() {{
+        if (currentIndex < items.length - 1) {{
+            currentIndex++;
+            track.style.transform = `translateX(-${{100 * currentIndex}}%)`;
+            updateStats(currentIndex);
+        }}
+        }}
+
+        function prev() {{
+        if (currentIndex > 0) {{
+            currentIndex--;
+            track.style.transform = `translateX(-${{100 * currentIndex}}%)`;
+            updateStats(currentIndex);
+        }}
+        }}
+    </script>
+
+    </div>
+    """
+
+
+    components.html(carousel_html, height=850)
+
+
+
+
+
+
 
 
 
