@@ -9,6 +9,8 @@ def load_art_data():
 
 @st.cache_data
 def load_all_data():
+
+
     df_culture = pd.read_csv("datasets/cultural_sites.csv", encoding='windows-1252')
     df_festival = pd.read_csv("datasets/festivals_data.csv")
     df_art = pd.read_csv("datasets/arts.csv")
@@ -16,7 +18,7 @@ def load_all_data():
     return df_culture, df_festival, df_art, df_weather
 
 def connect_to_snowflake():
-    secrets = toml.load('/Users/lou/Desktop/secrets.toml')
+    secrets = toml.load('/Users/loumeziere/Desktop/secret_files/secrets.toml')
     conn_info = secrets['connections']['my_example_connection']
     return snowflake.connector.connect(**conn_info)
 
