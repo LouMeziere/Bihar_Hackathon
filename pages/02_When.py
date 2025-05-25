@@ -20,7 +20,7 @@ st.markdown("To help travelers make informed and responsible decisions, we've an
 
 
 st.markdown("""
-<h2 style="color:#fffff; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Ideal Seasons for Perfect Weather</h2>
+<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Ideal Seasons for Perfect Weather</h2>
 """, unsafe_allow_html=True)
 
 
@@ -199,7 +199,7 @@ plot_weather(selected_states)
 
 
 st.markdown("""
-<h2 style="color:#fffff; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Best Seasons to Escape the Crowds</h2>
+<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Best Seasons to Escape the Crowds</h2>
 """, unsafe_allow_html=True)
 
 st.markdown("""
@@ -312,7 +312,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 st.markdown("""
-<h2 style="color:#fffff; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Timing Your Trip Around India’s Grand Celebrations</h2>
+<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Timing Your Trip Around India’s Grand Celebrations</h2>
 """, unsafe_allow_html=True)
 
 
