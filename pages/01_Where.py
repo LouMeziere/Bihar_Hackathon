@@ -88,24 +88,11 @@ fig.add_trace(go.Bar(
     width=0.4,
     hoverinfo='text',
     hovertemplate=[
-        f'<span style="color:#34f4a4; font-weight:bold;">Global rank:</span> <span style="color:#ffffff;">#{rank}</span><extra></extra>'
+        f'<span style="color:#34f4a4; font-weight:bold;">UNESCO rank:</span> <span style="color:#ffffff;">#{rank}</span><extra></extra>'
         for rank in ranks
     ],
     texttemplate="%{text}",  # HTML-friendly for hover only — labels render plain
 ))
-
-UNESCO_LOGO_URL = f"{GITHUB_BASE}/datasets/UNESCO_logo.png"
-
-st.markdown(f"""
-<div style="display: flex; justify-content: center; margin-top: 20px;">
-  <div style="width: 80px; height: 80px; background-color: #34f4a4; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-    <img src="{UNESCO_LOGO_URL}" style="width: 45px; height: 45px; object-fit: contain;" alt="UNESCO Logo"/>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-
-
 
 
 

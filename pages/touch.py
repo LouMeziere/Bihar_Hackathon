@@ -30,9 +30,29 @@ for _, row in arts_filtered.iterrows():
     item_html = f"""
       <div class="carousel-item" data-benefit="{row['benefited']}" data-state="{row['state']}">
         <img src="{row['image_url']}" alt="{row['name']}">
-        <div class="carousel-title">{row['name']}</div>
-        <div class="carousel-text">📍 {row['state']}</div>
+        <div class="carousel-info-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 12px; border-radius: 0 0 12px 12px; height: 70px;">
+            <div class="carousel-arrow arrow-left" onclick="prev()" role="button" aria-label="Previous">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+              </svg>
+            </div>
+            
+            <div style="text-align: center;">
+              <div class="carousel-title">{row['name']}</div>
+              <div class="carousel-text">📍 {row['state']}</div>
+            </div>
+
+            <div class="carousel-arrow arrow-right" onclick="next()" role="button" aria-label="Next">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
       </div>
+
     """
     carousel_items += item_html
 
@@ -83,10 +103,11 @@ carousel_html = f"""
 
     .carousel-wrapper {{
       overflow: hidden;
-      width: 100%;
+      width: 600px;
       position: relative;
-      height: 420px;  /* bigger height to fit bigger image */
-      margin-bottom: 20px;
+      height: auto;  /* bigger height to fit bigger image */
+      margin: 0 auto 20px auto;
+      align: center;
     }}
     .carousel-track {{
       display: flex;
@@ -96,7 +117,7 @@ carousel_html = f"""
     .carousel-item {{
       flex: 0 0 100%;
       box-sizing: border-box;
-      padding: 20px;
+      padding: 0px;
       text-align: center;
       height: 100%;
       display: flex;
@@ -106,37 +127,48 @@ carousel_html = f"""
       position: relative;
     }}
     .carousel-item img {{
-      max-height: 550px;   /* bigger image */
-      max-width: 105%;     /* wider image */
-      width: auto;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      object-fit: contain;
+      height: 300px;
+      width: 100%;
+      object-fit: cover; /* Crops but maintains aspect ratio */
+      border-radius: 8px 8px 0 0;
+      margin-bottom: 0;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       user-select: none;
       pointer-events: none;
     }}
+
     .carousel-title, .carousel-text {{
-        position: absolute;
-        left: 20px;
+        position: static;
         color: #34f4a4;
         text-shadow: 0 0 6px rgba(0,0,0,0.7);
         z-index: 12;
-        max-width: 70%;
-        pointer-events: none;
+        max-width: 100%;
+        pointer-events: auto;
+        text-align: center;
+    }}
+    .carousel-info-box {{
+      background-color: #1e2f2f;
+      padding: 12px 16px;
+      width: 100%;
+      color: #ffffff;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      margin-top: 8px;
+      border-radius: 0 0 8px 8px;
+      
     }}
     .carousel-title {{
-      top: 20px;
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: bold;
       color: #34f4a4;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      position: static;
     }}
     .carousel-text {{
-      top: 60px;
-      font-size: 18px;
-      font-weight: 500;
+      font-size: 14px;
       color: #b1c1b7;
+      position: static;
+      text-align: center;
     }}
 
     /* Hide default buttons container */
@@ -146,11 +178,10 @@ carousel_html = f"""
 
     /* Arrow buttons styles */
     .carousel-arrow {{
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.7);
-      border-radius: 50%;
+      top: auto;
+      transform: none;
+      background: rgba(4, 28, 28, 0.7);
+      border-radius: 12px;
       width: 48px;
       height: 48px;
       display: flex;
@@ -160,6 +191,8 @@ carousel_html = f"""
       transition: background-color 0.3s ease;
       user-select: none;
       z-index: 10;
+      position: static;
+      padding: 0 5px;
     }}
     .carousel-arrow:hover {{
       background: rgba(0,0,0,0.9);
@@ -177,7 +210,6 @@ carousel_html = f"""
       right: 12px;
     }}
   </style>
-
   <div class="buy-local-card">
     <div class="buy-local-left">
       <div class="buy-local-title">Buy Local</div>
@@ -198,16 +230,8 @@ carousel_html = f"""
       {carousel_items}
     </div>
 
-    <!-- Left arrow -->
-    <div class="carousel-arrow arrow-left" onclick="prev()" role="button" aria-label="Previous">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-    </div>
-
-    <!-- Right arrow -->
-    <div class="carousel-arrow arrow-right" onclick="next()" role="button" aria-label="Next">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
-    </div>
   </div>
+
 
   <script>
     const track = document.getElementById("carouselTrack");
@@ -237,7 +261,6 @@ carousel_html = f"""
       }}
     }}
   </script>
-
 </div>
 """
 
@@ -266,7 +289,139 @@ components.html(carousel_html, height=850)
 
 
 
+st.markdown("""
+<div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_feeling.jpg');">
+  <div class="experience-overlay">
+    <div class="experience-title">A Pause with Purpose</div>
+    <div class="experience-subtitle">Find calm and clarity — experience spiritual spaces that invite reflection, healing, and connection.</div>
+""", unsafe_allow_html=True)
+
+
+# Load ashram data
+df = pd.read_csv("datasets/ashrams.csv", encoding='windows-1252')
+df.dropna(inplace=True)
+
+GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/ashrams"
+df["image_url"] = df["image_url"].apply(lambda x: f"{GITHUB_BASE}/{x}")
+
+# Build carousel HTML with SwiperJS
+carousel_html = """
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
+<style>
+    body {
+        color: white;
+    }
+    .swiper {
+        width: 100%;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+    .swiper-slide {
+        background-position: center;
+        background-size: cover;
+        width: 320px;
+        height: 400px;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: none;
+    }
+    .ashram-overlay {
+        background: linear-gradient(to top, rgba(4, 28, 28, 0.7), rgba(28, 76, 84, 0.7));
+        position: absolute;
+        bottom: 0;
+        padding: 20px;
+        width: 100%;
+    }
+    .ashram-name {
+        font-size: 22px;
+        font-weight: bold;
+        color: #34f4a4 !important;
+        text-shadow: none;
+        opacity: 1 ;
+        
+    }
+    .ashram-meta {
+        font-size: 13px;
+        opacity: 1;
+        margin-top: 5px;
+    }
+    .ashram-desc {
+        font-size: 14px;
+        margin-top: 10px;
+        line-height: 1.4;
+    }
+    .swiper-button-next, .swiper-button-prev {
+        color: #34f4a4; 
+    }
+    /* Change inactive pagination bullets */
+    .swiper-pagination-bullet {
+    background: #1c4c54 !important;
+    opacity: 0.6;
+    }
+
+    /* Change active pagination bullet */
+    .swiper-pagination-bullet-active {
+    background: #34f4a4 !important;
+    opacity: 1;
+    }
+    
+</style>
+
+<div class="swiper mySwiper">
+<div class="swiper-wrapper">
+"""
+
+# Add each ashram card as a swiper slide
+for idx, row in df.iterrows():
+    
+    card_html = f"""
+    <div class="swiper-slide" style="background-image: url('{row["image_url"]}');">
+        <div class="ashram-overlay">
+            <div class="ashram-name">{row['name']}, {row['state']}</div>
+            <div class="ashram-meta">{row['phone']} | {row['email']}</div>
+            <div class="ashram-desc">{row['description']}</div>
+        </div>
+    </div>
+    """
+    carousel_html += card_html
+
+carousel_html += """
+</div>
+<div class="swiper-pagination"></div>
+<div class="swiper-button-next"></div>
+<div class="swiper-button-prev"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+const swiper = new Swiper(".mySwiper", {
+    slidesPerView: 1,
+    spaceBetween: 30,
+    loop: true,
+    pagination: {
+    el: ".swiper-pagination",
+    clickable: true,
+    },
+    navigation: {
+    nextEl: ".swiper-button-next",
+    prevEl: ".swiper-button-prev",
+    },
+    breakpoints: {
+    768: { slidesPerView: 2 },
+    1024: { slidesPerView: 3 },
+    },
+});
+</script>
+"""
+
+# Show it in Streamlit
+st.markdown("<h2 style='text-align:center; margin_bottom: 0px; padding-bottom: 0px; padding-top: 70px;'>Sacred Spaces Across India</h2>", unsafe_allow_html=True)
+st.components.v1.html(carousel_html, height=600, scrolling=False)
 
 
 
-
+st.markdown("</div></div>", unsafe_allow_html=True)
