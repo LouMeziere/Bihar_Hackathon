@@ -13,18 +13,7 @@ import streamlit.components.v1 as components
 from streamlit_folium import folium_static
 from utils.helpers import render_sidebar, load_table, month_order, GITHUB_BASE
 
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #101414;
-        color: #93aca4;
-        ...
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 # -------------------------------
 #          Intro Section
@@ -35,9 +24,9 @@ selected_states, selected_months = render_sidebar()
 
 # Title
 st.markdown("""
-<div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
+<div style="text-align: left; margin-top: 40px; margin-bottom: 40px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">WHERE </span>
-  <span style="color: white; font-size: 58px; font-weight: 600;">the journey begins</span>
+  <span style="color: white; font-size: 54px; font-weight: 600;">the journey begins</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -68,7 +57,7 @@ st.markdown(f"""
 <div style="max-width: 900px; margin: auto; padding: 20px; border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #2f5454 50%, #041c1c 100%); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   <h2 style="color:#ffffff; font-weight: 900; font-size: 44px; margin-bottom: 0;">India: A Visual Wonderland</h2>
   <p style="font-size: 1.2rem; color:#93aca4; margin-top: 8px;">
-    India is not just a destination — it is an experience. With one of the world’s highest concentrations of UNESCO World Heritage sites, it’s a place where culture comes alive.
+    India is not just a destination — it is an experience. With one of the world’s highest concentrations of UNESCO World Heritage sites, it is a place where culture comes alive.
   </p>
   
   <!-- Big stats -->
@@ -173,10 +162,6 @@ df_sites = load_table("cultural_sites")
 # Drop sites without coordinates
 df_sites = df_sites.dropna(subset=['latitude', 'longitude'])
 
-# Only keep the instances from state(s) of interest
-if selected_states:
-    df_sites = df_sites[df_sites['state'].isin(selected_states)]
-
 
 
 # --- Avoid crowds card ---
@@ -267,6 +252,10 @@ st.markdown("""
 st.markdown('<div style="margin-top:0px;"></div>', unsafe_allow_html=True)
 
 
+# Only keep the instances from state(s) of interest
+if selected_states:
+    df_sites = df_sites[df_sites['state'].isin(selected_states)]
+
 
 # --- Map ---
 m = folium.Map(location=[22.9734, 78.6569], zoom_start=5, tiles='CartoDB positron')
@@ -299,14 +288,14 @@ for _, row in df_sites.iterrows():
     # UNESCO badge if applicable
     unesco_label = ""
     if str(row.get("unesco", "")).lower() == "true":
-        unesco_label = '<span style="background-color:#d4af37; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:12px;"><img src="https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/UNESCO_logo.png" alt="" width="17" height="20"> UNESCO Site</span><br>'
+        unesco_label = '<span style="background-color:#93aca4; color:#000; padding:5px 6px; border-radius:4px; font-weight:bold; font-size:12px; display: inline-block; margin-bottom:8px;">🌎 UNESCO Site</span><br>'
 
     html = f"""
-    <div style="width:220px">
+    <div style="width:220px;">
         {img_html}
         <h4>{row['monument']}</h4>
         {unesco_label}
-        <b>City:</b> {row['city']}<br>
+        <b">City:</b> {row['city']}<br>
         <b>State:</b> {row['state']}<br>
         <b>Visitors (2023-24):</b> {row['total_visitors_2023_24']:,}<br>
         <b>Domestic Growth:</b> {row['domestic_growth_percent']}%
@@ -354,8 +343,14 @@ st.markdown(
 # Most Visited Monuments Section
 # -------------------------------
 
-# Select top 3 monuments based on total visitors in 2023–24
-top_3_monuments = df_sites.sort_values('total_visitors_2023_24', ascending=False).head(3)
+# Filter monuments based on the selected states (if any)
+if selected_states:
+    filtered_sites = df_sites[df_sites['state'].isin(selected_states)]
+else:
+    filtered_sites = df_sites
+
+# Select top 3 monuments based on total visitors in 2023–24 from filtered data
+top_3_monuments = filtered_sites.sort_values('total_visitors_2023_24', ascending=False).head(3)
 
 # Render section heading for Top 3 Monuments
 st.markdown("""
@@ -400,7 +395,7 @@ for i, (_, row) in enumerate(top_3_monuments.iterrows(), start=1):
                 flex-shrink: 0;
                 width: 80px;
                 display: flex;
-                align-items: flex-end;  /* align number bottom with title */
+                align-items: flex-end;
                 justify-content: center;
             ">
                 {i:02d}
@@ -424,5 +419,8 @@ for i, (_, row) in enumerate(top_3_monuments.iterrows(), start=1):
     </div>
     """
 
-# Render the combined HTML for all top 3 monuments
-st.markdown(html_content, unsafe_allow_html=True)
+# Check if there are monuments to show, display message or the monuments
+if top_3_monuments.empty:
+    st.info("No monuments found for this selection.")
+else:
+    st.markdown(html_content, unsafe_allow_html=True)

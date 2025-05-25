@@ -64,6 +64,7 @@ streamlit run Home.py
 - festivals names found in (https://www.indiaculture.gov.in/festivals-religious). festival information found in Incredible India (https://www.incredibleindia.gov.in/en)
 - festivals scraped from 'Festivals from India'
 - ashrams from Art of Living https://www.artofliving.org/ashram/india
+ashram lessons https://www.manifestationscapital.com/news-1/seven-lessons-from-the-ashram
 - indian railway data from Humanitarian Data Exchange (HDX) 
 - arts from Incredible India (https://www.incredibleindia.gov.in/en/exquisite-crafts)
 - personBenefitedHandicraft.csv : 2019 data from gov (https://www.data.gov.in/resource/stateut-wise-number-persons-benefitted-under-handicrafts-sector-reply-starred-question-25)

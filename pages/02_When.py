@@ -11,18 +11,7 @@ import streamlit.components.v1 as components
 import plotly.graph_objects as go
 import plotly.express as px
 
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-color: #101414;
-        color: #93aca4;
-        ...
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 
 
@@ -35,19 +24,25 @@ selected_states, selected_months = render_sidebar()
 
 # Title
 st.markdown("""
-<div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
+<div style="text-align: left; margin-top: 40px; margin-bottom: 40px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">WHEN </span>
-  <span style="color: white; font-size: 58px; font-weight: 600;">the journey begins</span>
+  <span style="color: white; font-size: 53px; font-weight: 600;">the journey begins</span>
 </div>
 """, unsafe_allow_html=True)
 
 # Intro paragraph
-st.markdown("To help travelers make informed and responsible decisions, we've analyzed historical weather data (1991–2022)" \
-", monthly visitor trends (2021–2023), and key local festivals. This section highlights the best months to visit, so you can plan around weather, crowds, and cultural events.")
+st.markdown("")
+
+st.markdown("""
+<div style='color:#ffffff;'>
+    To help travelers make informed and responsible decisions, historical weather data (1991–2022)" \
+", monthly visitor trends (2021–2023), and key local festivals were analyzed. This section highlights the best months to visit, so you can plan around weather, crowds, and cultural events.
+</div>
+""", unsafe_allow_html=True)
 
 # Sub-title 
 st.markdown("""
-<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Ideal Seasons for Perfect Weather</h2>
+<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 70px 0 20px 0;">Ideal Seasons for Perfect Weather</h2>
 """, unsafe_allow_html=True)
 
 
@@ -60,8 +55,6 @@ st.markdown("""
 # --- Load & clean data ---
 df_weather = load_table("weather_data")
 
-st.write("Columns in dataframe:") ################## remove
-st.write(list(df_weather.columns))
 
 
 # --- Plotting ---
@@ -267,6 +260,9 @@ df_visitors_month.columns = [col[1:] if col.startswith('_') and col[1:].isdigit(
 # Convert the 'months' column to a categorical type with a defined order
 df_visitors_month['months'] = pd.Categorical(df_visitors_month['months'], categories=month_order, ordered=True)
 
+# Convert visitor numbers to millions for better readability
+for col in ['2021', '2022', '2023']:
+    df_visitors_month[col] = df_visitors_month[col] / 1_000_000
 
 # Prepare data for heatmap: years as rows, months as columns
 heatmap_data = df_visitors_month.set_index('months')[['2021', '2022', '2023']].T
@@ -326,7 +322,7 @@ fig.update_yaxes(
 
 # Enhance Heatmap Trace 
 fig.update_traces(
-    hovertemplate='Year: %{y}<br>Month: %{x}<br>Arrivals: %{z}<extra></extra>',  # Custom tooltip
+    hovertemplate='Year: %{y}<br>Month: %{x}<br>Arrivals: %{z:.2f} M <extra></extra>',  # Custom tooltip
     showscale=True,  # Show color bar
     colorbar=dict(   # Style the color bar
         title=dict(
@@ -360,8 +356,16 @@ st.plotly_chart(fig, use_container_width=True)
 
 # Sub-title
 st.markdown("""
-<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Timing Your Trip Around India’s Grand Celebrations</h2>
+<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Plan Around India’s Festival Calendar</h2>
 """, unsafe_allow_html=True)
+
+# Description
+st.markdown("""
+<div style='color:#93aca4; padding-bottom:30px;'>
+   India’s calendar is rich with festivals — from Holi to regional music and dance celebrations. Choosing the right month can elevate your trip, offering a deeper cultural experience. Use this guide to discover when the biggest events take place this year.
+</div>
+""", unsafe_allow_html=True)
+
 
 
 st.markdown(
@@ -375,7 +379,7 @@ st.markdown(
     }
     /* Container for festival cards */
     .festival-card {
-        background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
+        background: linear-gradient(to bottom, #041c1c 11%, #1c4c54 90%, #041c1c 100%);
         border-radius: 12px;
         padding: 20px;
         margin-bottom: 1.5rem;
@@ -383,6 +387,7 @@ st.markdown(
         transition: transform 0.25s ease, box-shadow 0.25s ease;
         animation: fadeIn 0.7s ease forwards;
         opacity: 0;
+    
     }
     .festival-card:hover {
         transform: translateY(-6px);
@@ -408,7 +413,7 @@ st.markdown(
         font-size: 1.8rem;
         text-align: center;
         margin-top: 1rem;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1.4rem;
     }
     .festival-card p {
         color: #93aca4 ;
@@ -507,29 +512,33 @@ available_months = sorted(grouped["start_date"].dropna().apply(lambda d: (d.year
 if "month_index" not in st.session_state:
     st.session_state.month_index = 0
 
-# Navigation buttons (Previous / Next)
-col1, col2, col3 = st.columns([1, 3, 1])
-with col1:
-    if st.button("← Previous"):
-        if st.session_state.month_index > 0:
-            st.session_state.month_index -= 1
-with col3:
-    if st.button("Next →"):
-        if st.session_state.month_index < len(available_months) - 1:
-            st.session_state.month_index += 1
-
 
 
 # --- Display Festival Cards for Selected Month ---
 
 if available_months:
+    # Retrieve selected month
     selected_year, selected_month = available_months[st.session_state.month_index]
 
-    # Display the current selected month title
-    st.markdown(
-        f"<h2>📅 Festivals in {calendar.month_name[selected_month]} {selected_year}</h2>",
-        unsafe_allow_html=True,
-    )
+    # Navigation buttons (Previous / Next)
+    col1, col2, col3 = st.columns([1, 3, 1])
+    with col1:
+        if st.button("← Previous"):
+            if st.session_state.month_index > 0:
+                st.session_state.month_index -= 1
+    with col2:
+        st.markdown(
+            f"""
+            <div style="display: flex; margin-top: -1.2rem; margin-bottom: 30px; align-items: center; justify-content: center; height: 100%;">
+                <h2 style='margin: 0;'>📅 Festivals in {calendar.month_name[selected_month]} {selected_year}</h2>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with col3:
+        if st.button("Next →"):
+            if st.session_state.month_index < len(available_months) - 1:
+                st.session_state.month_index += 1
 
     # Filter festivals happening in the selected month
     this_month = grouped[
@@ -537,8 +546,8 @@ if available_months:
         (grouped["start_date"].dt.month == selected_month)
     ].reset_index(drop=True)
 
-    # Display festivals as cards, 3 per row
-    cards_per_row = 3
+    # Display festivals as cards, 2 per row
+    cards_per_row = 2
     for i in range(0, len(this_month), cards_per_row):
         row_festivals = this_month.iloc[i : i + cards_per_row]
         cols = st.columns(cards_per_row)
@@ -552,11 +561,10 @@ if available_months:
                 st.markdown(
                     f"""
                     <div class="festival-card">
-                        <h3>{row['festival_name']}</h3>
-                        <p><strong>📍 City:</strong> {row['city']}</p>
-                        <p><strong>📍 State(s):</strong> {row['state']}</p>
-                        <p><strong>🎵 Genre:</strong> {row['genre']}</p>
-                        <p><strong>📆 Date:</strong> {date_str}</p>
+                        <h3 style='color:#ffffff; font-weight:800; margin-bottom:20px;'>{row['festival_name']}</h3>
+                        <p><strong style='color:#041c1c;font-weight:800;'>📍 Location:</strong> {row['city']}, {row['state']}</p>
+                        <p><strong style='color:#041c1c;font-weight:800;'>🎵 Genre:</strong> {row['genre']}</p>
+                        <p><strong style='color:#041c1c;font-weight:800;'>📆 Date:</strong> {date_str}</p>
                         <details>
                             <summary>Details</summary>
                             <p>{row['description']}</p>

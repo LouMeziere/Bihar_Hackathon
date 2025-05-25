@@ -11,19 +11,6 @@ month_order = ['January', 'February', 'March', 'April', 'May', 'June',
 GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
 
 
-@st.cache_data
-def load_art_data():
-    return pd.read_csv("data/arts.csv")
-
-@st.cache_data
-def load_all_data():
-
-
-    df_culture = pd.read_csv("datasets/cultural_sites.csv", encoding='windows-1252')
-    df_festival = pd.read_csv("datasets/festivals_data.csv")
-    df_art = pd.read_csv("datasets/arts.csv")
-    df_weather = pd.read_csv("datasets/weather_data.csv")
-    return df_culture, df_festival, df_art, df_weather
 
 def connect_to_snowflake():
     secrets = toml.load('/Users/loumeziere/Desktop/secret_files/secrets.toml')
@@ -50,6 +37,16 @@ def load_table(table_name: str, schema: str = "discover_india.public") -> pd.Dat
     return df
 
 
+@st.cache_data
+def load_all_data():
+    df_site = load_table("cultural_sites")
+    df_festival = load_table("festivals_data")
+    df_art = load_table("arts")
+    df_weather = load_table("weather_data")
+    return df_site, df_festival, df_art, df_weather
+
+
+
 def render_sidebar():
     df_culture, df_festival, df_art, df_weather = load_all_data()
 
@@ -61,7 +58,7 @@ def render_sidebar():
         df_weather['state']
     ]).dropna().unique()
 
-    months = df_weather['month'].dropna().unique()
+    
 
     # Fallback to empty list if not set
     default_states = st.session_state.get("selected_states", [])
@@ -79,7 +76,7 @@ def render_sidebar():
 
         selected_months = st.multiselect(
             "📅 Select Month(s):",
-            sorted(months),
+            month_order,
             default=default_months,
             key="month_selector"
         )

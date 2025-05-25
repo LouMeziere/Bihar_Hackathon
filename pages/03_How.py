@@ -23,7 +23,7 @@ selected_states, selected_months = render_sidebar()
 
 # Title
 st.markdown("""
-<div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
+<div style="text-align: left; margin-top: 40px; margin-bottom: 0px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">HOW </span>
   <span style="color: white; font-size: 58px; font-weight: 600;">the journey goes</span>
 </div>
@@ -37,10 +37,34 @@ st.markdown("""
 # -------------------------------
 
 # Sub-title
-st.markdown("<h2 style='color: #ffffff; margin_bottom: 0px; padding-bottom: 0px; padding-top: 70px;'>A Pause with Purpose</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='color: #ffffff; margin_bottom: 0px; padding-bottom: 0px; padding-top: 50px;'>A Pause with Purpose</h2>", unsafe_allow_html=True)
 
 # Description
-st.markdown("Find calm and clarity — experience spiritual spaces that invite reflection, healing, and connection.")
+st.markdown("""
+<div style='color:#93aca4; padding-top:20px;'>
+    A visit to an Indian ashram is not just a retreat — it is a return to yourself. 
+    In these sacred spaces, time slows, clarity sharpens, and the noise of modern life gives way to deep inner peace. 
+    Whether you are seeking healing, growth, or stillness, an ashram offers a journey inward that every traveler deserves to experience.
+</div>
+""", unsafe_allow_html=True)
+
+# Lessons
+st.markdown("""
+<div style='margin-top: 30px; padding: 20px; background-color: #041c1c; border-left: 4px solid #34f4a4; border-radius: 6px; max-width: 700px; text-align:center;'>
+    <div style='display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-size: 16px; margin-bottom: 20px;'>
+        <span>🧘 <i>"Observe yourself gently — in awareness, transformation begins."</i></span>
+        <span style='color: #34f4a4; font-weight: bold;'>Lesson 01</span>
+    </div>
+    <div style='display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-size: 16px;'>
+        <span>🌿 <i>"Balance giving to others with giving back to yourself."</i></span>
+        <span style='color: #34f4a4; font-weight: bold;'>Lesson 02</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+
+
 
 # --- Load & clean data ---
 
@@ -171,7 +195,7 @@ const swiper = new Swiper(".mySwiper", {
 """
 
 # Show it in Streamlit
-st.components.v1.html(carousel_html, height=600, scrolling=False)
+st.components.v1.html(carousel_html, height=540, scrolling=False)
 
 
 
@@ -202,19 +226,21 @@ st.markdown("</div></div>", unsafe_allow_html=True)
 # -------------------------------
 
 # Sub-title
-st.markdown('<h1 class="title" style="color:#ffffff;">India\'s Railway & Transport CO₂ Emissions Overview</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="title" style="color:#ffffff;">Where the Journey Is the Destination</h1>', unsafe_allow_html=True)
 
 # Description
 st.markdown(
     """
     <p class="subtitle">
-    India’s extensive railway network is the world’s <strong>second largest</strong>, carrying millions of passengers daily.<br>
-    It blends modern upgrades and luxury carriages with iconic historic routes like the UNESCO-listed mountain railways of Darjeeling, Nilgiri, and Kalka-Shimla.<br><br>
-    Traveling by train is not only one of the most authentic ways to experience India’s diverse landscapes and culture but also a <strong>greener alternative</strong> to flying, producing far less carbon emissions.
+    India boasts the world’s <strong style="color:#1c4c54;">second largest</strong> railway system, moving millions of travelers every day.<br>
+    Taking an overnight train is a classic way to experience the country—offering genuine encounters with locals and a window into India’s vast and varied landscape.<br>
+    Discover the charm of long-distance journeys or enjoy picturesque trips on narrow-gauge railways, including <strong style="color:#1c4c54;">3 UNESCO-recognized mountain 
+    routes:</strong>  Darjeeling, Nilgiri, and Kalka-Shimla.<br><br>
     </p>
     """,
     unsafe_allow_html=True,
 )
+
 
 
 
@@ -227,11 +253,6 @@ df_emissions = load_table("co2_emissions_transports")
 st.markdown(
     """
     <style>
-    .stApp {
-        background-color: #101414;
-        color: #93aca4;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
     .title {
         color: #34f4a4;
         font-weight: 700;
@@ -251,6 +272,9 @@ st.markdown(
 
 
 
+
+# --- Plot --
+
 # Define color mapping matching your palette
 color_map = {
     'Rail': '#34f4a4',          # Light green
@@ -266,9 +290,9 @@ bar_chart = (
     .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
     .encode(
         y=alt.Y('mode:N', sort='-x', title=None,
-                axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
+                axis=alt.Axis(labelColor='rgba(255, 255, 255, 0.8)', domainColor='#93aca4', tickColor='#93aca4')),
         x=alt.X('transport_gm_tkm', title='CO₂ Emissions (gm/tkm)', 
-                axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
+                axis=alt.Axis(labelColor='rgba(255, 255, 255, 0.8)', domainColor='#93aca4', tickColor='#93aca4', gridColor='rgba(255, 255, 255, 0.3)')),
         color=alt.Color('mode:N', scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())), legend=None),
         tooltip=['mode', 'category', alt.Tooltip('transport_gm_tkm', format='.0f')]
     )
@@ -290,6 +314,7 @@ st.markdown(
         color: #93aca4;
         font-size: 16px;
         font-weight: 600;
+        padding-bottom: 30px;
     ">
         <strong style="color:#34f4a4;">Insight:</strong> Rail transport (both freight and passenger) produces <span style="color:#1c4c54;">significantly lower CO₂ emissions</span> compared to road freight, passenger cars, and airways.<br>
         Choosing trains supports sustainable travel and reduces environmental impact across India.
@@ -297,6 +322,8 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+# Spacer for gap
+st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 
 
 
@@ -305,10 +332,10 @@ st.markdown(
 # -------------------------------
 
 
-with open("datasets/railway/railways_lines.geojson") as f:
+with open("images/railway/railways_lines.geojson") as f:
     lines_data = json.load(f)
 
-with open("datasets/railway/railways_points.geojson") as f:
+with open("images/railway/railways_points.geojson") as f:
     points_data = json.load(f)
 
 rail_layer = pdk.Layer(
@@ -377,7 +404,10 @@ st.markdown("""
 <h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Local Artistry</h2>
 """, unsafe_allow_html=True)
 
-st.markdown("Come home with more than souvenirs — buy handcrafted gifts that support artisans and preserve tradition.")
+st.markdown("""
+<div style="color:#93aca4;">Come home with more than souvenirs — buy handcrafted gifts that support artisans and preserve tradition.</div>
+""", unsafe_allow_html=True)
+
 
 # --- Load & clean data ---
 
@@ -401,250 +431,255 @@ arts_filtered = df_art.merge(df_benefit[["state", "benefited"]], on="state", how
 if selected_states:
     arts_filtered = arts_filtered[arts_filtered["state"].isin(selected_states)]
 
-# Generate carousel items
-carousel_items = ""
-for _, row in arts_filtered.iterrows():
-    item_html = f"""
-    <div class="carousel-item" data-benefit="{row['benefited']}" data-state="{row['state']}">
-        <img src="{row['image_url']}" alt="{row['name']}">
-        <div class="carousel-info-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 12px; border-radius: 0 0 12px 12px; height: 70px; ];">
-            <div class="carousel-arrow arrow-left" onclick="prev()" role="button" aria-label="Previous">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-            </svg>
+# Show if no data after filter
+if arts_filtered.empty:
+    st.markdown("")
+    st.info("No local artistry for this selection.")
+else:
+    # Generate carousel items
+    carousel_items = ""
+    for _, row in arts_filtered.iterrows():
+        item_html = f"""
+        <div class="carousel-item" data-benefit="{row['benefited']}" data-state="{row['state']}">
+            <img src="{row['image_url']}" alt="{row['name']}">
+            <div class="carousel-info-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 30px 12px; border-radius: 0 0 12px 12px; height: 70px; ];">
+                <div class="carousel-arrow arrow-left" onclick="prev()" role="button" aria-label="Previous">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </svg>
+                </div>
+                
+                <div style="text-align: center;">
+                <div class="carousel-title">{row['name']}</div>
+                <div class="carousel-text">📍 {row['state']}</div>
+                </div>
+
+                <div class="carousel-arrow arrow-right" onclick="next()" role="button" aria-label="Next">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+                </svg>
+                </div>
             </div>
-            
-            <div style="text-align: center;">
-            <div class="carousel-title">{row['name']}</div>
-            <div class="carousel-text">📍 {row['state']}</div>
             </div>
 
-            <div class="carousel-arrow arrow-right" onclick="next()" role="button" aria-label="Next">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
-            </svg>
-            </div>
         </div>
-        </div>
 
-    </div>
+        """
+        carousel_items += item_html
 
-    """
-    carousel_items += item_html
+    carousel_html = f"""
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: auto; position: relative;">
 
-carousel_html = f"""
-<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 900px; margin: auto; position: relative;">
-
-<style>
-    .buy-local-card {{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to right, #2f5454, #1e2f2f);
-    padding: 24px 32px;
-    border-radius: 12px;
-    color: #ffffff;
-    margin: 20px 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    }}
-    .buy-local-left {{
-    max-width: 55%;
-    }}
-    .buy-local-title {{
-    font-size: 26px;
-    font-weight: 700;
-    color: #34f4a4;
-    margin-bottom: 12px;
-    }}
-    .buy-local-text {{
-    font-size: 16px;
-    line-height: 1.5;
-    color: #b1c1b7;
-    }}
-    .buy-local-right {{
-    text-align: center;
-    max-width: 40%;
-    }}
-    .buy-local-number {{
-    font-size: 50px;
-    font-weight: 900;
-    color: #34f4a4;
-    margin-bottom: 6px;
-    }}
-    .buy-local-label {{
-    font-weight: 600;
-    font-size: 18px;
-    color: #ffffff;
-    }}
-
-    .carousel-wrapper {{
-    overflow: hidden;
-    width: 600px;
-    position: relative;
-    height: auto;  /* bigger height to fit bigger image */
-    margin: 0 auto 20px auto;
-    align: center;
-    }}
-    .carousel-track {{
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-    height: 100%;
-    }}
-    .carousel-item {{
-    flex: 0 0 100%;
-    box-sizing: border-box;
-    padding: 0px;
-    text-align: center;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    }}
-    .carousel-item img {{
-    height: 300px;
-    width: 100%;
-    object-fit: cover; /* Crops but maintains aspect ratio */
-    border-radius: 8px 8px 0 0;
-    margin-bottom: 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    user-select: none;
-    pointer-events: none;
-    }}
-
-    .carousel-title, .carousel-text {{
-        position: static;
+    <style>
+        .buy-local-card {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(to right, #2f5454, #1e2f2f);
+        padding: 24px 32px;
+        border-radius: 12px;
+        color: #ffffff;
+        margin: 20px 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }}
+        .buy-local-left {{
+        max-width: 55%;
+        }}
+        .buy-local-title {{
+        font-size: 26px;
+        font-weight: 700;
         color: #34f4a4;
-        text-shadow: 0 0 6px rgba(0,0,0,0.7);
-        z-index: 12;
-        max-width: 100%;
-        pointer-events: auto;
+        margin-bottom: 12px;
+        }}
+        .buy-local-text {{
+        font-size: 16px;
+        line-height: 1.5;
+        color: #b1c1b7;
+        }}
+        .buy-local-right {{
         text-align: center;
-    }}
-    .carousel-info-box {{
-    background-color: #1e2f2f;
-    padding: 12px 16px;
-    width: 100%;
-    color: #ffffff;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    margin-top: 8px;
-    border-radius: 0 0 8px 8px;
-    
-    }}
-    .carousel-title {{
-    font-size: 20px;
-    font-weight: bold;
-    color: #34f4a4;
-    margin-bottom: 4px;
-    position: static;
-    }}
-    .carousel-text {{
-    font-size: 14px;
-    color: #b1c1b7;
-    position: static;
-    text-align: center;
-    }}
+        max-width: 40%;
+        }}
+        .buy-local-number {{
+        font-size: 50px;
+        font-weight: 900;
+        color: #34f4a4;
+        margin-bottom: 6px;
+        }}
+        .buy-local-label {{
+        font-weight: 600;
+        font-size: 18px;
+        color: #ffffff;
+        }}
 
-    /* Hide default buttons container */
-    .carousel-buttons {{
-    display: none;
-    }}
+        .carousel-wrapper {{
+        overflow: hidden;
+        width: 600px;
+        position: relative;
+        height: auto;  /* bigger height to fit bigger image */
+        margin: 0 auto 20px auto;
+        align: center;
+        }}
+        .carousel-track {{
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+        height: 100%;
+        }}
+        .carousel-item {{
+        flex: 0 0 100%;
+        box-sizing: border-box;
+        padding: 0px;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        }}
+        .carousel-item img {{
+        height: 300px;
+        width: 100%;
+        object-fit: cover; /* Crops but maintains aspect ratio */
+        border-radius: 8px 8px 0 0;
+        margin-bottom: 0;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        user-select: none;
+        pointer-events: none;
+        }}
 
-    /* Arrow buttons styles */
-    .carousel-arrow {{
-    top: auto;
-    transform: none;
-    background: rgba(4, 28, 28, 0.7);
-    border-radius: 12px;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-    z-index: 10;
-    position: static;
-    padding: 0 5px;
-    }}
-    .carousel-arrow:hover {{
-    background: rgba(0,0,0,0.9);
-    }}
-    .carousel-arrow svg {{
-    fill: #34f4a4;
-    width: 24px;
-    height: 24px;
-    }}
+        .carousel-title, .carousel-text {{
+            position: static;
+            color: #34f4a4;
+            text-shadow: 0 0 6px rgba(0,0,0,0.7);
+            z-index: 12;
+            max-width: 100%;
+            pointer-events: auto;
+            text-align: center;
+        }}
+        .carousel-info-box {{
+        background-color: #1e2f2f;
+        padding: 12px 16px;
+        width: 100%;
+        color: #ffffff;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        margin-top: 8px;
+        border-radius: 0 0 8px 8px;
+        
+        }}
+        .carousel-title {{
+        font-size: 20px;
+        font-weight: bold;
+        color: #34f4a4;
+        margin-bottom: 4px;
+        position: static;
+        }}
+        .carousel-text {{
+        font-size: 14px;
+        color: #b1c1b7;
+        position: static;
+        text-align: center;
+        }}
 
-    .arrow-left {{
-    left: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    }}
-    .arrow-right {{
-    right: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    }}
-</style>
-<div class="buy-local-card">
-    <div class="buy-local-left">
-    <div class="buy-local-title">Buy Local</div>
-    <div class="buy-local-text">
-        Purchasing local crafts across India supports thousands of artisans and their families.<br><br>
-        Every purchase from a local artisan strengthens their community, preserves cultural <br>
-        traditions, and fosters sustainable tourism. 🌿
+        /* Hide default buttons container */
+        .carousel-buttons {{
+        display: none;
+        }}
+
+        /* Arrow buttons styles */
+        .carousel-arrow {{
+        top: auto;
+        transform: none;
+        background: rgba(4, 28, 28, 0.7);
+        border-radius: 12px;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        user-select: none;
+        z-index: 10;
+        position: static;
+        padding: 0 5px;
+        }}
+        .carousel-arrow:hover {{
+        background: rgba(0,0,0,0.9);
+        }}
+        .carousel-arrow svg {{
+        fill: #34f4a4;
+        width: 24px;
+        height: 24px;
+        }}
+
+        .arrow-left {{
+        left: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }}
+        .arrow-right {{
+        right: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }}
+    </style>
+    <div class="buy-local-card">
+        <div class="buy-local-left">
+        <div class="buy-local-title">Buy Local</div>
+        <div class="buy-local-text">
+            Purchasing local crafts across India supports thousands of artisans and their families.<br><br>
+            Every purchase from a local artisan strengthens their community, preserves cultural <br>
+            traditions, and fosters sustainable tourism. 🌿
+        </div>
+        </div>
+        <div class="buy-local-right">
+        <div class="buy-local-number" id="benefitNumber">{int(arts_filtered.iloc[0]['benefited'])}</div>
+        <div class="buy-local-label" id="benefitLabel">people benefited in <br>{arts_filtered.iloc[0]['state']}</div>
+        </div>
     </div>
-    </div>
-    <div class="buy-local-right">
-    <div class="buy-local-number" id="benefitNumber">{int(arts_filtered.iloc[0]['benefited'])}</div>
-    <div class="buy-local-label" id="benefitLabel">people benefited in <br>{arts_filtered.iloc[0]['state']}</div>
-    </div>
-</div>
 
-<div class="carousel-wrapper">
-    <div class="carousel-track" id="carouselTrack">
-    {carousel_items}
+    <div class="carousel-wrapper">
+        <div class="carousel-track" id="carouselTrack">
+        {carousel_items}
+        </div>
+
     </div>
 
-</div>
+
+    <script>
+        const track = document.getElementById("carouselTrack");
+        const items = document.querySelectorAll(".carousel-item");
+        let currentIndex = 0;
+
+        function updateStats(index) {{
+        const benefit = items[index].dataset.benefit;
+        const state = items[index].dataset.state;
+        document.getElementById("benefitNumber").textContent = benefit;
+        document.getElementById("benefitLabel").innerHTML = `people benefited in <br>${{state}}`;
+        }}
+
+        function next() {{
+        if (currentIndex < items.length - 1) {{
+            currentIndex++;
+            track.style.transform = `translateX(-${{100 * currentIndex}}%)`;
+            updateStats(currentIndex);
+        }}
+        }}
+
+        function prev() {{
+        if (currentIndex > 0) {{
+            currentIndex--;
+            track.style.transform = `translateX(-${{100 * currentIndex}}%)`;
+            updateStats(currentIndex);
+        }}
+        }}
+    </script>
+    </div>
+    """
 
 
-<script>
-    const track = document.getElementById("carouselTrack");
-    const items = document.querySelectorAll(".carousel-item");
-    let currentIndex = 0;
-
-    function updateStats(index) {{
-    const benefit = items[index].dataset.benefit;
-    const state = items[index].dataset.state;
-    document.getElementById("benefitNumber").textContent = benefit;
-    document.getElementById("benefitLabel").innerHTML = `people benefited in <br>${{state}}`;
-    }}
-
-    function next() {{
-    if (currentIndex < items.length - 1) {{
-        currentIndex++;
-        track.style.transform = `translateX(-${{100 * currentIndex}}%)`;
-        updateStats(currentIndex);
-    }}
-    }}
-
-    function prev() {{
-    if (currentIndex > 0) {{
-        currentIndex--;
-        track.style.transform = `translateX(-${{100 * currentIndex}}%)`;
-        updateStats(currentIndex);
-    }}
-    }}
-</script>
-</div>
-"""
-
-
-components.html(carousel_html, height=850)
+    components.html(carousel_html, height=850)
 
 
 
