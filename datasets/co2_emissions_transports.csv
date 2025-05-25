@@ -1,7 +1,7 @@
-Mode,Category,Transport (gm/tkm) ,,
-Road,Freight,160,,
-Rail,Freight,29,,
-Shipping,Freight,31,,
-Passenger Cars,Passenger,175,,
-Rail,Passenger,75,,
-Airways,Passenger,229,,
+Mode,Category,Transport (gm/tkm)
+Road,Freight,160
+Rail,Freight,29
+Shipping,Freight,31
+Passenger Cars,Passenger,175
+Rail,Passenger,75
+Airways,Passenger,229

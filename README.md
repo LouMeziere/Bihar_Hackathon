@@ -8,7 +8,7 @@
 
 # Datasets
 - Unesco_sites_per_country.csv : data is from UNESCO (https://whc.unesco.org/en/list/stat/) and is up to date as of May 20, 2025.
-- Tourism data: from report '2024 India Tourism Data Compendium' by Ministry of Tourism (published on https://tourism.gov.in/)
+- Tourism data: from report '2024 India Tourism Data Compendium' by Ministry of Tourism (published on https://tourism.gov.in/). tourism on map  is 2023-24 shown
 - festivals names found in (https://www.indiaculture.gov.in/festivals-religious). festival information found in Incredible India (https://www.incredibleindia.gov.in/en)
 - festivals scraped from 'Festivals from India'
 - ashrams from Art of Living https://www.artofliving.org/ashram/india

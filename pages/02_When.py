@@ -3,11 +3,16 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import calendar
-from utils.helpers import render_sidebar
+from utils.helpers import render_sidebar, connect_to_snowflake
 import streamlit.components.v1 as components
 
 selected_states, selected_months = render_sidebar()
 
+conn = connect_to_snowflake()
+df = pd.read_sql("SELECT * FROM discover_india.public.weather_data", conn)
+conn.close()
+st.write("Columns in dataframe:")
+st.write(list(df.columns))
 st.markdown("""
 <div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">WHEN </span>
@@ -29,11 +34,8 @@ import streamlit as st
 import pandas as pd
 import streamlit.components.v1 as components
 
-@st.cache_data
-def load_data():
-    return pd.read_csv('datasets/weather_data.csv')
 
-df = load_data()
+
 
 def plot_weather(selected_states):
     if not selected_states:
