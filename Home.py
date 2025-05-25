@@ -28,8 +28,55 @@ st.markdown("""
 
 
 # Video of world
-st.video(f"{GITHUB_BASE}/images/world.mp4")
+import streamlit as st
 
+
+st.markdown(f"""
+<style>
+.container {{
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+}}
+
+.container img {{
+    width: 100%;
+    border-radius: 20px;
+    display: block;
+}}
+
+.text-overlay {{
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    color: white;
+    text-align: right;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}}
+
+.text-overlay div {{
+    margin-bottom: 10px;
+    font-size: 20px;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+}}
+</style>
+
+<div class="container">
+  <img src="{GITHUB_BASE}/images/world.png" />
+  <div class="text-overlay">
+    <div>Where the journey begins</div>
+    <div>When the journey begins</div>
+    <div>How the journey goes</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+
+st.image(f"{GITHUB_BASE}/images/world.png", use_column_width=True)
 
 # ---------- What You Can Explore ----------
 st.markdown("""
