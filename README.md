@@ -15,6 +15,12 @@ Users can:
 
 ---
 
+## 📊 Tools
+- Streamlit: interface
+- Snowflake: cloud saving datasets (Microfot Azure)
+- Crawl4AI: data scraping
+
+
 ## 📊 Datasets
 
 All datasets used are publicly available or taken from official government and

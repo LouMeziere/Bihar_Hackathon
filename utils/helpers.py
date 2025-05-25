@@ -27,6 +27,12 @@ def connect_to_snowflake():
     # Connect using the dictionary of connection parameters
     return snowflake.connector.connect(**conn_info)
 
+"""
+def connect_to_snowflake():
+    secrets = toml.load('../secrets.toml')
+    conn_info = secrets['connections']['my_example_connection']
+    return snowflake.connector.connect(**conn_info)
+"""
 
 def load_table(table_name: str, schema: str = "discover_india.public") -> pd.DataFrame:
     """

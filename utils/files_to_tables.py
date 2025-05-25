@@ -1,17 +1,15 @@
-import snowflake.connector
-import toml
+
+# -------------------------------
+#           Imports
+# -------------------------------
 
 import pandas as pd
+from helpers import connect_to_snowflake
 
 
-
-
-
-
-def connect_to_snowflake():
-    secrets = toml.load('/Users/loumeziere/Desktop/secret_files/secrets.toml')
-    conn_info = secrets['connections']['my_example_connection']
-    return snowflake.connector.connect(**conn_info)
+# -------------------------------
+#       Assign column names
+# -------------------------------
 
 # Define your table schemas here (table_name -> list of (col_name, type))
 table_schemas = {
@@ -96,6 +94,11 @@ table_schemas = {
     ],
 }
 
+
+
+# -------------------------------
+#           Connection
+# -------------------------------
 
 conn = connect_to_snowflake()
 cur = conn.cursor()
