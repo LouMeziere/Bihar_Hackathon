@@ -1,13 +1,27 @@
-import streamlit as st
+# -------------------------------
+#           Imports
+# -------------------------------
+
+
+import json
+import pydeck as pdk
 import pandas as pd
-
-from utils.helpers import render_sidebar
+import altair as alt
+import streamlit as st
 import streamlit.components.v1 as components
+from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE
 
-# Sidebar filters
+
+
+
+# -------------------------------
+#          Intro Section
+# -------------------------------
+
+# Display options of states and months in side bar
 selected_states, selected_months = render_sidebar()
 
-# Section title
+# Title
 st.markdown("""
 <div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">HOW </span>
@@ -17,29 +31,30 @@ st.markdown("""
 
 
 
-st.markdown("</div></div>", unsafe_allow_html=True)
 
+# -------------------------------
+#         Ashrams Section
+# -------------------------------
 
+# Sub-title
+st.markdown("<h2 style='color: #ffffff; margin_bottom: 0px; padding-bottom: 0px; padding-top: 70px;'>A Pause with Purpose</h2>", unsafe_allow_html=True)
 
-st.markdown("""
-<div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_feeling.jpg');">
-  <div class="experience-overlay">
-    <div class="experience-title">A Pause with Purpose</div>
-    <div class="experience-subtitle">Find calm and clarity — experience spiritual spaces that invite reflection, healing, and connection.</div>
-""", unsafe_allow_html=True)
+# Description
+st.markdown("Find calm and clarity — experience spiritual spaces that invite reflection, healing, and connection.")
 
+# --- Load & clean data ---
 
-# Load ashram data
-df = pd.read_csv("datasets/ashrams.csv", encoding='windows-1252')
-df.dropna(inplace=True)
+df_ashrams = load_table("ashrams")
+
+# Drop null values
+df_ashrams.dropna(inplace=True)
 
 # Filter by selected states
 if selected_states:
-    df = df[df["state"].isin(selected_states)]
+    df_ashrams = df_ashrams[df_ashrams["state"].isin(selected_states)]
 
 
-GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/ashrams"
-df["image_url"] = df["image_url"].apply(lambda x: f"{GITHUB_BASE}/{x}")
+df_ashrams["image_url"] = df_ashrams["image_url"].apply(lambda x: f"{GITHUB_BASE}/images/ashrams/{x}")
 
 # Build carousel HTML with SwiperJS
 carousel_html = """
@@ -113,7 +128,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 """
 
 # Add each ashram card as a swiper slide
-for idx, row in df.iterrows():
+for idx, row in df_ashrams.iterrows():
     
     card_html = f"""
     <div class="swiper-slide" style="background-image: url('{row["image_url"]}');">
@@ -156,7 +171,6 @@ const swiper = new Swiper(".mySwiper", {
 """
 
 # Show it in Streamlit
-st.markdown("<h2 style='text-align:center; margin_bottom: 0px; padding-bottom: 0px; padding-top: 70px;'>Sacred Spaces Across India</h2>", unsafe_allow_html=True)
 st.components.v1.html(carousel_html, height=600, scrolling=False)
 
 
@@ -183,163 +197,150 @@ st.markdown("</div></div>", unsafe_allow_html=True)
 
 
 
-# Initialize session state if not already set
-if "show_railways" not in st.session_state:
-    st.session_state.show_railways = False
+# -------------------------------
+#         Train Section
+# -------------------------------
 
-# A Journey Section
-st.markdown("""
-<div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_journey.jpg');">
-  <div class="experience-overlay">
-    <div class="experience-title">Transportation</div>
-    <div class="experience-subtitle">The way you travel becomes part of the story — choose transport that elevates the journey.</div>
-""", unsafe_allow_html=True)
+# Sub-title
+st.markdown('<h1 class="title" style="color:#ffffff;">India\'s Railway & Transport CO₂ Emissions Overview</h1>', unsafe_allow_html=True)
 
-if st.button("Explore Railways", key="rail_btn", use_container_width=True):
-    st.session_state.show_railways = not st.session_state.show_railways
+# Description
+st.markdown(
+    """
+    <p class="subtitle">
+    India’s extensive railway network is the world’s <strong>second largest</strong>, carrying millions of passengers daily.<br>
+    It blends modern upgrades and luxury carriages with iconic historic routes like the UNESCO-listed mountain railways of Darjeeling, Nilgiri, and Kalka-Shimla.<br><br>
+    Traveling by train is not only one of the most authentic ways to experience India’s diverse landscapes and culture but also a <strong>greener alternative</strong> to flying, producing far less carbon emissions.
+    </p>
+    """,
+    unsafe_allow_html=True,
+)
 
-if st.session_state.show_railways:
 
-    import streamlit as st
-    import pandas as pd
-    import altair as alt
 
-    # Load CSV
-    df = pd.read_csv('datasets/co2_emissions_transports.csv')
+# --- Load & clean data --
 
-    # Clean column names
-    df.columns = df.columns.str.strip()
+# Load tables into dataframes
+df_emissions = load_table("co2_emissions_transports")
 
-    
-    st.markdown(
-        """
-        <style>
-        .stApp {
-            background-color: #101414;
-            color: #93aca4;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .title {
-            color: #34f4a4;
-            font-weight: 700;
-            font-size: 2.2rem;
-            margin-bottom: 0.25rem;
-        }
-        .subtitle {
-            margin-top: 0;
-            color: #93aca4;
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
-    st.markdown('<h1 class="title">India\'s Railway & Transport CO₂ Emissions Overview</h1>', unsafe_allow_html=True)
-
-    st.markdown(
-        """
-        <p class="subtitle">
-        India’s extensive railway network is the world’s <strong>second largest</strong>, carrying millions of passengers daily.<br>
-        It blends modern upgrades and luxury carriages with iconic historic routes like the UNESCO-listed mountain railways of Darjeeling, Nilgiri, and Kalka-Shimla.<br><br>
-        Traveling by train is not only one of the most authentic ways to experience India’s diverse landscapes and culture but also a <strong>greener alternative</strong> to flying, producing far less carbon emissions.
-        </p>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Define color mapping matching your palette
-    color_map = {
-        'Rail': '#34f4a4',          # Light green
-        'Road': '#1c4c54 ',          # Grey
-        'Shipping': '#282434',          # Light green
-        'Passenger Cars': '#041c1c',# Dark green
-        'Airways': '#1e2f2f'        # Flashy green
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #101414;
+        color: #93aca4;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+    .title {
+        color: #34f4a4;
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin-bottom: 0.25rem;
+    }
+    .subtitle {
+        margin-top: 0;
+        color: #93aca4;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-    # Build bar chart
-    bar_chart = (
-        alt.Chart(df)
-        .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
-        .encode(
-            y=alt.Y('Mode:N', sort='-x', title=None,
-                    axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
-            x=alt.X('Transport (gm/tkm):Q', title='CO₂ Emissions (gm/tkm)', 
-                    axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
-            color=alt.Color('Mode:N', scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())), legend=None),
-            tooltip=['Mode', 'Category', alt.Tooltip('Transport (gm/tkm):Q', format='.0f')]
-        )
-        .properties(height=300, width=700)
-        .configure_view(strokeWidth=0)
+
+
+# Define color mapping matching your palette
+color_map = {
+    'Rail': '#34f4a4',          # Light green
+    'Road': '#1c4c54 ',          # Grey
+    'Shipping': '#282434',          # Light green
+    'Passenger Cars': '#041c1c',# Dark green
+    'Airways': '#1e2f2f'        # Flashy green
+}
+
+# Build bar chart
+bar_chart = (
+    alt.Chart(df_emissions)
+    .mark_bar(cornerRadiusTopLeft=3, cornerRadiusTopRight=3)
+    .encode(
+        y=alt.Y('mode:N', sort='-x', title=None,
+                axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
+        x=alt.X('transport_gm_tkm', title='CO₂ Emissions (gm/tkm)', 
+                axis=alt.Axis(labelColor='#93aca4', domainColor='#93aca4', tickColor='#93aca4')),
+        color=alt.Color('mode:N', scale=alt.Scale(domain=list(color_map.keys()), range=list(color_map.values())), legend=None),
+        tooltip=['mode', 'category', alt.Tooltip('transport_gm_tkm', format='.0f')]
     )
+    .properties(height=300, width=700)
+    .configure_view(strokeWidth=0)
+)
 
-    st.altair_chart(bar_chart, use_container_width=True)
+st.altair_chart(bar_chart, use_container_width=True)
 
-    # Insight box styled with your dark green background and flashy green text
-    st.markdown(
-        """
-        <div style="
-            background-color:#041c1c;
-            border-left: 6px solid #34f4a4;
-            padding: 16px;
-            border-radius: 6px;
-            margin-top: 20px;
-            color: #93aca4;
-            font-size: 16px;
-            font-weight: 600;
-        ">
-            <strong style="color:#34f4a4;">Insight:</strong> Rail transport (both freight and passenger) produces <span style="color:#1c4c54;">significantly lower CO₂ emissions</span> compared to road freight, passenger cars, and airways.<br>
-            Choosing trains supports sustainable travel and reduces environmental impact across India.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
+# Insight box styled with your dark green background and flashy green text
+st.markdown(
+    """
+    <div style="
+        background-color:#041c1c;
+        border-left: 6px solid #34f4a4;
+        padding: 16px;
+        border-radius: 6px;
+        margin-top: 20px;
+        color: #93aca4;
+        font-size: 16px;
+        font-weight: 600;
+    ">
+        <strong style="color:#34f4a4;">Insight:</strong> Rail transport (both freight and passenger) produces <span style="color:#1c4c54;">significantly lower CO₂ emissions</span> compared to road freight, passenger cars, and airways.<br>
+        Choosing trains supports sustainable travel and reduces environmental impact across India.
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 
+# -------------------------------
+#      Train Routes Section
+# -------------------------------
 
-    import json
-    import pydeck as pdk
 
-    with open("datasets/railway/railways_lines.geojson") as f:
-        lines_data = json.load(f)
+with open("datasets/railway/railways_lines.geojson") as f:
+    lines_data = json.load(f)
 
-    with open("datasets/railway/railways_points.geojson") as f:
-        points_data = json.load(f)
+with open("datasets/railway/railways_points.geojson") as f:
+    points_data = json.load(f)
 
-    rail_layer = pdk.Layer(
-        "GeoJsonLayer",
-        lines_data,
-        get_line_color=[255, 0, 0],
-        get_line_width=2,
-        pickable=True
-    )
+rail_layer = pdk.Layer(
+    "GeoJsonLayer",
+    lines_data,
+    get_line_color=[255, 0, 0],
+    get_line_width=2,
+    pickable=True
+)
 
-    points_layer = pdk.Layer(
-        "GeoJsonLayer",
-        points_data,
-        get_fill_color=[52, 244, 164, 160],  # changed to green
-        get_radius=1000,
-        point_radius_min_pixels=2,
-        point_radius_max_pixels=10,
-        pickable=True
-    )
+points_layer = pdk.Layer(
+    "GeoJsonLayer",
+    points_data,
+    get_fill_color=[52, 244, 164, 160],  # changed to green
+    get_radius=1000,
+    point_radius_min_pixels=2,
+    point_radius_max_pixels=10,
+    pickable=True
+)
 
-    view_state = pdk.ViewState(
-        latitude=22.9734,
-        longitude=78.6569,
-        zoom=4,
-        pitch=0
-    )
+view_state = pdk.ViewState(
+    latitude=22.9734,
+    longitude=78.6569,
+    zoom=4,
+    pitch=0
+)
 
-    st.pydeck_chart(pdk.Deck(
-        layers=[rail_layer, points_layer],
-        initial_view_state=view_state,
-        tooltip={"text": "{name}"}
-    ))
+st.pydeck_chart(pdk.Deck(
+    layers=[rail_layer, points_layer],
+    initial_view_state=view_state,
+    tooltip={"text": "{name}"}
+))
 
 
 st.markdown("</div></div>", unsafe_allow_html=True)
@@ -360,67 +361,38 @@ st.markdown("</div></div>", unsafe_allow_html=True)
 
 
 
-# Inject custom CSS
-st.markdown(
-    """
-    <style>
 
-    .experience-section {
-        position: relative;
-        margin: 40px 0;
-        padding: 60px 40px;
-        border-radius: 16px;
-        color: white;
-        text-align: center;
-        background-size: cover;
-        background-position: center;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    }
 
-    .experience-overlay {
-        background: rgba(4, 28, 28, 0.75);
-        padding: 60px 20px;
-        border-radius: 16px;
-    }
 
-    .experience-title {
-        font-size: 42px;
-        font-weight: 700;
-        margin-bottom: 10px;
-    }
 
-    .experience-subtitle {
-        font-size: 22px;
-        color: #34f4a4;
-        margin-bottom: 30px;
-    }
 
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
-# Hero section
+# -------------------------------
+#         Arts Section
+# -------------------------------
+
+
+# Sub-title 
 st.markdown("""
-<div class="experience-section" style="background-image: url('https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/a_date.jpg');">
-  <div class="experience-overlay">
-    <div class="experience-title">Local Artistry</div>
-    <div class="experience-subtitle">Come home with more than souvenirs — buy handcrafted gifts that support artisans and preserve tradition.</div>
-  </div>
-</div>
+<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Local Artistry</h2>
 """, unsafe_allow_html=True)
 
+st.markdown("Come home with more than souvenirs — buy handcrafted gifts that support artisans and preserve tradition.")
 
+# --- Load & clean data ---
 
-# Load and filter art data
-df_art = pd.read_csv("datasets/arts.csv", encoding='windows-1252')
-GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
+# Load tables into dataframes
+df_art = load_table("arts")
+df_benefit = load_table("person_benefited_handicraft")
+
+# Append full path in the 'image_url' column 
 df_art["image_url"] = df_art["image_url"].apply(lambda x: f"{GITHUB_BASE}/images/arts_out/{x}")
 
-# Load people benefited data and clean it
-df_benefit = pd.read_csv("datasets/person_benefited_handicraft.csv", encoding='windows-1252')
-df_benefit.columns = df_benefit.columns.str.strip().str.lower().str.replace(" ", "_")
-df_benefit.rename(columns={"state/uts": "state", "total_no._of_persons_benefitted": "benefited"}, inplace=True)
+# Rename specific columns 
+df_benefit.rename(columns={
+    "state_uts": "state",
+    "total_no_of_persons_benefitted": "benefited"
+}, inplace=True)
 
 # Merge datasets on 'state'
 arts_filtered = df_art.merge(df_benefit[["state", "benefited"]], on="state", how="left").sort_values(by="state").copy()
@@ -436,7 +408,7 @@ for _, row in arts_filtered.iterrows():
     <div class="carousel-item" data-benefit="{row['benefited']}" data-state="{row['state']}">
         <img src="{row['image_url']}" alt="{row['name']}">
         <div class="carousel-info-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 12px; border-radius: 0 0 12px 12px; height: 70px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 12px; border-radius: 0 0 12px 12px; height: 70px; ];">
             <div class="carousel-arrow arrow-left" onclick="prev()" role="button" aria-label="Previous">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
@@ -474,7 +446,7 @@ carousel_html = f"""
     border-radius: 12px;
     color: #ffffff;
     margin: 20px 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }}
     .buy-local-left {{
     max-width: 55%;
@@ -610,9 +582,11 @@ carousel_html = f"""
 
     .arrow-left {{
     left: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     }}
     .arrow-right {{
     right: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     }}
 </style>
 <div class="buy-local-card">

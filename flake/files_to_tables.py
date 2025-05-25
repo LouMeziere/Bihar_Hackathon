@@ -3,14 +3,11 @@ import toml
 
 import pandas as pd
 
-# Load the CSV file
-df = pd.read_csv('../datasets/cultural_sites.csv')
 
-# Drop the last row
-df = df.iloc[:-1]
 
-# Save the updated CSV back, overwriting the original file
-df.to_csv('../datasets/cultural_sites.csv', index=False)
+
+
+
 def connect_to_snowflake():
     secrets = toml.load('/Users/loumeziere/Desktop/secret_files/secrets.toml')
     conn_info = secrets['connections']['my_example_connection']
@@ -33,30 +30,30 @@ table_schemas = {
         ("image_url", "STRING"),
     ],
     "budget_allocation": [
-        ("year", "STRING"),
-        ("funds_allocated_released_by_ministry_of_culture", "STRING"),
-        ("funds_utilised_by_seven_zccs", "STRING"),
+        ("year", "NUMBER"),
+        ("funds_allocated_released_by_ministry_of_culture", "NUMBER"),
+        ("funds_utilised_by_seven_zccs", "NUMBER"),
     ],
     "co2_emissions_transports": [
         ("mode", "STRING"),
         ("category", "STRING"),
-        ("transport_gm_tkm", "STRING"),
+        ("transport_gm_tkm", "NUMBER"),
     ],
     "cultural_sites": [
         ("monument", "STRING"),
-        ("unesco", "STRING"),
-        ("latitude", "STRING"),
-        ("longitude", "STRING"),
+        ("unesco", "BOOLEAN"),
+        ("latitude", "FLOAT"),
+        ("longitude", "FLOAT"),
         ("city", "STRING"),
         ("state", "STRING"),
-        ("domestic_2022_23", "STRING"),
-        ("foreign_2022_23", "STRING"),
-        ("total_visitors_2022_23", "STRING"),
-        ("domestic_2023_24", "STRING"),
-        ("foreign_2023_24", "STRING"),
-        ("total_visitors_2023_24", "STRING"),
-        ("domestic_growth_percent", "STRING"),
-        ("foreign_growth_percent", "STRING"),
+        ("domestic_2022_23", "NUMBER"),
+        ("foreign_2022_23", "NUMBER"),
+        ("total_visitors_2022_23", "NUMBER"),
+        ("domestic_2023_24", "NUMBER"),
+        ("foreign_2023_24", "NUMBER"),
+        ("total_visitors_2023_24", "NUMBER"),
+        ("domestic_growth_percent", "FLOAT"),
+        ("foreign_growth_percent", "FLOAT"),
         ("image_url", "STRING"),
     ],
     "festivals_data": [
@@ -70,34 +67,35 @@ table_schemas = {
     ],
     "monthwise_itas": [
         ("months", "STRING"),
-        ("_2021", "STRING"),
-        ("_2022", "STRING"),
-        ("_2023", "STRING"),
-        ("growth_2022_21_percent", "STRING"),
-        ("growth_2023_22_percent", "STRING"),
+        ("_2021", "NUMBER"),
+        ("_2022", "NUMBER"),
+        ("_2023", "NUMBER"),
+        ("growth_2022_21_percent", "FLOAT"),
+        ("growth_2023_22_percent", "FLOAT"),
     ],
     "person_benefited_handicraft": [
-        ("s_no", "STRING"),
+        ("s_no", "NUMBER"),
         ("state_uts", "STRING"),
-        ("total_no_of_persons_benefitted", "STRING"),
+        ("total_no_of_persons_benefitted", "NUMBER"),
     ],
-    "unesco_sites": [
+    "unesco_sites_per_country": [
         ("countries", "STRING"),
-        ("site_amount", "STRING"),
+        ("site_amount", "NUMBER"),
     ],
     "weather_data": [
         ("city", "STRING"),
         ("state", "STRING"),
         ("month", "STRING"),
-        ("avg_temperature_c", "STRING"),
-        ("min_temperature_c", "STRING"),
-        ("max_temperature_c", "STRING"),
-        ("rainfall_mm", "STRING"),
-        ("humidity_percent", "STRING"),
-        ("rainy_days_d", "STRING"),
-        ("avg_sun_hours_hours", "STRING"),
+        ("avg_temperature_c", "FLOAT"),
+        ("min_temperature_c", "FLOAT"),
+        ("max_temperature_c", "FLOAT"),
+        ("rainfall_mm", "FLOAT"),
+        ("humidity_percent", "FLOAT"),
+        ("rainy_days_d", "NUMBER"),
+        ("avg_sun_hours_hours", "FLOAT"),
     ],
 }
+
 
 conn = connect_to_snowflake()
 cur = conn.cursor()

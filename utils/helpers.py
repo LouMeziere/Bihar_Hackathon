@@ -3,6 +3,14 @@ import pandas as pd
 import toml
 import snowflake.connector
 
+
+month_order = ['January', 'February', 'March', 'April', 'May', 'June',
+                   'July', 'August', 'September', 'October', 'November', 'December']
+
+# GitHub base path once
+GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
+
+
 @st.cache_data
 def load_art_data():
     return pd.read_csv("data/arts.csv")
@@ -21,6 +29,26 @@ def connect_to_snowflake():
     secrets = toml.load('/Users/loumeziere/Desktop/secret_files/secrets.toml')
     conn_info = secrets['connections']['my_example_connection']
     return snowflake.connector.connect(**conn_info)
+
+
+def load_table(table_name: str, schema: str = "discover_india.public") -> pd.DataFrame:
+    """
+    Load a table from Snowflake and convert column names to lowercase.
+
+    Parameters:
+    - table_name (str): The name of the table to load.
+    - schema (str): The schema where the table is located (default: discover_india.public).
+
+    Returns:
+    - pd.DataFrame: The resulting DataFrame with lowercase column names.
+    """
+    conn = connect_to_snowflake()
+    query = f'SELECT * FROM {schema}.{table_name}'
+    df = pd.read_sql(query, conn)
+    conn.close()
+    df.columns = [col.lower() for col in df.columns]
+    return df
+
 
 def render_sidebar():
     df_culture, df_festival, df_art, df_weather = load_all_data()

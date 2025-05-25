@@ -1,18 +1,39 @@
+# -------------------------------
+#           Imports
+# -------------------------------
 
 import streamlit as st
 import pandas as pd
-import altair as alt
 import calendar
-from utils.helpers import render_sidebar, connect_to_snowflake
+from utils.helpers import render_sidebar, load_table,  month_order
 import streamlit.components.v1 as components
 
+import plotly.graph_objects as go
+import plotly.express as px
+
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: #101414;
+        color: #93aca4;
+        ...
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+
+
+# -------------------------------
+#          Intro Section
+# -------------------------------
+
+# Display options of states and months in side bar
 selected_states, selected_months = render_sidebar()
 
-conn = connect_to_snowflake()
-df = pd.read_sql("SELECT * FROM discover_india.public.weather_data", conn)
-conn.close()
-st.write("Columns in dataframe:")
-st.write(list(df.columns))
+# Title
 st.markdown("""
 <div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">WHEN </span>
@@ -20,52 +41,64 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# Intro paragraph
 st.markdown("To help travelers make informed and responsible decisions, we've analyzed historical weather data (1991–2022)" \
 ", monthly visitor trends (2021–2023), and key local festivals. This section highlights the best months to visit, so you can plan around weather, crowds, and cultural events.")
 
-
+# Sub-title 
 st.markdown("""
-<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Ideal Seasons for Perfect Weather</h2>
+<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Ideal Seasons for Perfect Weather</h2>
 """, unsafe_allow_html=True)
 
 
-import plotly.graph_objects as go
-import streamlit as st
-import pandas as pd
-import streamlit.components.v1 as components
 
 
+# -------------------------------
+#     Ideal Weather Section
+# -------------------------------
 
+# --- Load & clean data ---
+df_weather = load_table("weather_data")
+
+st.write("Columns in dataframe:") ################## remove
+st.write(list(df_weather.columns))
+
+
+# --- Plotting ---
 
 def plot_weather(selected_states):
+    # Check if any states have been selected by the user
     if not selected_states:
-        df_filtered = df.copy()
+        # No states selected: use the full weather dataset
+        df_weather_filtered = df_weather.copy()
         title = "Average Weather Across All States"
     else:
-        df_filtered = df[df['state'].isin(selected_states)]
+        # Filter the dataset to include only the selected states
+        df_weather_filtered = df_weather[df_weather['state'].isin(selected_states)]
+
+        # Set title depending on how many states are selected
         if len(selected_states) == 1:
             title = f"Weather Data for {selected_states[0]}"
         else:
             title = f"Average Weather for Selected States: {', '.join(selected_states)}"
 
-    month_order = ['January', 'February', 'March', 'April', 'May', 'June',
-                   'July', 'August', 'September', 'October', 'November', 'December']
-
-    agg = df_filtered.groupby('month')['Avg. Temperature (°C)'].agg(['mean', 'std']).reindex(month_order)
+    # Group the filtered data by month and calculate mean and standard deviation of average temperature
+    # Reindex by the predefined month_order list to ensure months are in correct calendar order
+    agg = df_weather_filtered.groupby('month')['avg_temperature_c'].agg(['mean', 'std']).reindex(month_order)
 
     # Calculate May to September stats
     hot_months = ['May', 'June', 'July', 'August', 'September']
-    hot_data = df_filtered[df_filtered['month'].isin(hot_months)]
+    hot_data = df_weather_filtered[df_weather_filtered['month'].isin(hot_months)]
 
-    avg_min_temp = hot_data['Min Temperature (°C)'].mean()
-    avg_max_temp = hot_data['Max Temperature (°C)'].mean()
-    avg_rainfall = hot_data['Rainfall (mm)'].mean()
+    avg_min_temp = hot_data['min_temperature_c'].mean()
+    avg_max_temp = hot_data['max_temperature_c'].mean()
+    avg_rainfall = hot_data['rainfall_mm'].mean()
 
     # Explanation text above cards (no background)
     st.markdown("""
         <div style="
             font-size: 18px; 
-            color: #f0f0f0; 
+            color: #93aca4; 
             line-height: 1.4; 
             margin-bottom: 20px;
             font-family: Arial, sans-serif;
@@ -77,7 +110,9 @@ def plot_weather(selected_states):
         </div>
     """, unsafe_allow_html=True)
 
-    # Two cards side-by-side for the stats
+
+    # --- Weather Cards ---
+
     components.html(f"""
         <div style="display: flex; gap: 20px; justify-content: space-between;">
             <div style="
@@ -115,39 +150,44 @@ def plot_weather(selected_states):
 
 
     # --- Plot ---
+
+    # Create a new Plotly figure
     fig = go.Figure()
 
+    # Add a line plot for average temperature with markers
     fig.add_trace(go.Scatter(
-        x=agg.index,
-        y=agg['mean'],
-        mode='lines+markers',
-        line=dict(color='#34f4a4'),
-        marker=dict(size=6),
-        name='Avg Temp',
-        hovertemplate='Month: %{x}<br>Temperature: %{y:.1f} ± %{customdata:.1f} °C',
-        customdata=agg['std'].values.reshape(-1, 1)
+        x=agg.index,                        # Months on x-axis
+        y=agg['mean'],                      # Mean temperatures on y-axis
+        mode='lines+markers',              # Show both lines and markers
+        line=dict(color='#34f4a4'),        # Line color
+        marker=dict(size=6),               # Marker size
+        name='Avg Temp',                   # Legend label
+        hovertemplate='Month: %{x}<br>Temperature: %{y:.1f} ± %{customdata:.1f} °C',  # Hover info
+        customdata=agg['std'].values.reshape(-1, 1)  # Standard deviation for hover display
     ))
 
+    # Add a shaded area to represent one standard deviation around the mean
     fig.add_trace(go.Scatter(
-        x=agg.index.tolist() + agg.index[::-1].tolist(),
-        y=(agg['mean'] + agg['std']).tolist() + (agg['mean'] - agg['std'])[::-1].tolist(),
-        fill='toself',
-        fillcolor='rgba(147, 172, 164, 0.15)',
-        line=dict(color='rgba(255,255,255,0)'),
-        hoverinfo="skip",
-        name='Std Dev'
+        x=agg.index.tolist() + agg.index[::-1].tolist(),  # Combine x-axis for upper and lower bounds
+        y=(agg['mean'] + agg['std']).tolist() + (agg['mean'] - agg['std'])[::-1].tolist(),  # Upper + lower bound
+        fill='toself',                        # Fill the area between curves
+        fillcolor='rgba(147, 172, 164, 0.15)',# Light fill color
+        line=dict(color='rgba(255,255,255,0)'), # Invisible border
+        hoverinfo="skip",                     # Skip hover for this trace
+        name='Std Dev'                        # Legend label
     ))
 
+    # Update layout and styling for dark theme and custom colors
     fig.update_layout(
-        plot_bgcolor='#101414',
-        paper_bgcolor='#101414',
+        plot_bgcolor='#101414',               # Dark plot background
+        paper_bgcolor='#101414',              # Dark overall background
         title=dict(
-            text=title,
+            text=title,                       # Title based on selected states
             font=dict(color='#9ee0cc', size=18, family='Arial'),
             x=0.5,
             xanchor='center'
         ),
-        xaxis=dict(
+        xaxis=dict(                           # X-axis formatting
             title=dict(text='Month', font=dict(color='#93aca4')),
             tickfont=dict(color='#9ee0cc'),
             showgrid=True,
@@ -161,7 +201,7 @@ def plot_weather(selected_states):
             tickwidth=1.1,
             ticklen=8,
         ),
-        yaxis=dict(
+        yaxis=dict(                           # Y-axis formatting
             title=dict(text='Average Temperature (°C)', font=dict(color='#93aca4')),
             tickfont=dict(color='#9ee0cc'),
             showgrid=True,
@@ -175,12 +215,12 @@ def plot_weather(selected_states):
             tickwidth=1.1,
             ticklen=8,
         ),
-        legend=dict(font=dict(color='#93aca4')),
-        margin=dict(l=40, r=20, t=60, b=40)
+        legend=dict(font=dict(color='#93aca4')),  # Legend font color
+        margin=dict(l=40, r=20, t=60, b=40)       # Chart margins
     )
 
+    # Render the chart in Streamlit
     st.plotly_chart(fig, use_container_width=True)
-
 
 # Assuming selected_states is defined, or pass an empty list if none selected
 plot_weather(selected_states)
@@ -199,42 +239,41 @@ plot_weather(selected_states)
 
 
 
+# -------------------------------
+#       Avoid Crowds Section
+# -------------------------------
 
+# Sub-title
 st.markdown("""
-<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Best Seasons to Escape the Crowds</h2>
+<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Best Seasons to Escape the Crowds</h2>
 """, unsafe_allow_html=True)
 
+# Description
 st.markdown("""
 To enjoy a more peaceful and authentic experience while visiting India, it is best to avoid the busiest months of June, July, November, and December, when tourist arrivals peak and attractions become crowded. Planning your visit during the less crowded months of October, January, February, and March allows you to take advantage of pleasant weather while exploring popular destinations with fewer tourists. This approach not only enhances your travel experience but also promotes responsible tourism by helping to distribute visitor numbers more evenly throughout the year, easing pressure on local communities and the environment during peak seasons.
 """)
 
 
-import streamlit as st
-import pandas as pd
-import plotly.express as px
+# --- Load & clean data ---
 
-# Load your data
-monthwise_ITAs = pd.read_csv("datasets/monthwise_ITAs.csv")
-# Drop any rows where all columns except maybe 'Months' are empty or NaN
-monthwise_ITAs = monthwise_ITAs.dropna(how='all')
+df_visitors_month = load_table("monthwise_ITAs")
 
-# Remove commas and convert numbers (for columns '2021', '2022', '2023')
-for col in ['2021', '2022', '2023']:
-    monthwise_ITAs[col] = monthwise_ITAs[col].astype(str).str.replace(',', '').astype(float)
+# Drop null values
+df_visitors_month = df_visitors_month.dropna(how='all')
 
-# Order months
-month_order = ['January', 'February', 'March', 'April', 'May', 'June', 
-               'July', 'August', 'September', 'October', 'November', 'December']
-monthwise_ITAs['Months'] = pd.Categorical(monthwise_ITAs['Months'], categories=month_order, ordered=True)
-monthwise_ITAs = monthwise_ITAs.sort_values('Months')
+# Change columns that start with _ to remove char
+df_visitors_month.columns = [col[1:] if col.startswith('_') and col[1:].isdigit() else col for col in df_visitors_month.columns]
+
+# Convert the 'months' column to a categorical type with a defined order
+df_visitors_month['months'] = pd.Categorical(df_visitors_month['months'], categories=month_order, ordered=True)
+
 
 # Prepare data for heatmap: years as rows, months as columns
-heatmap_data = monthwise_ITAs.set_index('Months')[['2021', '2022', '2023']].T
+heatmap_data = df_visitors_month.set_index('months')[['2021', '2022', '2023']].T
 
-import plotly.express as px
-import streamlit as st
 
-# Your data loading and cleaning code goes here (as you wrote)...
+
+# --- Plot ---
 
 # Custom green color scale from dark green to flashy green
 custom_colorscale = [
@@ -244,59 +283,63 @@ custom_colorscale = [
     [1.0, 'rgba(52, 244, 164, 1)']    # flashy green
 ]
 
+# Create Heatmap
 fig = px.imshow(
-    heatmap_data,
-    labels=dict(x="Month", y="Year", color="Tourist Arrivals"),
-    x=month_order,
-    y=['2021', '2022', '2023'],
-    color_continuous_scale=custom_colorscale,
-    aspect="auto",
+    heatmap_data,  # Data in matrix format (years as rows, months as columns)
+    labels=dict(x="Month", y="Year", color="Tourist Arrivals"),  
+    x=month_order,  # Explicit month order for x-axis
+    y=['2021', '2022', '2023'], 
+    color_continuous_scale=custom_colorscale,  
+    aspect="auto",  
 )
 
+# General Layout Customization 
 fig.update_layout(
-    plot_bgcolor='#101414',       # your background color
-    paper_bgcolor='#101414',
-    font=dict(color='#93aca4', family="Arial, sans-serif"),  # light green text color & font
+    plot_bgcolor='#101414',      
+    paper_bgcolor='#101414',      
+    font=dict(color='#93aca4', family="Arial, sans-serif"),  
     title=dict(
-        text="Monthly Tourist Arrivals Heatmap",
-        font=dict(size=24, color='#ffffff'),
-        x=0.5,
+        text="Monthly Tourist Arrivals Heatmap",  
+        font=dict(size=24, color='#ffffff'),     
+        x=0.5,                                     
         xanchor='center',
     ),
-    margin=dict(t=60, l=50, r=50, b=50),
+    margin=dict(t=60, l=50, r=50, b=50),  # Margins around the chart
 )
 
+# Customize X-axis Appearance
 fig.update_xaxes(
-    showgrid=False,
-    tickangle=45,
-    tickfont=dict(color='#93aca4'),
-    linecolor='#282434',           # grey axis lines
-    zeroline=False,
+    showgrid=False,                  # Remove gridlines
+    tickangle=45,                   # Tilt x-axis labels for readability
+    tickfont=dict(color='#93aca4'), 
+    linecolor='#282434',            
+    zeroline=False,                 # Hide baseline at 0
 )
 
+# Customize Y-axis Appearance
 fig.update_yaxes(
-    showgrid=False,
+    showgrid=False,                  
     tickfont=dict(color='#93aca4'),
-    linecolor='#282434',           # grey axis lines
-    zeroline=False,
+    linecolor='#282434',            
+    zeroline=False,                 
 )
 
-# Add subtle white border around heatmap cells for clarity
+# Enhance Heatmap Trace 
 fig.update_traces(
-    hovertemplate='Year: %{y}<br>Month: %{x}<br>Arrivals: %{z}<extra></extra>',
-    showscale=True,
-    colorbar=dict(
+    hovertemplate='Year: %{y}<br>Month: %{x}<br>Arrivals: %{z}<extra></extra>',  # Custom tooltip
+    showscale=True,  # Show color bar
+    colorbar=dict(   # Style the color bar
         title=dict(
             text='Arrivals',
             font=dict(color='#93aca4')
         ),
         tickfont=dict(color='#93aca4'),
-        outlinecolor='#282434',
+        outlinecolor='#282434',  # Color bar border color
         bordercolor='#282434',
     )
 )
 
-
+# Display the Chart in Streamlit 
 st.plotly_chart(fig, use_container_width=True)
 
 
@@ -311,8 +354,11 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 
+# -------------------------------
+#        Festivals Section
+# -------------------------------
 
-
+# Sub-title
 st.markdown("""
 <h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Timing Your Trip Around India’s Grand Celebrations</h2>
 """, unsafe_allow_html=True)
@@ -398,16 +444,32 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Your existing data loading and filtering code remains unchanged:
-df_festival = pd.read_csv("datasets/festivals_data.csv", encoding='utf-8')
+
+# --- Load & clean data ---
+
+df_festival = load_table("festivals_data")
+
+# Remove rows where state information is missing
 df_festival = df_festival.dropna(subset=['state'])
+
+# Convert start and end dates to datetime, filtering out parsing errors
 df_festival["start_date"] = pd.to_datetime(df_festival["start_date"], format='%d %b %Y', errors="coerce")
 df_festival["end_date"] = pd.to_datetime(df_festival["end_date"], format='%d %b %Y', errors="coerce")
+
+# Keep only future festivals (starting from May 2025)
 df_festival = df_festival[(df_festival["start_date"].dt.year >= 2025) & (df_festival["start_date"].dt.month >= 5)]
 
+
+
+# --- Filtering Based on User Selections ---
+
 filtered_festivals = df_festival.copy()
+
+# Filter festivals by selected states
 if selected_states:
     filtered_festivals = filtered_festivals[filtered_festivals["state"].isin(selected_states)]
+
+# Filter festivals by selected months (converted from month names to numbers)
 if selected_months:
     month_number_map = {
         "January": 1, "February": 2, "March": 3, "April": 4,
@@ -419,18 +481,33 @@ if selected_months:
         filtered_festivals["start_date"].dt.month.isin(selected_month_nums)
     ]
 
+
+
+# --- Grouping Festival Info for Display ---
+
+# Group by festival info and combine multiple states into comma-separated strings
 grouped = (
     filtered_festivals
     .groupby(["festival_name", "start_date", "end_date", "description", "genre", "city"], dropna=False)
     .agg({"state": lambda x: ", ".join(sorted(set(x.dropna())))})
     .reset_index()
 )
+
+# Sort festivals chronologically
 grouped = grouped.sort_values(by="start_date")
+
+# Get list of unique (year, month) tuples for available festivals
 available_months = sorted(grouped["start_date"].dropna().apply(lambda d: (d.year, d.month)).unique())
 
+
+
+# --- Month Navigation Logic ---
+
+# Initialize session state to keep track of current month index
 if "month_index" not in st.session_state:
     st.session_state.month_index = 0
 
+# Navigation buttons (Previous / Next)
 col1, col2, col3 = st.columns([1, 3, 1])
 with col1:
     if st.button("← Previous"):
@@ -441,19 +518,26 @@ with col3:
         if st.session_state.month_index < len(available_months) - 1:
             st.session_state.month_index += 1
 
+
+
+# --- Display Festival Cards for Selected Month ---
+
 if available_months:
     selected_year, selected_month = available_months[st.session_state.month_index]
 
+    # Display the current selected month title
     st.markdown(
         f"<h2>📅 Festivals in {calendar.month_name[selected_month]} {selected_year}</h2>",
         unsafe_allow_html=True,
     )
 
+    # Filter festivals happening in the selected month
     this_month = grouped[
         (grouped["start_date"].dt.year == selected_year) &
         (grouped["start_date"].dt.month == selected_month)
     ].reset_index(drop=True)
 
+    # Display festivals as cards, 3 per row
     cards_per_row = 3
     for i in range(0, len(this_month), cards_per_row):
         row_festivals = this_month.iloc[i : i + cards_per_row]
@@ -463,6 +547,8 @@ if available_months:
                 start = row['start_date'].date()
                 end = row['end_date'].date() if pd.notnull(row['end_date']) else None
                 date_str = f"{start}" if not end or start == end else f"{start} → {end}"
+
+                # Render a styled card for each festival
                 st.markdown(
                     f"""
                     <div class="festival-card">
@@ -480,6 +566,5 @@ if available_months:
                     unsafe_allow_html=True,
                 )
 else:
+    # Message when no festivals are available
     st.info("No festival data available.")
-
-
