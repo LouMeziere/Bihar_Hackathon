@@ -7,12 +7,28 @@ import pandas as pd
 import calendar
 from utils.helpers import render_sidebar, load_table,  month_order
 import streamlit.components.v1 as components
-
+import plotly.io as pio
 import plotly.graph_objects as go
 import plotly.express as px
 
 
+from utils.helpers import inject_global_css
 
+inject_global_css()
+
+
+st.markdown(
+    """
+    <style>
+    .app-container {
+        max-width: 850px;
+        margin: 20px auto;  /* centers horizontally, 20px vertical margin */
+        padding: 0 10px;    /* optional horizontal padding */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # -------------------------------
@@ -24,31 +40,26 @@ selected_states, selected_months = render_sidebar()
 
 # Title
 st.markdown("""
-<div style="text-align: left; margin-top: 40px; margin-bottom: 40px;">
+<div class="container" style="margin-top: 40px; margin-bottom: 0px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">WHEN </span>
   <span style="color: white; font-size: 53px; font-weight: 600;">the journey begins</span>
+</div>
+<div class="container" style="padding-top: 0px;">
+    To help travelers make informed and responsible decisions, historical weather data (1991–2022) \
+monthly visitor trends (2021–2023), and key local festivals were analyzed. This section highlights the best months to visit, so you can plan around weather, crowds, and cultural events.
 </div>
 """, unsafe_allow_html=True)
 
 # Intro paragraph
-st.markdown("")
-
-st.markdown("""
-<div style='color:#ffffff;'>
-    To help travelers make informed and responsible decisions, historical weather data (1991–2022)" \
-", monthly visitor trends (2021–2023), and key local festivals were analyzed. This section highlights the best months to visit, so you can plan around weather, crowds, and cultural events.
-</div>
-""", unsafe_allow_html=True)
-
-# Sub-title 
-st.markdown("""
-<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 70px 0 20px 0;">Ideal Seasons for Perfect Weather</h2>
-""", unsafe_allow_html=True)
 
 
 
 
-# -------------------------------
+
+
+
+
+# ------------------------------
 #     Ideal Weather Section
 # -------------------------------
 
@@ -89,17 +100,19 @@ def plot_weather(selected_states):
 
     # Explanation text above cards (no background)
     st.markdown("""
-        <div style="
-            font-size: 18px; 
-            color: #93aca4; 
-            line-height: 1.4; 
-            margin-bottom: 20px;
-            font-family: Arial, sans-serif;
-        ">
-            From May through September, temperatures often soar, 
-            with daytime heat reaching levels that may be uncomfortable for extended outdoor activities. This period also 
-            marks the rainy season, bringing increased humidity and frequent showers that can impact travel plans and 
-            outdoor excursions.
+        <div class=container>
+            <h2 style="margin: 0 auto; max-width:850px;">Ideal Seasons for Perfect Weather</h2>
+            <div style="
+                font-size: 18px; 
+                color: #93aca4; 
+                line-height: 1.4; 
+                font-family: Arial, sans-serif;
+            ">
+                From May through September, temperatures often soar, 
+                with daytime heat reaching levels that may be uncomfortable for extended outdoor activities. This period also 
+                marks the rainy season, bringing increased humidity and frequent showers that can impact travel plans and 
+                outdoor excursions.
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
@@ -107,7 +120,8 @@ def plot_weather(selected_states):
     # --- Weather Cards ---
 
     components.html(f"""
-        <div style="display: flex; gap: 20px; justify-content: space-between;">
+    <div style="max-width: 850px; margin: 0 auto;">
+        <div style="display: flex; padding: 0 24px; gap: 20px; justify-content: space-between;">
             <div style="
                 flex: 1;
                 background: linear-gradient(to right, #1e2f2f, #1c4c54);
@@ -138,6 +152,7 @@ def plot_weather(selected_states):
                 <div style="font-size:12px; color:#ffffff; margin-top:4px;">☔ May–Sep avg.</div>
             </div>
         </div>
+    </div>
     """, height=180)
 
 
@@ -209,15 +224,22 @@ def plot_weather(selected_states):
             ticklen=8,
         ),
         legend=dict(font=dict(color='#93aca4')),  # Legend font color
-        margin=dict(l=40, r=20, t=60, b=40)       # Chart margins
-    )
+        margin=dict(l=50, r=20, t=60, b=140),     # Chart margins
+        height=500
+    )   
+    
+    # Render the figure
+    return fig
 
-    # Render the chart in Streamlit
+# plot_weather returns a Plotly fig
+fig = plot_weather(selected_states)
+
+# Set a fixed height in the figure layout for consistency
+fig.update_layout(height=500)
+
+left, center, right = st.columns([0.5, 8, 0.5])
+with center:
     st.plotly_chart(fig, use_container_width=True)
-
-# Assuming selected_states is defined, or pass an empty list if none selected
-plot_weather(selected_states)
-
 
 
 
@@ -236,15 +258,15 @@ plot_weather(selected_states)
 #       Avoid Crowds Section
 # -------------------------------
 
-# Sub-title
+# Sub-title & description
 st.markdown("""
-<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Best Seasons to Escape the Crowds</h2>
+<div class="container">
+<h2 style="margin: 60px auto 20px auto;">Best Seasons to Escape the Crowds</h2>
+<p>To enjoy a more peaceful and authentic experience while visiting India, it is best to avoid the busiest months of June, July, November, and December, when tourist arrivals peak and attractions become crowded. Planning your visit during the less crowded months of October, January, February, and March allows you to take advantage of pleasant weather while exploring popular destinations with fewer tourists. This approach not only enhances your travel experience but also promotes responsible tourism by helping to distribute visitor numbers more evenly throughout the year, easing pressure on local communities and the environment during peak seasons.</p>
+</div>
 """, unsafe_allow_html=True)
 
-# Description
-st.markdown("""
-To enjoy a more peaceful and authentic experience while visiting India, it is best to avoid the busiest months of June, July, November, and December, when tourist arrivals peak and attractions become crowded. Planning your visit during the less crowded months of October, January, February, and March allows you to take advantage of pleasant weather while exploring popular destinations with fewer tourists. This approach not only enhances your travel experience but also promotes responsible tourism by helping to distribute visitor numbers more evenly throughout the year, easing pressure on local communities and the environment during peak seasons.
-""")
+
 
 
 # --- Load & clean data ---
@@ -331,14 +353,15 @@ fig.update_traces(
         ),
         tickfont=dict(color='#93aca4'),
         outlinecolor='#282434',  # Color bar border color
-        bordercolor='#282434',
+        bordercolor='#282434'
     )
 )
 
-# Display the Chart in Streamlit 
-st.plotly_chart(fig, use_container_width=True)
 
+left, center, right = st.columns([1, 8, 1])  # Wide center column
 
+with center:
+    st.plotly_chart(fig, use_container_width=True)  # Cleaner and responsive
 
 
 
@@ -354,28 +377,17 @@ st.plotly_chart(fig, use_container_width=True)
 #        Festivals Section
 # -------------------------------
 
-# Sub-title
-st.markdown("""
-<h2 style="color:#fffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Plan Around India’s Festival Calendar</h2>
-""", unsafe_allow_html=True)
-
-# Description
-st.markdown("""
-<div style='color:#93aca4; padding-bottom:30px;'>
-   India’s calendar is rich with festivals — from Holi to regional music and dance celebrations. Choosing the right month can elevate your trip, offering a deeper cultural experience. Use this guide to discover when the biggest events take place this year.
-</div>
-""", unsafe_allow_html=True)
-
-
-
 st.markdown(
     """
     <style>
     /* Page background and font */
     .main {
-        background-color: #f9f9f9;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #222222;
+        padding: 20px;  
+        max-width: 850px !important;
+        margin: 0 auto !important;        
+
     }
     /* Container for festival cards */
     .festival-card {
@@ -387,7 +399,10 @@ st.markdown(
         transition: transform 0.25s ease, box-shadow 0.25s ease;
         animation: fadeIn 0.7s ease forwards;
         opacity: 0;
-    
+        max-width: 450px;            /* don't exceed main's width */
+        width: 100%;  
+        margin-left: auto;
+        margin-right: auto;
     }
     .festival-card:hover {
         transform: translateY(-6px);
@@ -397,24 +412,8 @@ st.markdown(
     @keyframes fadeIn {
         to { opacity: 1; }
     }
-    /* Headers */
-    h1, h2, h3 {
-        font-weight: 700;
-        color: #1c4c54;
-        margin-bottom: 0.3rem;
-    }
-    h1 {
-        font-size: 2.5rem;
-        text-align: center;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-    h2 {
-        font-size: 1.8rem;
-        text-align: center;
-        margin-top: 1rem;
-        margin-bottom: 1.4rem;
-    }
+    
+    
     .festival-card p {
         color: #93aca4 ;
     }
@@ -448,6 +447,24 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+
+# Sub-title
+st.markdown("""
+<div class="main">
+
+<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 30px 0 20px 0;">
+    Plan Around India’s Festival Calendar
+</h2>
+
+<div style='color:#93aca4; padding-bottom:30px;'>
+    India’s calendar is rich with festivals — from Holi to regional music and dance celebrations. Choosing the right month can elevate your trip, offering a deeper cultural experience. Use this guide to discover when the biggest events take place this year.
+</div>
+
+</div>
+""", unsafe_allow_html=True)
+
+
 
 
 # --- Load & clean data ---
@@ -546,6 +563,9 @@ if available_months:
         (grouped["start_date"].dt.month == selected_month)
     ].reset_index(drop=True)
 
+    # Start wrapper div with class main
+    st.markdown('<div class="container" style="max-width: 600px; margin: 0 auto;">', unsafe_allow_html=True)
+
     # Display festivals as cards, 2 per row
     cards_per_row = 2
     for i in range(0, len(this_month), cards_per_row):
@@ -560,7 +580,7 @@ if available_months:
                 # Render a styled card for each festival
                 st.markdown(
                     f"""
-                    <div class="festival-card">
+                    <div class="festival-card" >
                         <h3 style='color:#ffffff; font-weight:800; margin-bottom:20px;'>{row['festival_name']}</h3>
                         <p><strong style='color:#041c1c;font-weight:800;'>📍 Location:</strong> {row['city']}, {row['state']}</p>
                         <p><strong style='color:#041c1c;font-weight:800;'>🎵 Genre:</strong> {row['genre']}</p>
@@ -573,6 +593,13 @@ if available_months:
                     """,
                     unsafe_allow_html=True,
                 )
+
+    # Close wrapper div
+    st.markdown('</div>', unsafe_allow_html=True)
+
 else:
     # Message when no festivals are available
     st.info("No festival data available.")
+
+
+st.markdown('</div>', unsafe_allow_html=True)

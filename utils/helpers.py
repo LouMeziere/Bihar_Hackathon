@@ -1,8 +1,16 @@
+# -------------------------------
+#           Imports
+# -------------------------------
+
 import streamlit as st
 import pandas as pd
 import toml
 import os
 import snowflake.connector
+import json
+import pydeck as pdk
+
+
 
 # Define the order of months for consistent display
 month_order = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -10,6 +18,38 @@ month_order = ['January', 'February', 'March', 'April', 'May', 'June',
 
 # GitHub base path once 
 GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
+
+
+import streamlit as st
+
+def inject_global_css():
+    st.markdown("""
+        <style>
+        .container {
+            max-width: 850px ;
+            margin: 0 auto ;
+            padding: 24px ;
+            text-align: left;
+        }
+
+        h2, .subtitle {
+            color: #ffffff; 
+            font-weight: 900; 
+            font-size: 44px; 
+            max-width: 850px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        p {
+            color: #93aca4;  
+            font-size: 1.2rem;   
+        }    
+
+        </style>
+    """, unsafe_allow_html=True)
+
+
 
 
 def connect_to_snowflake():
@@ -108,3 +148,46 @@ def render_sidebar():
 
     # Return the current selections
     return selected_states, selected_months
+
+
+
+@st.cache_data
+def load_geojson(path):
+    with open(path, "r") as f:
+        return json.load(f)
+
+def create_map():
+    lines_data = load_geojson("images/railway/railways_lines_cleaned.geojson")
+    points_data = load_geojson("images/railway/railways_points_cleaned.geojson")
+
+    rail_layer = pdk.Layer(
+        "GeoJsonLayer",
+        lines_data,
+        get_line_color=[255, 0, 0],
+        get_line_width=2,
+        pickable=True
+    )
+
+    points_layer = pdk.Layer(
+        "GeoJsonLayer",
+        points_data,
+        get_fill_color=[52, 244, 164, 160],
+        get_radius=1000,
+        point_radius_min_pixels=2,
+        point_radius_max_pixels=10,
+        pickable=True
+    )
+
+    view_state = pdk.ViewState(
+        latitude=22.9734,
+        longitude=78.6569,
+        zoom=4,
+        pitch=0
+    )
+
+    return pdk.Deck(
+        layers=[rail_layer, points_layer],
+        initial_view_state=view_state,
+        tooltip={"text": "{name}"}
+    )
+

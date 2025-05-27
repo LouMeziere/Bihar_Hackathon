@@ -9,7 +9,10 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 import streamlit.components.v1 as components
-from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE
+from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, create_map
+from utils.helpers import inject_global_css
+
+inject_global_css()
 
 
 
@@ -21,9 +24,18 @@ from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE
 # Display options of states and months in side bar
 selected_states, selected_months = render_sidebar()
 
+st.markdown("""
+<style>
+/* Style Streamlit main content container */
+.css-18e3th9 {
+    max-width: 850px !important;
+    margin: 20px auto !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # Title
 st.markdown("""
-<div style="text-align: left; margin-top: 40px; margin-bottom: 0px;">
+<div class="container" style="margin-top: 40px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">HOW </span>
   <span style="color: white; font-size: 58px; font-weight: 600;">the journey goes</span>
 </div>
@@ -36,21 +48,22 @@ st.markdown("""
 #         Ashrams Section
 # -------------------------------
 
-# Sub-title
-st.markdown("<h2 style='color: #ffffff; margin_bottom: 0px; padding-bottom: 0px; padding-top: 50px;'>A Pause with Purpose</h2>", unsafe_allow_html=True)
 
-# Description
+# Sub-title
+
+# Sub-title & description
 st.markdown("""
-<div style='color:#93aca4; padding-top:20px;'>
-    A visit to an Indian ashram is not just a retreat — it is a return to yourself. 
+<div class="container" style=' padding-top:20px;'>
+    <h2>A Pause with Purpose</h2>
+    <p>A visit to an Indian ashram is not just a retreat — it is a return to yourself. 
     In these sacred spaces, time slows, clarity sharpens, and the noise of modern life gives way to deep inner peace. 
-    Whether you are seeking healing, growth, or stillness, an ashram offers a journey inward that every traveler deserves to experience.
+    Whether you are seeking healing, growth, or stillness, an ashram offers a journey inward that every traveler deserves to experience.</p>
 </div>
 """, unsafe_allow_html=True)
 
 # Lessons
 st.markdown("""
-<div style='margin-top: 30px; padding: 20px; background-color: #041c1c; border-left: 4px solid #34f4a4; border-radius: 6px; max-width: 700px; text-align:center;'>
+<div class="container" style='margin-top: 30px; padding: 20px; text-align: left; background-color: #041c1c; border-left: 4px solid #34f4a4; border-radius: 6px; max-width: 700px; text-align:center;'>
     <div style='display: flex; justify-content: space-between; align-items: center; color: #ffffff; font-size: 16px; margin-bottom: 20px;'>
         <span>🧘 <i>"Observe yourself gently — in awareness, transformation begins."</i></span>
         <span style='color: #34f4a4; font-weight: bold;'>Lesson 01</span>
@@ -92,6 +105,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
     }
     .swiper {
         width: 100%;
+        max-width: 800px;
         padding-top: 50px;
         padding-bottom: 50px;
     }
@@ -148,7 +162,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 </style>
 
 <div class="swiper mySwiper">
-<div class="swiper-wrapper">
+<div class="swiper-wrapper"">
 """
 
 # Add each ashram card as a swiper slide
@@ -197,16 +211,16 @@ const swiper = new Swiper(".mySwiper", {
 # Show it in Streamlit
 st.components.v1.html(carousel_html, height=540, scrolling=False)
 
-
-
-
-
-
-
-
-
-
 st.markdown("</div></div>", unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
 
 
 
@@ -225,18 +239,18 @@ st.markdown("</div></div>", unsafe_allow_html=True)
 #         Train Section
 # -------------------------------
 
-# Sub-title
-st.markdown('<h1 class="title" style="color:#ffffff;">Where the Journey Is the Destination</h1>', unsafe_allow_html=True)
-
 # Description
 st.markdown(
     """
-    <p class="subtitle">
-    India boasts the world’s <strong style="color:#1c4c54;">second largest</strong> railway system, moving millions of travelers every day.<br>
-    Taking an overnight train is a classic way to experience the country—offering genuine encounters with locals and a window into India’s vast and varied landscape.<br>
-    Discover the charm of long-distance journeys or enjoy picturesque trips on narrow-gauge railways, including <strong style="color:#1c4c54;">3 UNESCO-recognized mountain 
-    routes:</strong>  Darjeeling, Nilgiri, and Kalka-Shimla.<br><br>
-    </p>
+    <div class="container">
+        <h1 class="title container" style="color:#ffffff;">Where the Journey Is the Destination</h1>
+        <p class="subtitle">
+            India boasts the world’s <strong style="color:#1c4c54;">second largest</strong> railway system, moving millions of travelers every day.<br>
+            Taking an overnight train is a classic way to experience the country—offering genuine encounters with locals and a window into India’s vast and varied landscape.<br>
+            Discover the charm of long-distance journeys or enjoy picturesque trips on narrow-gauge railways, including <strong style="color:#1c4c54;">3 UNESCO-recognized mountain 
+            routes:</strong>  Darjeeling, Nilgiri, and Kalka-Shimla.<br><br>
+        </p>
+    </div>
     """,
     unsafe_allow_html=True,
 )
@@ -273,12 +287,12 @@ st.markdown(
 
 
 
-# --- Plot --
+# --- CO2 Emission Plot --
 
 # Define color mapping matching your palette
 color_map = {
     'Rail': '#34f4a4',          # Light green
-    'Road': '#1c4c54 ',          # Grey
+    'Road': '#1c4c54',          # Grey
     'Shipping': '#282434',          # Light green
     'Passenger Cars': '#041c1c',# Dark green
     'Airways': '#1e2f2f'        # Flashy green
@@ -300,12 +314,18 @@ bar_chart = (
     .configure_view(strokeWidth=0)
 )
 
+st.markdown(
+    "<div style='max-width: 700px;'>", 
+    unsafe_allow_html=True
+)
 st.altair_chart(bar_chart, use_container_width=True)
+st.markdown("</div>", unsafe_allow_html=True)
+
 
 # Insight box styled with your dark green background and flashy green text
 st.markdown(
     """
-    <div style="
+    <div class="container" style="
         background-color:#041c1c;
         border-left: 6px solid #34f4a4;
         padding: 16px;
@@ -332,46 +352,21 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 # -------------------------------
 
 
-with open("images/railway/railways_lines.geojson") as f:
-    lines_data = json.load(f)
+# Only create the map once per session
+if "map_chart" not in st.session_state:
+    # Center the map
+    left, center, right = st.columns([1, 6, 1])
+    with center:
+        st.session_state.map_chart = create_map()
 
-with open("images/railway/railways_points.geojson") as f:
-    points_data = json.load(f)
+# Use the cached chart
+# Center the map using Streamlit layout
+left, center, right = st.columns([1, 6, 1])
+with center:
+    st.pydeck_chart(st.session_state.map_chart, use_container_width=False)
 
-rail_layer = pdk.Layer(
-    "GeoJsonLayer",
-    lines_data,
-    get_line_color=[255, 0, 0],
-    get_line_width=2,
-    pickable=True
-)
-
-points_layer = pdk.Layer(
-    "GeoJsonLayer",
-    points_data,
-    get_fill_color=[52, 244, 164, 160],  # changed to green
-    get_radius=1000,
-    point_radius_min_pixels=2,
-    point_radius_max_pixels=10,
-    pickable=True
-)
-
-view_state = pdk.ViewState(
-    latitude=22.9734,
-    longitude=78.6569,
-    zoom=4,
-    pitch=0
-)
-
-st.pydeck_chart(pdk.Deck(
-    layers=[rail_layer, points_layer],
-    initial_view_state=view_state,
-    tooltip={"text": "{name}"}
-))
-
-
+# Add space
 st.markdown("</div></div>", unsafe_allow_html=True)
-
 
 
 
@@ -399,13 +394,12 @@ st.markdown("</div></div>", unsafe_allow_html=True)
 # -------------------------------
 
 
-# Sub-title 
+# Sub-title & description
 st.markdown("""
-<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Local Artistry</h2>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div style="color:#93aca4;">Come home with more than souvenirs — buy handcrafted gifts that support artisans and preserve tradition.</div>
+<div class="container">
+    <h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Local Artistry</h2>
+    <div style="color:#93aca4;">Come home with more than souvenirs — buy handcrafted gifts that support artisans and preserve tradition.</div>
+</div>
 """, unsafe_allow_html=True)
 
 
@@ -480,8 +474,9 @@ else:
         padding: 24px 32px;
         border-radius: 12px;
         color: #ffffff;
-        margin: 20px 0;
+        margin: 20px auto;
         box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        max-width: 700px;
         }}
         .buy-local-left {{
         max-width: 55%;
@@ -529,7 +524,6 @@ else:
         .carousel-item {{
         flex: 0 0 100%;
         box-sizing: border-box;
-        padding: 0px;
         text-align: center;
         height: 100%;
         display: flex;

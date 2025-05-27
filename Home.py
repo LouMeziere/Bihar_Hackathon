@@ -5,8 +5,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from utils.helpers import render_sidebar, GITHUB_BASE
-
-
+from utils.helpers import inject_global_css
 
 
 # -------------------------------
@@ -16,9 +15,14 @@ from utils.helpers import render_sidebar, GITHUB_BASE
 # Page configuration
 st.set_page_config(page_title="India Cultural Explorer", layout="wide")
 
+# Add global css
+inject_global_css()
+
+
+
 # Title
 st.markdown("""
-<div style="text-align: left; margin-top: 40px; margin-bottom: 0px;">
+<div class="container" style="margin-top: 40px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">India's </span>
   <span style="color: white; font-size: 58px; font-weight: 600;">Cultural Explorer</span>
 </div>
@@ -35,16 +39,18 @@ st.markdown("""
 # Display video with file names
 st.markdown(f"""
 <style>
-.container {{
+.contain {{
     position: relative;
     width: 700px;
     height: 450px;
     margin: auto;
     overflow: hidden;
     border-radius: 20px;
+    max-width: 850px;
+    
 }}
 
-.container video {{
+.contain video {{
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -77,7 +83,7 @@ st.markdown(f"""
 }}
 </style>
 
-<div class="container">
+<div class="contain">
   <video autoplay loop muted playsinline>
     <source src="{GITHUB_BASE}/static/world.mp4" type="video/mp4">
     Your browser does not support the video tag.
@@ -106,7 +112,7 @@ st.markdown(f"""
 
 # Highlighted list of three key travel features
 html_code = """
-<div style="max-width: 900px; margin: 60px 0 80px 0; font-family: system-ui, sans-serif;">
+<div style="max-width: 850px; margin: 60px auto 80px auto; font-family: system-ui, sans-serif;">
   <h2 style="color:#ffffff; font-weight: 900; font-size: 44px; margin-bottom: 20px;">
     What can you explore?
   </h2>
@@ -149,13 +155,15 @@ components.html(html_code, height=500, scrolling=False)
 
 
 
+
+
+
+
 # -------------------------------
 #      App Files Section
 # -------------------------------
 
 # Display 3 cards in 1 row
-col1, col2, col3 = st.columns(3)
-
 card_style = """
 padding:20px;
 background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 80%, #041c1c 100%);
@@ -163,39 +171,39 @@ border-radius:10px;
 text-align:center;
 box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 color:#ffffff;
+flex: 1;  /* Important to allow cards to grow equally */
 """
 
-# Column 1: WHERE — Helps users select destinations
-with col1:
-    st.markdown(f"""
-    <div id="where" style="{card_style}">  <!-- Card container with shared style -->
-        <h3 style="color:#34f4a4;">01  WHERE</h3>  <!-- Step title in highlight color -->
-        <p>Choose the Indian states that call to your heart — from coastal paradises to mountain escapes.</p>
-        <!-- Description encourages emotional and geographic variety -->
-    </div>
-    """, unsafe_allow_html=True)
+# Wrap all cards in a flex container
+cards_html = f"""
+<div class="container" style="display: flex; gap: 20px; align-items: stretch; padding-top: 5px">
 
-# Column 2: WHEN — Helps users choose the ideal time
-with col2:
-    st.markdown(f"""
-    <div id="when" style="{card_style}">
-        <h3 style="color:#34f4a4;">02  WHEN</h3>
-        <p>Pick the best months to explore — based on climate, festivals, and your vibe.</p>
-        <!-- Describes time selection with a friendly, modern tone -->
-    </div>
-    """, unsafe_allow_html=True)
+  <div style="{card_style}">
+    <h3 style="color:#34f4a4;">01  WHERE</h3>
+    <p>Choose the Indian states that call to your heart — from coastal paradises to mountain escapes.</p>
+  </div>
 
-# Column 3: HOW — Encourages mindful travel
-with col3:
-    st.markdown(f"""
-    <div id="how" style="{card_style}">
-        <h3 style="color:#34f4a4;">03  HOW</h3>
-        <p>Discover soulful ways to travel — through local connections and mindful choices.</p>
-        <!-- Promotes ethical and emotionally enriching travel -->
-    </div>
-    """, unsafe_allow_html=True)
+  <div style="{card_style}">
+    <h3 style="color:#34f4a4;">02  WHEN</h3>
+    <p>Pick the best months to explore — based on climate, festivals, and your vibe.</p>
+  </div>
+
+  <div style="{card_style}">
+    <h3 style="color:#34f4a4;">03  HOW</h3>
+    <p>Discover soulful ways to travel — through local connections and mindful choices.</p>
+  </div>
+
+</div>
+"""
+
+st.markdown(cards_html, unsafe_allow_html=True)
 
 
 
 # Display options of states and months in side bar
 selected_states, selected_months = render_sidebar()
+
+
+
+
+st.markdown('</div>', unsafe_allow_html=True)

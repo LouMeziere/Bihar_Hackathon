@@ -13,6 +13,11 @@ import streamlit.components.v1 as components
 from streamlit_folium import folium_static
 from utils.helpers import render_sidebar, load_table, month_order, GITHUB_BASE
 
+from utils.helpers import inject_global_css
+
+inject_global_css()
+
+
 
 
 # -------------------------------
@@ -24,7 +29,7 @@ selected_states, selected_months = render_sidebar()
 
 # Title
 st.markdown("""
-<div style="text-align: left; margin-top: 40px; margin-bottom: 40px;">
+<div style="text-align: left; margin: 40px auto; max-width:850px">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">WHERE </span>
   <span style="color: white; font-size: 54px; font-weight: 600;">the journey begins</span>
 </div>
@@ -54,9 +59,9 @@ india_site_count = int(india_row.at[0, "site_amount"])
 india_rank = india_row.at[0, "index"] + 1
 
 st.markdown(f"""
-<div style="max-width: 900px; margin: auto; padding: 20px; border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #2f5454 50%, #041c1c 100%); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-  <h2 style="color:#ffffff; font-weight: 900; font-size: 44px; margin-bottom: 0;">India: A Visual Wonderland</h2>
-  <p style="font-size: 1.2rem; color:#93aca4; margin-top: 8px;">
+<div class="container" style="border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #2f5454 50%, #041c1c 100%); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <h2>India: A Visual Wonderland</h2>
+  <p style="margin-top: 8px;">
     India is not just a destination — it is an experience. With one of the world’s highest concentrations of UNESCO World Heritage sites, it is a place where culture comes alive.
   </p>
   
@@ -116,6 +121,10 @@ fig.add_trace(go.Bar(
 
 # Tweak layout to be clean and dark-transparent
 fig.update_layout(
+    font=dict(
+        family="Arial, sans-serif",   # font family
+        size=12,                      # base font size in pixels
+    ),
     showlegend=False,
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
@@ -125,21 +134,30 @@ fig.update_layout(
     height=300
 )
 
-# Wrap the plot in a styled Streamlit container
+# Add small box under
 st.markdown("""
-<div style="border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%); padding: 20px;">
+<div style="display: flex; justify-content: center;">
+  <div style="border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
+              padding: 20px; max-width: 850px; width: 100%;">
 """, unsafe_allow_html=True)
 
-# Display the chart
-st.plotly_chart(fig, use_container_width=True)
 
-# Close the container div
-st.markdown("</div>", unsafe_allow_html=True)
+# Close container
+st.markdown("""</div></div>""", unsafe_allow_html=True)
 
 
+# Export the figure as HTML
+fig_html = fig.to_html(include_plotlyjs='cdn', full_html=False)
 
+# Wrap in a single div with max-width and center alignment
+html = f"""
+<div style="max-width: 880px; margin: 0 auto;">
+    {fig_html}
+</div>
+"""
 
-
+# Render the wrapped chart in Streamlit in one single call
+components.html(html, height=350)
 
 
 
@@ -151,7 +169,7 @@ st.markdown("</div>", unsafe_allow_html=True)
 
 # Sub-title 
 st.markdown("""
-<h2 style="color:#ffffff; font-weight: 900; font-size: 44px; margin: 40px 0 20px 0;">Exploring India’s Timeless Heritage</h2>
+<h2 style="margin: 40px auto 20px auto;">Exploring India’s Timeless Heritage</h2>
 """, unsafe_allow_html=True)
 
 
@@ -184,17 +202,14 @@ top_3_state_names = ", ".join(top_3_states['state'].tolist())
 
 # Custom HTML block highlighting high-visitor states and impact
 visitor_volume_html = f"""
-<div style="background: linear-gradient(to right, #1e2f2f, #1c4c54);
-            padding: 24px;
+<div class=container style="margin-bottom: 24px; background: linear-gradient(to right, #1e2f2f, #1c4c54);
             border-radius: 16px;
-            color: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 40px;
-            margin: 0 auto 20px auto;
-            max-width: 900px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            max-width: 850px;">
 
   <!-- Left section: Explanation of overcrowding issues -->
   <div style="flex: 1; min-width: 300px;">
@@ -225,8 +240,6 @@ visitor_volume_html = f"""
   </div>
 
 </div>
-<!-- Spacer to prevent layout shift -->
-<div style="height: 0px; overflow: hidden;"></div>
 """
 
 # Render the visitor warning box in Streamlit
@@ -234,22 +247,36 @@ st.markdown(visitor_volume_html, unsafe_allow_html=True)
 
 # Add a divider and exploration tips for the map below
 st.markdown("""
-    <hr style="border: 0; border-top: 1px solid #2f5b63; margin: 24px 0;">
-    
-    <p style="font-weight: 600; color: #34f4a4; font-size: 1.2rem;">
+<div class=container>
+
+  <!-- Divider line -->
+  <div style="
+      height: 1px; 
+      background-color: #2f5b63; 
+      border-radius: 1px;
+      margin-bottom: 16px;
+  "></div>
+  
+  <!-- Text content -->
+  <p style="font-weight: 600; color: #34f4a4; margin-bottom: 8px;">
     💡 Scroll through the map below to explore cultural sites by region.
-    </p>
-    <p>Keep in mind to avoid highly popular destinations and priorities <strong>culturally rich but less-visited states</strong> like <strong>Bihar</strong>, <strong>Odisha</strong>, and <strong>Chhattisgarh</strong> offer authentic and meaningful experiences — <em>without the crowds.</em></p>
-    
-    <ul style="padding-left: 20px; color: #b1c1b7;">
+  </p>
+  <p style="margin-bottom: 16px;">
+    Keep in mind to avoid highly popular destinations and prioritize <strong>culturally rich but less-visited states</strong> like <strong>Bihar</strong>, <strong>Odisha</strong>, and <strong>Chhattisgarh</strong> for authentic experiences — <em>without the crowds.</em>
+  </p>
+  
+  <ul style="padding-left: 20px; color: #b1c1b7;">
     <li>Click on any site to learn more.</li>
     <li>UNESCO sites are indicated.</li>
     <li>Marker colors indicate visitor volume: 🟢 low, 🟠 medium, 🔴 high.</li>
-    </ul>
+  </ul>
+
+</div>
 """, unsafe_allow_html=True)
 
-# Add some vertical spacing between text and map
-st.markdown('<div style="margin-top:0px;"></div>', unsafe_allow_html=True)
+
+
+
 
 
 # Only keep the instances from state(s) of interest
@@ -290,7 +317,7 @@ for _, row in df_sites.iterrows():
     if str(row.get("unesco", "")).lower() == "true":
         unesco_label = '<span style="background-color:#93aca4; color:#000; padding:5px 6px; border-radius:4px; font-weight:bold; font-size:12px; display: inline-block; margin-bottom:8px;">🌎 UNESCO Site</span><br>'
 
-    html = f"""
+    html_monuments = f"""
     <div style="width:220px;">
         {img_html}
         <h4>{row['monument']}</h4>
@@ -301,7 +328,7 @@ for _, row in df_sites.iterrows():
         <b>Domestic Growth:</b> {row['domestic_growth_percent']}%
     </div>
     """
-    popup = folium.Popup(html, max_width=250)
+    popup = folium.Popup(html_monuments, max_width=250)
 
     folium.Marker(
         location=[row['latitude'], row['longitude']],
@@ -309,31 +336,10 @@ for _, row in df_sites.iterrows():
         icon=folium.Icon(color=color, icon="university", prefix="fa")
     ).add_to(marker_cluster)
 
-# Start a styled container for the map with dark background, rounded corners, and shadow
-st.markdown(
-    """
-    <div style="max-width: 750px;
-                margin: 0 auto 0 auto;
-                border-radius: 12px;
-                overflow: hidden;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-                background-color: #0a2a2a;
-                padding: 0;">
-    """,
-    unsafe_allow_html=True
-)
-
-# Display the Folium map within the styled container
-folium_static(m, width=750, height=600)
-
-# Add a hidden spacer to prevent layout jump after the map
-st.markdown(
-    """<div style="height: 0px; overflow: hidden;"></div>
-    """,
-    unsafe_allow_html=True
-)
-
-
+# Center the map using Streamlit layout
+left, center, right = st.columns([1, 6, 1])
+with center:
+    folium_static(m, width=750, height=650)
 
 
 
@@ -354,12 +360,12 @@ top_3_monuments = filtered_sites.sort_values('total_visitors_2023_24', ascending
 
 # Render section heading for Top 3 Monuments
 st.markdown("""
-<h2 style="color:#ffffff; font-weight: 900; font-size: 44px; margin: 40px 0 10px 0;">🏆 Top 3 Most Visited Monuments</h2>
+<h2 style="font-size: 44px; margin: 60px auto 20px auto;">🏆 Top 3 Most Visited Monuments</h2>
 """, unsafe_allow_html=True)
 
 # Display introductory text and call to explore lesser-known states
 st.markdown("""
-<div style="padding-bottom: 30px; font-size: 16px;">
+<div style="max-width: 850px; margin: 0px auto 60px auto">
   <p>Here are the <strong>most visited cultural sites</strong> based on your current state selection — or for <strong>all of India</strong> if no filter is applied.</p>
 
   <p>👉 <strong>Use the filters on your left to discover high-value sites in lesser-visited states</strong> like <strong>Bihar</strong> or <strong>Odisha</strong> — where your visit can have a <em>greater local impact</em> and offer a <em>deeper cultural experience</em>.</p>
@@ -372,7 +378,7 @@ html_content = ""
 # Loop through the top 3 monuments and build styled HTML blocks for each
 for i, (_, row) in enumerate(top_3_monuments.iterrows(), start=1):
     html_content += f"""
-    <div style="
+    <div class="container" style="
         background: linear-gradient(to right, #041c1c, #1c4c54);
         padding: 20px 30px;
         border-radius: 10px;
@@ -382,6 +388,7 @@ for i, (_, row) in enumerate(top_3_monuments.iterrows(), start=1):
         justify-content: space-between;
         align-items: center;
         gap: 20px;
+        max-width: 700px;
     ">
         <!-- Left side: Number and info -->
         <div style="display: flex; flex: 1; gap: 20px; align-items: flex-start;">
@@ -424,3 +431,9 @@ if top_3_monuments.empty:
     st.info("No monuments found for this selection.")
 else:
     st.markdown(html_content, unsafe_allow_html=True)
+
+
+
+
+
+st.markdown('</div>', unsafe_allow_html=True)
