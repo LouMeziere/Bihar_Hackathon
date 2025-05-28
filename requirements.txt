@@ -5,6 +5,7 @@ numpy
 matplotlib
 scikit-learn
 folium
+streamlit_folium
 pydeck
 altair
 plotly
