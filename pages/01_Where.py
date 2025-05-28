@@ -59,8 +59,8 @@ india_site_count = int(india_row.at[0, "site_amount"])
 india_rank = india_row.at[0, "index"] + 1
 
 st.markdown(f"""
-<div class="container" style="border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #2f5454 50%, #041c1c 100%); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-  <h2>India: A Visual Wonderland</h2>
+<div class="container" style="border-radius: 12px; background: linear-gradient(to bottom, #041c1c 0%, #1c4c54 50%, #041c1c 100%); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <h2 style='color:#ffffff;'>India: A Visual Wonderland</h2>
   <p style="margin-top: 8px;">
     India is not just a destination — it is an experience. With one of the world’s highest concentrations of UNESCO World Heritage sites, it is a place where culture comes alive.
   </p>
@@ -83,7 +83,7 @@ st.markdown(f"""
 # --- Minimalist bar chart ---
 
 # Get countries ranked up to India
-top_countries_unesco = df_unesco_sorted.iloc[:india_rank][["countries", "site_amount"]].sort_values("site_amount").reset_index(drop=True)
+top_countries_unesco = df_unesco_sorted.iloc[:india_rank][["countries", "site_amount"]].sort_values("site_amount", ascending=False).reset_index(drop=True)
 
 # Prepare the data for plotting
 countries = top_countries_unesco["countries"].tolist()
@@ -92,47 +92,64 @@ site_counts = top_countries_unesco["site_amount"].tolist()
 # Create plotly figure with variable name `fig`
 fig = go.Figure()
 
-ranks = list(range(len(countries), 0, -1))  # descending from 6 to 1
+# ranks from 1 to length
+ranks = list(range(1, len(countries) + 1))
 
-# Add a bar chart trace for UNESCO site counts
+# Colors for bars: default dark green except India (6th place)
+colors = ['rgba(28, 76, 84, 0.85)'] * len(countries)
+india_index = 5  # index for India (6th place)
+colors[india_index] = 'rgba(52, 244, 164, 1)'  # flashy green highlight
+
+# Slightly wider bar for India
+widths = [0.4] * len(countries)
+widths[india_index] = 0.6
+
+fig = go.Figure()
+
 fig.add_trace(go.Bar(
     x=countries,
     y=site_counts,
     text=[
-        # Format each label with country and styled site count
         f"<br>{country}<br><span style='font-size:15px;font-weight:600;color:#34f4a4;'>{int(sites)}</span><br>"
         for country, sites in zip(countries, site_counts)
     ],
     textposition='outside',
-    textfont=dict(size=12, color='white'),  # Label font style
+    textfont=dict(size=12, color='white'),
     marker=dict(
-        color='rgba(28, 76, 84, 0.85)',  # Bar fill color
-        line=dict(color='rgba(255, 255, 255, 0.2)', width=1)  # Subtle border
+        color=colors,
+        line=dict(color='rgba(255, 255, 255, 0.2)', width=1)
     ),
-    width=0.4,
+    width=widths,
     hoverinfo='text',
     hovertemplate=[
-        # Custom hover with UNESCO rank and no extra box
-        f'<span style="color:#34f4a4; font-weight:bold;">UNESCO rank:</span> <span style="color:#ffffff;">#{rank}</span><extra></extra>'
+        f'UNESCO rank: #{rank}<extra></extra>'
         for rank in ranks
     ],
-    texttemplate="%{text}",  # Plain rendering of HTML-style labels
+    texttemplate="%{text}",
 ))
 
-# Tweak layout to be clean and dark-transparent
+# Add rank annotations below each bar
+for i, rank in enumerate(ranks):
+    fig.add_annotation(
+        x=countries[i],
+        y=0,  # just below bars on x axis
+        text=f"<b>{rank}</b>",
+        showarrow=False,
+        yshift=-20,  # shift down below x-axis labels
+        font=dict(color='white', size=14)
+    )
+
 fig.update_layout(
-    font=dict(
-        family="Arial, sans-serif",   # font family
-        size=12,                      # base font size in pixels
-    ),
+    font=dict(family="Arial, sans-serif", size=12),
     showlegend=False,
     plot_bgcolor='rgba(0,0,0,0)',
     paper_bgcolor='rgba(0,0,0,0)',
     xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
     yaxis=dict(range=[40, max(site_counts) + 5], showgrid=False, zeroline=False, showticklabels=False),
-    margin=dict(l=20, r=20, t=40, b=20),
-    height=300
+    margin=dict(l=20, r=20, t=40, b=60),  # extra bottom margin for annotations
+    height=350
 )
+
 
 # Add small box under
 st.markdown("""
@@ -163,13 +180,17 @@ components.html(html, height=350)
 
 
 
+
+
+
+
 # -------------------------------
 #     Heritage Sites Section
 # -------------------------------
 
 # Sub-title 
 st.markdown("""
-<h2 style="margin: 40px auto 20px auto;">Exploring India’s Timeless Heritage</h2>
+<h2 style="color:#ffffff; margin: 40px auto 20px auto;">Exploring India’s Timeless Heritage</h2>
 """, unsafe_allow_html=True)
 
 
@@ -213,7 +234,7 @@ visitor_volume_html = f"""
 
   <!-- Left section: Explanation of overcrowding issues -->
   <div style="flex: 1; min-width: 300px;">
-    <div style="font-size: 24px; font-weight: 800; margin-bottom: 16px;">
+    <div style="color:#ffffff; font-size: 24px; font-weight: 800; margin-bottom: 16px;">
       Avoid High Visitor Volumes
     </div>
     <div style="font-size: 16px; color: #d0d0d0; margin-bottom: 12px;">
@@ -345,6 +366,9 @@ with center:
 
 
 
+
+
+
 # -------------------------------
 # Most Visited Monuments Section
 # -------------------------------
@@ -360,7 +384,7 @@ top_3_monuments = filtered_sites.sort_values('total_visitors_2023_24', ascending
 
 # Render section heading for Top 3 Monuments
 st.markdown("""
-<h2 style="font-size: 44px; margin: 60px auto 20px auto;">🏆 Top 3 Most Visited Monuments</h2>
+<h2 style="color:#ffffff; font-size: 44px; margin: 60px auto 20px auto;">🏆 Top 3 Most Visited Monuments</h2>
 """, unsafe_allow_html=True)
 
 # Display introductory text and call to explore lesser-known states

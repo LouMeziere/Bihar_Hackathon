@@ -185,7 +185,7 @@ cards_html = f"""
 
   <div style="{card_style}">
     <h3 style="color:#34f4a4;">02  WHEN</h3>
-    <p>Pick the best months to explore — based on climate, festivals, and your vibe.</p>
+    <p>Pick the best months to explore — based on climate, festivals, and the crowds.</p>
   </div>
 
   <div style="{card_style}">
@@ -198,10 +198,6 @@ cards_html = f"""
 
 st.markdown(cards_html, unsafe_allow_html=True)
 
-
-
-# Display options of states and months in side bar
-selected_states, selected_months = render_sidebar()
 
 
 

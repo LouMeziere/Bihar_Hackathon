@@ -4,7 +4,7 @@
 # -------------------------------
 
 import pandas as pd
-from helpers import connect_to_snowflake
+from utils.helpers import connect_to_snowflake
 
 
 # -------------------------------
@@ -13,7 +13,7 @@ from helpers import connect_to_snowflake
 
 # Define your table schemas here (table_name -> list of (col_name, type))
 table_schemas = {
-    "ashrams": [
+    "ashrams_formatted": [
         ("name", "STRING"),
         ("state", "STRING"),
         ("phone", "STRING"),

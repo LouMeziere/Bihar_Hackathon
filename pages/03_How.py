@@ -53,7 +53,7 @@ st.markdown("""
 
 # Sub-title & description
 st.markdown("""
-<div class="container" style=' padding-top:20px;'>
+<div class="container" style='color:#ffffff; padding-top:20px;'>
     <h2>A Pause with Purpose</h2>
     <p>A visit to an Indian ashram is not just a retreat — it is a return to yourself. 
     In these sacred spaces, time slows, clarity sharpens, and the noise of modern life gives way to deep inner peace. 
@@ -80,8 +80,7 @@ st.markdown("""
 
 
 # --- Load & clean data ---
-
-df_ashrams = load_table("ashrams")
+df_ashrams = load_table("ashrams_formatted")
 
 # Drop null values
 df_ashrams.dropna(inplace=True)
@@ -90,128 +89,136 @@ df_ashrams.dropna(inplace=True)
 if selected_states:
     df_ashrams = df_ashrams[df_ashrams["state"].isin(selected_states)]
 
-
-df_ashrams["image_url"] = df_ashrams["image_url"].apply(lambda x: f"{GITHUB_BASE}/images/ashrams/{x}")
-
-# Build carousel HTML with SwiperJS
-carousel_html = """
-<link
-rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-/>
-<style>
-    body {
-        color: white;
-    }
-    .swiper {
-        width: 100%;
-        max-width: 800px;
-        padding-top: 50px;
-        padding-bottom: 50px;
-    }
-    .swiper-slide {
-        background-position: center;
-        background-size: cover;
-        width: 320px;
-        height: 400px;
-        border-radius: 16px;
-        overflow: hidden;
-        position: relative;
-        box-shadow: none;
-    }
-    .ashram-overlay {
-        background: linear-gradient(to top, rgba(4, 28, 28, 0.7), rgba(28, 76, 84, 0.7));
-        position: absolute;
-        bottom: 0;
-        padding: 20px;
-        width: 100%;
-    }
-    .ashram-name {
-        font-size: 22px;
-        font-weight: bold;
-        color: #34f4a4 !important;
-        text-shadow: none;
-        opacity: 1 ;
-        
-    }
-    .ashram-meta {
-        font-size: 13px;
-        opacity: 1;
-        margin-top: 5px;
-    }
-    .ashram-desc {
-        font-size: 14px;
-        margin-top: 10px;
-        line-height: 1.4;
-    }
-    .swiper-button-next, .swiper-button-prev {
-        color: #34f4a4; 
-    }
-    /* Change inactive pagination bullets */
-    .swiper-pagination-bullet {
-    background: #1c4c54 !important;
-    opacity: 0.6;
-    }
-
-    /* Change active pagination bullet */
-    .swiper-pagination-bullet-active {
-    background: #34f4a4 !important;
-    opacity: 1;
-    }
-    
-</style>
-
-<div class="swiper mySwiper">
-<div class="swiper-wrapper"">
-"""
-
-# Add each ashram card as a swiper slide
-for idx, row in df_ashrams.iterrows():
-    
-    card_html = f"""
-    <div class="swiper-slide" style="background-image: url('{row["image_url"]}');">
-        <div class="ashram-overlay">
-            <div class="ashram-name">{row['name']}, {row['state']}</div>
-            <div class="ashram-meta">{row['phone']} | {row['email']}</div>
-            <div class="ashram-desc">{row['description']}</div>
+# If there's no data after filtering, show a message and stop rendering the carousel
+if df_ashrams.empty:
+    # Message when no ashrams are available
+    st.markdown(
+        """
+        <div style='
+            background: linear-gradient(to right, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 30px auto;
+            max-width: 700px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(6px);
+        '>
+            🚫 No ashram data available.
         </div>
-    </div>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    # Construct full image URLs
+    df_ashrams["image_url"] = df_ashrams["image_url"].apply(lambda x: f"{GITHUB_BASE}/images/ashrams/{x}")
+
+    # Build carousel HTML with SwiperJS
+    carousel_html = """
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        body { color: white; }
+        .swiper { width: 100%; max-width: 800px; padding-top: 50px; padding-bottom: 50px; }
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+            width: 320px;
+            height: 400px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: none;
+        }
+        .ashram-overlay {
+            background: linear-gradient(to top, rgba(4, 28, 28, 0.7), rgba(28, 76, 84, 0.7));
+            position: absolute;
+            bottom: 0;
+            padding: 20px;
+            width: 100%;
+        }
+        .ashram-name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #34f4a4 !important;
+            text-shadow: none;
+            opacity: 1;
+        }
+        .ashram-meta {
+            font-size: 13px;
+            opacity: 1;
+            margin-top: 5px;
+        }
+        .ashram-desc {
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: #34f4a4;
+        }
+        .swiper-pagination-bullet {
+            background: #1c4c54 !important;
+            opacity: 0.6;
+        }
+        .swiper-pagination-bullet-active {
+            background: #34f4a4 !important;
+            opacity: 1;
+        }
+    </style>
+
+    <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
     """
-    carousel_html += card_html
 
-carousel_html += """
-</div>
-<div class="swiper-pagination"></div>
-<div class="swiper-button-next"></div>
-<div class="swiper-button-prev"></div>
-</div>
+    # Add each ashram card as a swiper slide
+    for idx, row in df_ashrams.iterrows():
+        carousel_html += f"""
+        <div class="swiper-slide" style="background-image: url('{row["image_url"]}');">
+            <div class="ashram-overlay">
+                <div class="ashram-name">{row['name']}, {row['state']}</div>
+                <div class="ashram-meta">{row['phone']} | {row['email']}</div>
+                <div class="ashram-desc">{row['description']}</div>
+            </div>
+        </div>
+        """
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script>
-const swiper = new Swiper(".mySwiper", {
-    slidesPerView: 1,
-    spaceBetween: 30,
-    loop: true,
-    pagination: {
-    el: ".swiper-pagination",
-    clickable: true,
-    },
-    navigation: {
-    nextEl: ".swiper-button-next",
-    prevEl: ".swiper-button-prev",
-    },
-    breakpoints: {
-    768: { slidesPerView: 2 },
-    1024: { slidesPerView: 3 },
-    },
-});
-</script>
-"""
+    # Close HTML and add SwiperJS script
+    carousel_html += """
+    </div>
+    <div class="swiper-pagination"></div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    </div>
 
-# Show it in Streamlit
-st.components.v1.html(carousel_html, height=540, scrolling=False)
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+    const swiper = new Swiper(".mySwiper", {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+        },
+    });
+    </script>
+    """
 
-st.markdown("</div></div>", unsafe_allow_html=True)
+    # Show carousel in Streamlit
+    st.components.v1.html(carousel_html, height=540, scrolling=False)
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
 
 
 
@@ -347,6 +354,8 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 
 
 
+
+
 # -------------------------------
 #      Train Routes Section
 # -------------------------------
@@ -428,7 +437,27 @@ if selected_states:
 # Show if no data after filter
 if arts_filtered.empty:
     st.markdown("")
-    st.info("No local artistry for this selection.")
+    # Message when no festivals are available
+    st.markdown(
+        """
+        <div style='
+            background: linear-gradient(to right, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 30px auto;
+            max-width: 700px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(6px);
+        '>
+            🚫 No local artistry for this selection.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 else:
     # Generate carousel items
     carousel_items = ""

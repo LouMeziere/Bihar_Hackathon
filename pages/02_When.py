@@ -38,19 +38,19 @@ st.markdown(
 # Display options of states and months in side bar
 selected_states, selected_months = render_sidebar()
 
-# Title
+# Title & description
 st.markdown("""
 <div class="container" style="margin-top: 40px; margin-bottom: 0px;">
   <span style="color: #34f4a4; font-size: 65px; font-weight: 900;">WHEN </span>
   <span style="color: white; font-size: 53px; font-weight: 600;">the journey begins</span>
 </div>
 <div class="container" style="padding-top: 0px;">
-    To help travelers make informed and responsible decisions, historical weather data (1991–2022) \
+    To help travelers make informed and responsible decisions, historical weather data (1991–2022), \
 monthly visitor trends (2021–2023), and key local festivals were analyzed. This section highlights the best months to visit, so you can plan around weather, crowds, and cultural events.
 </div>
 """, unsafe_allow_html=True)
 
-# Intro paragraph
+
 
 
 
@@ -68,7 +68,7 @@ df_weather = load_table("weather_data")
 
 
 
-# --- Plotting ---
+# --- Line Plotting ---
 
 def plot_weather(selected_states):
     # Check if any states have been selected by the user
@@ -101,7 +101,7 @@ def plot_weather(selected_states):
     # Explanation text above cards (no background)
     st.markdown("""
         <div class=container>
-            <h2 style="margin: 0 auto; max-width:850px;">Ideal Seasons for Perfect Weather</h2>
+            <h2 style="color:#ffffff; margin: 0 auto; max-width:850px;">Ideal Seasons for Perfect Weather</h2>
             <div style="
                 font-size: 18px; 
                 color: #93aca4; 
@@ -261,7 +261,7 @@ with center:
 # Sub-title & description
 st.markdown("""
 <div class="container">
-<h2 style="margin: 60px auto 20px auto;">Best Seasons to Escape the Crowds</h2>
+<h2 style="color:#ffffff; margin: 60px auto 20px auto;">Best Seasons to Escape the Crowds</h2>
 <p>To enjoy a more peaceful and authentic experience while visiting India, it is best to avoid the busiest months of June, July, November, and December, when tourist arrivals peak and attractions become crowded. Planning your visit during the less crowded months of October, January, February, and March allows you to take advantage of pleasant weather while exploring popular destinations with fewer tourists. This approach not only enhances your travel experience but also promotes responsible tourism by helping to distribute visitor numbers more evenly throughout the year, easing pressure on local communities and the environment during peak seasons.</p>
 </div>
 """, unsafe_allow_html=True)
@@ -293,23 +293,58 @@ heatmap_data = df_visitors_month.set_index('months')[['2021', '2022', '2023']].T
 
 # --- Plot ---
 
+# Define years explicitly 
+years = ['2023', '2022', '2021']
+
 # Custom green color scale from dark green to flashy green
 custom_colorscale = [
-    [0.0, 'rgba(4, 28, 28, 1)'],      # dark green
-    [0.3, 'rgba(28, 76, 84, 1)'],     # light green
-    [0.6, 'rgba(147, 172, 164, 1)'],  # text green (light)
-    [1.0, 'rgba(52, 244, 164, 1)']    # flashy green
+    [0.0, 'rgba(52, 244, 164, 1)'],   # flashy green
+    [0.3, 'rgba(154, 250, 210, 1)'],  # text green (light)
+    [0.6, 'rgba(28, 76, 84, 1)'],     # light green
+    [1.0, 'rgba(4, 28, 28, 1)']      # dark green
 ]
 
-# Create Heatmap
-fig = px.imshow(
-    heatmap_data,  # Data in matrix format (years as rows, months as columns)
-    labels=dict(x="Month", y="Year", color="Tourist Arrivals"),  
-    x=month_order,  # Explicit month order for x-axis
-    y=['2021', '2022', '2023'], 
-    color_continuous_scale=custom_colorscale,  
-    aspect="auto",  
+# Prepare heatmap data: rows = years, columns = months
+heatmap_data = df_visitors_month.set_index('months')[years].T
+
+# Normalize data per year (row)
+normalized_data = heatmap_data.copy()
+for i, row in enumerate(normalized_data.values):
+    min_val, max_val = row.min(), row.max()
+    normalized_data.iloc[i] = (row - min_val) / (max_val - min_val)
+
+# Prepare customdata as numpy array (absolute visitor numbers)
+customdata = heatmap_data.values
+
+# convert numpy array to list of lists
+customdata_list = customdata.tolist()  
+
+fig = go.Figure(
+    go.Heatmap(
+        z=normalized_data.values,
+        x=month_order,
+        y=years,
+        colorscale=custom_colorscale,
+        zmin=0,
+        zmax=1,
+        customdata=customdata_list,
+        hovertemplate=(
+            "Year: %{y}<br>"
+            "Month: %{x}<br>"
+            "Arrivals: %{customdata:.2f} M<br>"
+            "<extra></extra>"
+        ),
+        colorbar=dict(
+            title=dict(text='Normalized Arrivals', font=dict(color='#93aca4')),
+            tickfont=dict(color='#93aca4'),
+            outlinecolor='#282434',
+            bordercolor='#282434'
+        )
+    )
 )
+
+
+
 
 # General Layout Customization 
 fig.update_layout(
@@ -339,20 +374,17 @@ fig.update_yaxes(
     showgrid=False,                  
     tickfont=dict(color='#93aca4'),
     linecolor='#282434',            
-    zeroline=False,                 
+    zeroline=False,     
+    type='category'   # Forces y-axis to show only given categories            
 )
 
 # Enhance Heatmap Trace 
 fig.update_traces(
-    hovertemplate='Year: %{y}<br>Month: %{x}<br>Arrivals: %{z:.2f} M <extra></extra>',  # Custom tooltip
-    showscale=True,  # Show color bar
-    colorbar=dict(   # Style the color bar
-        title=dict(
-            text='Arrivals',
-            font=dict(color='#93aca4')
-        ),
+    showscale=True,
+    colorbar=dict(
+        title=dict(text='Normalized<br>Arrivals', font=dict(color='#93aca4'), side='top'),
         tickfont=dict(color='#93aca4'),
-        outlinecolor='#282434',  # Color bar border color
+        outlinecolor='#282434',
         bordercolor='#282434'
     )
 )
@@ -381,64 +413,7 @@ st.markdown(
     """
     <style>
     /* Page background and font */
-    .main {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #222222;
-        padding: 20px;  
-        max-width: 850px !important;
-        margin: 0 auto !important;        
-
-    }
-    /* Container for festival cards */
-    .festival-card {
-        background: linear-gradient(to bottom, #041c1c 11%, #1c4c54 90%, #041c1c 100%);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 1.5rem;
-        box-shadow: 4px 4px 12px rgba(40, 36, 52, 0.8); /* subtle grey shadow */
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-        animation: fadeIn 0.7s ease forwards;
-        opacity: 0;
-        max-width: 450px;            /* don't exceed main's width */
-        width: 100%;  
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .festival-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-    }
-    /* Fade in keyframes */
-    @keyframes fadeIn {
-        to { opacity: 1; }
-    }
-    
-    
-    .festival-card p {
-        color: #93aca4 ;
-    }
-    /* Details summary styling */
-    details summary {
-        cursor: pointer;
-        font-weight: 600;
-        color: #34f4a4 ;
-        outline: none;
-        margin-top: 1rem;
-    }
-    details[open] summary::after {
-        content: "▲";
-        float: right;
-    }
-    details summary::after {
-        content: "▼";
-        float: right;
-    }
-    details p {
-        margin-top: 0.5rem;
-        color: #93aca4 ;
-        font-size: 0.95rem;
-        line-height: 1.3;
-    }
+   
     /* Responsive columns for cards */
     .stColumns > div {
         padding: 0 8px !important;
@@ -453,11 +428,11 @@ st.markdown(
 st.markdown("""
 <div class="main">
 
-<h2 style="color:#ffffff; text-align:left; font-weight: 900; font-size: 44px; margin: 30px 0 20px 0;">
+<h2 style="color:#ffffff; max-width: 850px; text-align:left; font-weight: 900; font-size: 44px; margin: 30px auto 20px auto;">
     Plan Around India’s Festival Calendar
 </h2>
 
-<div style='color:#93aca4; padding-bottom:30px;'>
+<div style='color:#93aca4; max-width: 850px; padding-bottom:60px; margin: 0px auto;'>
     India’s calendar is rich with festivals — from Holi to regional music and dance celebrations. Choosing the right month can elevate your trip, offering a deeper cultural experience. Use this guide to discover when the biggest events take place this year.
 </div>
 
@@ -521,13 +496,29 @@ grouped = grouped.sort_values(by="start_date")
 # Get list of unique (year, month) tuples for available festivals
 available_months = sorted(grouped["start_date"].dropna().apply(lambda d: (d.year, d.month)).unique())
 
-
-
-# --- Month Navigation Logic ---
-
-# Initialize session state to keep track of current month index
+# --- Clamp month_index if needed ---
 if "month_index" not in st.session_state:
     st.session_state.month_index = 0
+else:
+    # Clamp to available range
+    st.session_state.month_index = min(
+        st.session_state.month_index, max(0, len(available_months) - 1)
+    )
+
+# Optional: Reset index if current month no longer valid
+if st.session_state.month_index >= len(available_months):
+    st.session_state.month_index = 0
+
+
+# Callback functions to update session state
+def go_previous():
+    if st.session_state.month_index > 0:
+        st.session_state.month_index -= 1
+
+def go_next():
+    if st.session_state.month_index < len(available_months) - 1:
+        st.session_state.month_index += 1
+
 
 
 
@@ -540,22 +531,20 @@ if available_months:
     # Navigation buttons (Previous / Next)
     col1, col2, col3 = st.columns([1, 3, 1])
     with col1:
-        if st.button("← Previous"):
-            if st.session_state.month_index > 0:
-                st.session_state.month_index -= 1
+        st.button("← Previous", on_click=go_previous)
     with col2:
+        selected_year, selected_month = available_months[st.session_state.month_index]
         st.markdown(
             f"""
-            <div style="display: flex; margin-top: -1.2rem; margin-bottom: 30px; align-items: center; justify-content: center; height: 100%;">
+            <div style="display: flex; margin-top: -1.2rem; align-items: center; justify-content: center; height: 100%;">
                 <h2 style='margin: 0;'>📅 Festivals in {calendar.month_name[selected_month]} {selected_year}</h2>
             </div>
             """,
             unsafe_allow_html=True,
         )
     with col3:
-        if st.button("Next →"):
-            if st.session_state.month_index < len(available_months) - 1:
-                st.session_state.month_index += 1
+        st.button("Next →", on_click=go_next)
+
 
     # Filter festivals happening in the selected month
     this_month = grouped[
@@ -563,43 +552,146 @@ if available_months:
         (grouped["start_date"].dt.month == selected_month)
     ].reset_index(drop=True)
 
-    # Start wrapper div with class main
-    st.markdown('<div class="container" style="max-width: 600px; margin: 0 auto;">', unsafe_allow_html=True)
-
+    
     # Display festivals as cards, 2 per row
+    cards_html = ""
     cards_per_row = 2
+
     for i in range(0, len(this_month), cards_per_row):
-        row_festivals = this_month.iloc[i : i + cards_per_row]
-        cols = st.columns(cards_per_row)
-        for col, (_, row) in zip(cols, row_festivals.iterrows()):
-            with col:
-                start = row['start_date'].date()
-                end = row['end_date'].date() if pd.notnull(row['end_date']) else None
+        row_html = "<div class='row' style='display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;'>"
+        row = this_month.iloc[i : i + cards_per_row]
+
+        for j in range(cards_per_row):
+            if j < len(row):
+                fest = row.iloc[j]
+                start = fest["start_date"].date()
+                end = fest["end_date"].date() if pd.notnull(fest["end_date"]) else None
                 date_str = f"{start}" if not end or start == end else f"{start} → {end}"
 
-                # Render a styled card for each festival
-                st.markdown(
-                    f"""
-                    <div class="festival-card" >
-                        <h3 style='color:#ffffff; font-weight:800; margin-bottom:20px;'>{row['festival_name']}</h3>
-                        <p><strong style='color:#041c1c;font-weight:800;'>📍 Location:</strong> {row['city']}, {row['state']}</p>
-                        <p><strong style='color:#041c1c;font-weight:800;'>🎵 Genre:</strong> {row['genre']}</p>
-                        <p><strong style='color:#041c1c;font-weight:800;'>📆 Date:</strong> {date_str}</p>
+                row_html += f"""
+                    <div class="festival-card" style="flex: 1; background-color: #f7f7f7; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+                        <h3 style="margin-top: 0;">{fest["festival_name"]}</h3>
+                        <p><strong>📍 Location:</strong> {fest["city"]}, {fest["state"]}</p>
+                        <p><strong>🎵 Genre:</strong> {fest["genre"]}</p>
+                        <p><strong>📆 Date:</strong> {date_str}</p>
                         <details>
                             <summary>Details</summary>
-                            <p>{row['description']}</p>
+                            <p>{fest["description"]}</p>
                         </details>
                     </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+                """
+            else:
+                # Invisible placeholder to maintain layout when odd number of cards
+                row_html += """
+                    <div class="festival-card" style="flex: 1; visibility: hidden;"></div>
+                """
 
-    # Close wrapper div
-    st.markdown('</div>', unsafe_allow_html=True)
+        row_html += "</div>"
+        cards_html += row_html
+
+
+    # Full HTML with styling
+    full_html = f"""
+    <style>
+    .container {{
+        max-width: 870px;
+        margin: 0 auto;
+        padding: 20px;
+    }}
+    .row {{
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }}
+    .festival-card {{
+        flex: 1;
+        background: linear-gradient(to bottom, #041c1c 11%, #1c4c54 90%, #041c1c 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 1.5rem;
+        box-shadow: 4px 4px 12px rgba(40, 36, 52, 0.8); /* subtle grey shadow */
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        animation: fadeIn 0.7s ease forwards;
+        opacity: 0;
+        max-width: 380px;            /* don't exceed main's width */
+        width: 100%;  
+        margin-left: auto;
+        margin-right: auto;
+    }}
+    .festival-card h3 {{
+        color: #ffffff;
+        padding: 10px;
+        border-radius: 6px;
+        font-weight: 800;
+    }}
+    
+    .festival-card:hover {{
+        transform: translateY(-6px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }}
+    /* Fade in keyframes */
+    @keyframes fadeIn {{
+        to {{ opacity: 1; }}
+    }}
+    
+    .festival-card p {{
+        color: #93aca4 ;
+    }}
+    /* Details summary styling */
+    details summary {{
+        cursor: pointer;
+        font-weight: 600;
+        color: #34f4a4 ;
+        outline: none;
+        margin-top: 1rem;
+    }}
+    details[open] summary::after {{
+        content: "▲";
+        float: right;
+    }}
+    details summary::after {{
+        content: "▼";
+        float: right;
+    }}
+    details p {{
+        margin-top: 0.5rem;
+        color: #93aca4 ;
+        font-size: 0.95rem;
+        line-height: 1.3;
+    }}
+
+    </style>
+    <div class="container">
+        {cards_html}
+    </div>
+    """
+
+    # Render in component
+    components.html(full_html, height=700, scrolling=True)
 
 else:
     # Message when no festivals are available
-    st.info("No festival data available.")
+    st.markdown(
+        """
+        <div style='
+            background: linear-gradient(to right, #041c1c 0%, #1c4c54 50%, #041c1c 100%);
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 30px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(6px);
+        '>
+            🚫 No festival data available.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 
 st.markdown('</div>', unsafe_allow_html=True)
