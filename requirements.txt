@@ -7,3 +7,4 @@ scikit-learn
 folium
 pydeck
 altair
+plotly
