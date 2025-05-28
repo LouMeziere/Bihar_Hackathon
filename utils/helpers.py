@@ -49,9 +49,19 @@ def inject_global_css():
         </style>
     """, unsafe_allow_html=True)
 
+def connect_to_snowflake():
+    conn_info = {
+        "account": st.secrets["snowflake"]["account"],
+        "user": st.secrets["snowflake"]["user"],
+        "password": st.secrets["snowflake"]["password"],
+        "role": st.secrets["snowflake"]["role"],
+        "warehouse": st.secrets["snowflake"]["warehouse"],
+        "database": st.secrets["snowflake"]["database"],
+        "schema": st.secrets["snowflake"]["schema"],
+    }
+    return snowflake.connector.connect(**conn_info)
 
-
-
+"""
 def connect_to_snowflake():
     # Read Snowflake connection credentials from environment variables
     conn_info = {
@@ -68,11 +78,7 @@ def connect_to_snowflake():
     return snowflake.connector.connect(**conn_info)
 
 """
-def connect_to_snowflake():
-    secrets = toml.load('../secrets.toml')
-    conn_info = secrets['connections']['my_example_connection']
-    return snowflake.connector.connect(**conn_info)
-"""
+
 
 def load_table(table_name: str, schema: str = "discover_india.public") -> pd.DataFrame:
     """
