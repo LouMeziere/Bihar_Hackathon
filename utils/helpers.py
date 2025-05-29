@@ -9,6 +9,7 @@ import os
 import snowflake.connector
 import json
 import pydeck as pdk
+import requests
 
 
 
@@ -157,9 +158,10 @@ def render_sidebar():
 
 
 @st.cache_data
-def load_geojson(path):
-    with open(path, "r") as f:
-        return json.load(f)
+def load_geojson(url):
+    response = requests.get(url)
+    response.raise_for_status()  # will raise an error if the download fails
+    return response.json()
 
 def create_map():
     lines_data = load_geojson(f"{GITHUB_BASE}images/railway/railways_lines_cleaned.geojson")

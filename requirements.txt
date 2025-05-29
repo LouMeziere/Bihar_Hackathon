@@ -9,3 +9,4 @@ streamlit_folium
 pydeck
 altair
 plotly
+requests
