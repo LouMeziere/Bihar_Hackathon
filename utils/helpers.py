@@ -20,7 +20,7 @@ month_order = ['January', 'February', 'March', 'April', 'May', 'June',
 GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
 
 
-import streamlit as st
+
 
 def inject_global_css():
     st.markdown("""
@@ -162,8 +162,8 @@ def load_geojson(path):
         return json.load(f)
 
 def create_map():
-    lines_data = load_geojson("images/railway/railways_lines_cleaned.geojson")
-    points_data = load_geojson("images/railway/railways_points_cleaned.geojson")
+    lines_data = load_geojson(f"{GITHUB_BASE}images/railway/railways_lines_cleaned.geojson")
+    points_data = load_geojson(f"{GITHUB_BASE}images/railway/railways_points_cleaned.geojson")
 
     rail_layer = pdk.Layer(
         "GeoJsonLayer",
