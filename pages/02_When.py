@@ -531,7 +531,11 @@ if available_months:
     # Navigation buttons (Previous / Next)
     col1, col2, col3 = st.columns([1, 3, 1])
     with col1:
-        st.button("← Previous", on_click=go_previous)
+        # Add vertical spacer and center manually
+        col1_spacer1, col1_button, col1_spacer2 = st.columns([1, 2, 1])
+        with col1_button:
+            st.button("←", on_click=go_previous)
+
     with col2:
         selected_year, selected_month = available_months[st.session_state.month_index]
         st.markdown(
@@ -542,8 +546,13 @@ if available_months:
             """,
             unsafe_allow_html=True,
         )
+
     with col3:
-        st.button("Next →", on_click=go_next)
+        col3_spacer1, col3_button, col3_spacer2 = st.columns([1, 2, 1])
+        with col3_button:
+            st.button("→", on_click=go_next)
+
+
 
 
     # Filter festivals happening in the selected month

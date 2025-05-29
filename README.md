@@ -61,6 +61,9 @@ tourism sources. Below is a detailed list with sources and notes:
 
 ## ▶️ How to Run
 
+Ensure that you have all required packages for the app:
+pip install -r requirements.txt
+
 To launch the application locally, run:
 
 ```bash

@@ -25,6 +25,15 @@ import streamlit as st
 def inject_global_css():
     st.markdown("""
         <style>
+                
+        [data-testid="stSidebar"] {
+        width: 250px !important;  /* Change this value as needed */
+        }
+                
+        [data-testid="stSidebar"] > div:first-child {
+            width: 250px !important;
+        }
+                
         .container {
             max-width: 850px ;
             margin: 0 auto ;
@@ -49,6 +58,7 @@ def inject_global_css():
         </style>
     """, unsafe_allow_html=True)
 
+"""
 def connect_to_snowflake():
     conn_info = {
         "account": st.secrets["snowflake"]["account"],
@@ -77,7 +87,7 @@ def connect_to_snowflake():
     # Connect using the dictionary of connection parameters
     return snowflake.connector.connect(**conn_info)
 
-"""
+
 
 
 def load_table(table_name: str, schema: str = "discover_india.public") -> pd.DataFrame:
@@ -121,38 +131,27 @@ def render_sidebar():
         df_weather['state']
     ]).dropna().unique()
 
-    # Get previously selected states and months from session state or fallback to empty list
-    default_states = st.session_state.get("selected_states", [])
-    default_months = st.session_state.get("selected_months", [])
-
     with st.sidebar:
-        # Title
         st.markdown(
             '<h2 style="text-align: left;">Customize Your Exploration</h2>',
             unsafe_allow_html=True
         )
 
-        # Multi-select widget for states
         selected_states = st.multiselect(
             "🗺️ Select State(s):", 
             sorted(states),
-            default=default_states,
+            default=st.session_state.get("state_selector", []),
             key="state_selector"
         )
 
-        # Multi-select widget for months
         selected_months = st.multiselect(
             "📅 Select Month(s):",
             month_order,
-            default=default_months,
+            default=st.session_state.get("month_selector", []),
             key="month_selector"
         )
 
-    # Save selections back to session state for persistence
-    st.session_state["selected_states"] = selected_states
-    st.session_state["selected_months"] = selected_months
-
-    # Return the current selections
+    # Just return the values—no need to set them manually
     return selected_states, selected_months
 
 
