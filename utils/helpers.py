@@ -10,6 +10,7 @@ import snowflake.connector
 import json
 import pydeck as pdk
 from pathlib import Path
+import requests
 
 
 
@@ -161,11 +162,11 @@ def render_sidebar():
 def display_static_map():
     # Construct the full image URL from the GitHub base
     image_url = f"{GITHUB_BASE}/images/railway/railways.png"
-
-    # Check if the image file exists
-    if image_url.exists():
+  
+    # Check whether the path exists
+    response = requests.get(image_url)
+    if response.status_code == 200:
         # Display the image with full column width
         st.image(image_url, use_column_width=True)
     else:
-        # Show an error message if the image isn't found
-        st.error("❌ Railway image not found.")
+        st.warning("Map image could not be loaded.")
