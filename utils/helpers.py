@@ -162,8 +162,6 @@ def render_sidebar():
 
 
 
-# Base GitHub URL for raw files
-GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
 
 @lru_cache(maxsize=2)
 def load_geojson_cached(url: str):
@@ -174,7 +172,15 @@ def load_geojson_cached(url: str):
 def create_map():
     lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
     points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
-    st.write("Points features sample:", points_data["features"][:2])
+
+    # Add default name to missing features
+    for feature in lines_data.get("features", []):
+        if "name" not in feature.get("properties", {}) or feature["properties"]["name"] is None:
+            feature["properties"]["name"] = "No name"
+
+    for feature in points_data.get("features", []):
+        if "name" not in feature.get("properties", {}) or feature["properties"]["name"] is None:
+            feature["properties"]["name"] = "No name"
 
     rail_layer = pdk.Layer(
         "GeoJsonLayer",
@@ -185,12 +191,13 @@ def create_map():
     )
 
     points_layer = pdk.Layer(
-        "ScatterplotLayer",
-        data=points_data["features"],
-        get_position="geometry.coordinates",
-        get_radius=5000,
+        "GeoJsonLayer",
+        data=points_data,
         get_fill_color=[52, 244, 164, 160],
-        pickable=True,
+        get_radius=1000,
+        point_radius_min_pixels=2,
+        point_radius_max_pixels=10,
+        pickable=True
     )
 
     view_state = pdk.ViewState(
@@ -203,6 +210,7 @@ def create_map():
     return pdk.Deck(
         layers=[rail_layer, points_layer],
         initial_view_state=view_state,
-        tooltip={"text": "{name}"}
-
+        tooltip={"html": "<b>{name}</b>", "style": {"color": "white"}},
+        map_style="mapbox://styles/mapbox/dark-v10"
     )
+
