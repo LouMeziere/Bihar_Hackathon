@@ -172,50 +172,37 @@ def load_geojson_cached(url: str):
     return response.json()
 
 def create_map():
-    # Load GeoJSON data
-    lines_url = f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson"
-    points_url = f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson"
-    
-    lines_data = load_geojson_cached(lines_url)
-    points_data = load_geojson_cached(points_url)
-    
-    # Define line layer (Railways lines)
+    lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
+    points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
+    st.write("Points features sample:", points_data["features"][:2])
+
     rail_layer = pdk.Layer(
         "GeoJsonLayer",
         data=lines_data,
-        pickable=True,
-        stroked=True,
-        filled=False,
         get_line_color=[255, 0, 0],
         get_line_width=2,
+        pickable=True
     )
-    
-    # Define points layer (Railway points)
+
     points_layer = pdk.Layer(
-        "GeoJsonLayer",
-        data=points_data,
-        pickable=True,
-        stroked=False,
-        filled=True,
+        "ScatterplotLayer",
+        data=points_data["features"],
+        get_position="geometry.coordinates",
+        get_radius=5000,
         get_fill_color=[52, 244, 164, 160],
-        point_radius_min_pixels=5,
-        point_radius_max_pixels=10,
-        get_radius=1000,
+        pickable=True,
     )
-    
-    # Initial camera view state centered on India approx.
+
     view_state = pdk.ViewState(
         latitude=22.9734,
         longitude=78.6569,
         zoom=4,
-        pitch=0,
+        pitch=0
     )
-    
-    # Compose the Deck.gl map object
-    deck_map = pdk.Deck(
+
+    return pdk.Deck(
         layers=[rail_layer, points_layer],
         initial_view_state=view_state,
-        tooltip={"text": "{name}"},
+        tooltip={"text": "{name}"}
+        map_style="mapbox://styles/mapbox/dark-v10"
     )
-    
-    return deck_map
