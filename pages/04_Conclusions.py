@@ -70,7 +70,7 @@ st.markdown("""
 # Load feedback data directly from Snowflake
 try:
     # Replace 'YOUR_SCHEMA_NAME' with your actual Snowflake schema (e.g., 'discover_india.public')
-    feedback_df = load_table("FEEDBACK_DATA", schema="YOUR_SCHEMA_NAME")
+    feedback_df = load_table("FEEDBACK_DATA", schema="PUBLIC")
 except Exception as e:
     # If loading fails, display error message and create empty DataFrame with expected columns
     st.error(f"Failed to load feedback data: {e}")
