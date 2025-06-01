@@ -203,6 +203,6 @@ def create_map():
     return pdk.Deck(
         layers=[rail_layer, points_layer],
         initial_view_state=view_state,
-        tooltip={"text": "{name}"},
-        map_style="mapbox://styles/mapbox/dark-v10"
+        tooltip={"text": "{name}"}
+
     )
