@@ -42,3 +42,28 @@ def upload_feedback_to_snowflake():
 
     cursor.close()
     conn.close()
+
+
+
+def upload_feedback_to_snowflake_param(name: str, feedback: str, rating: int):
+    # Connect to Snowflake
+    conn = connect_to_snowflake()
+    cursor = conn.cursor()
+
+    # Ensure the table exists
+    create_table_sql = """
+        CREATE TABLE IF NOT EXISTS feedback_data (
+            name STRING,
+            feedback STRING,
+            rating INT
+        )
+    """
+    cursor.execute(create_table_sql)
+
+    # Insert a single new record (avoid truncating)
+    insert_sql = "INSERT INTO feedback_data (name, feedback, rating) VALUES (%s, %s, %s)"
+    cursor.execute(insert_sql, (name, feedback, rating))
+
+    conn.commit()
+    cursor.close()
+    conn.close()

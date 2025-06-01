@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from utils.helpers import inject_global_css, load_table, GITHUB_BASE
-from table_creation_snowflake.add_new_ratings import upload_feedback_to_snowflake
+from table_creation_snowflake.add_new_ratings import upload_feedback_to_snowflake_param
 
 inject_global_css()
 
@@ -123,7 +123,7 @@ with st.form("feedback_form"):
 
     if submit:
         # When submitted, insert new feedback record directly into Snowflake
-        upload_feedback_to_snowflake(name, feedback, rating)
+        upload_feedback_to_snowflake_param(name, feedback, rating)
         
         # Show success message to user
         st.success("Thank you for your feedback!")
