@@ -165,13 +165,26 @@ def load_geojson_cached(url):
     response.raise_for_status()
     return response.json()
 
+def ensure_names(features, fallback="Unnamed"):
+    for feature in features:
+        props = feature.get("properties", {})
+        props["name"] = props.get("name") or fallback
+
 def create_map():
     lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
     points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
 
+    # Extract feature lists
+    lines = lines_data.get("features", [])
+    points = points_data.get("features", [])
+
+    # Fix missing names
+    ensure_names(lines, "Unnamed Rail Line")
+    ensure_names(points, "Unnamed Station")
+
     rail_layer = pdk.Layer(
         "GeoJsonLayer",
-        data=lines_data,
+        data=lines,
         get_line_color=[255, 0, 0],
         get_line_width=2,
         pickable=True
@@ -179,7 +192,7 @@ def create_map():
 
     points_layer = pdk.Layer(
         "GeoJsonLayer",
-        data=points_data,
+        data=points,
         get_fill_color=[52, 244, 164, 160],
         get_radius=1000,
         point_radius_min_pixels=2,
@@ -193,9 +206,6 @@ def create_map():
         zoom=4,
         pitch=0
     )
-    st.write("Lines data sample:", lines_data.get("features", [])[:1])
-    st.write("Points data sample:", points_data.get("features", [])[:1])
-
 
     return pdk.Deck(
         layers=[rail_layer, points_layer],
