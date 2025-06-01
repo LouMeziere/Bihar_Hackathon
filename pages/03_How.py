@@ -10,8 +10,9 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 import streamlit.components.v1 as components
-from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, create_map
+from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, create_map, display_map
 from utils.helpers import inject_global_css
+
 
 inject_global_css()
 
@@ -360,8 +361,6 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 # -------------------------------
 #      Train Routes Section
 # -------------------------------
-
-from utils.helpers import create_map, display_map
 
 # Only create and show the map once per session
 if "map_obj" not in st.session_state:

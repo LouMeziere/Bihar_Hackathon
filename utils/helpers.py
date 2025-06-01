@@ -10,7 +10,6 @@ import snowflake.connector
 import json
 
 import requests
-
 import folium
 from streamlit_folium import st_folium
 
