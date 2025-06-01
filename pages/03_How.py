@@ -361,39 +361,22 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 #      Train Routes Section
 # -------------------------------
 
-import requests
-import streamlit as st
-from utils.helpers import create_map, GITHUB_BASE
+from utils.helpers import create_map, display_map
 
-# DEBUG: Print a small part of the GeoJSON directly
-lines_url = f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson"
-points_url = f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson"
-
-try:
-    lines_data = requests.get(lines_url)
-    points_data = requests.get(points_url)
-
-    st.write("✅ Status Code (Lines):", lines_data.status_code)
-    st.write("✅ Status Code (Points):", points_data.status_code)
-
-    st.write("✅ Sample Line:", lines_data.json().get("features", [])[:1])
-    st.write("✅ Sample Point:", points_data.json().get("features", [])[:1])
-except Exception as e:
-    st.error(f"❌ Failed to load GeoJSON: {e}")
-
-
-# Only create the map once per session
-if "map_chart" not in st.session_state:
+# Only create and show the map once per session
+if "map_obj" not in st.session_state:
     # Center the map
     left, center, right = st.columns([0.5, 6, 0.5])
     with center:
-        st.session_state.map_chart = create_map()
+        st.session_state.map_obj = create_map()
 
-# Use the cached chart
 # Center the map using Streamlit layout
 left, center, right = st.columns([0.5, 6, 0.5])
 with center:
-    st.pydeck_chart(st.session_state.map_chart)
+    # Display the cached map
+    display_map(st.session_state.map_obj)
+
+
 
 # Add space
 st.markdown("</div></div>", unsafe_allow_html=True)
