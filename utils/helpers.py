@@ -166,9 +166,7 @@ def load_geojson(url):
 def create_map():
     lines_data = load_geojson(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
     points_data = load_geojson(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
-    st.write(lines_data)
-    st.write(points_data)
-
+    
     rail_layer = pdk.Layer(
         "GeoJsonLayer",
         lines_data,
