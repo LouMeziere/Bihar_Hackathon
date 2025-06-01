@@ -365,8 +365,6 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 #      Train Routes Section
 # -------------------------------
 
-st.title("Railways Map")
-
 # Create a centered layout using Streamlit columns
 left, center, right = st.columns([1, 6, 1])
 

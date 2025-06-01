@@ -64,21 +64,34 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-FEEDBACK_FILE = f"{GITHUB_BASE}/datasets/feedback_data.csv"
 
-# Load existing feedback if file exists; else create empty DataFrame (do NOT create file here)
-if os.path.exists(FEEDBACK_FILE):
-    feedback_df = load_table('feedback_data')
+
+# Define file paths
+FEEDBACK_FILE_LOCAL = "datasets/feedback_data.csv"  # Local file for reading/writing
+FEEDBACK_FILE_REMOTE = f"{GITHUB_BASE}/datasets/feedback_data.csv"  # Optional, not used for saving
+
+# Load feedback data
+if os.path.exists(FEEDBACK_FILE_LOCAL):
+    feedback_df = pd.read_csv(FEEDBACK_FILE_LOCAL)
 else:
+    # Create an empty DataFrame if no file exists yet
     feedback_df = pd.DataFrame(columns=["name", "feedback", "rating"])
 
+# Display current average rating
 if not feedback_df.empty:
     avg_rating = feedback_df["rating"].mean()
     total_ratings = feedback_df["rating"].count()
-    st.markdown(f"<h2 style='color:#ffffff; padding-top:50px;'>⭐ Current Rating:  {avg_rating:.0f} / 5 ({total_ratings} reviews)</h2>", unsafe_allow_html=True)
+    st.markdown(
+        f"<h2 style='color:#ffffff; padding-top:50px;'>⭐ Current Rating: {avg_rating:.0f} / 5 ({total_ratings} reviews)</h2>",
+        unsafe_allow_html=True
+    )
 else:
-    st.markdown("<h2 style='color:#ffffff;padding-top:50px;'>⭐ No ratings yet. Be the first to give feedback!</h2>", unsafe_allow_html=True)
+    st.markdown(
+        "<h2 style='color:#ffffff;padding-top:50px;'>⭐ No ratings yet. Be the first to give feedback!</h2>",
+        unsafe_allow_html=True
+    )
 
+# Rating descriptions
 rating_descriptions = {
     1: "Poor",
     2: "Fair",
@@ -87,8 +100,8 @@ rating_descriptions = {
     5: "Excellent"
 }
 
+# Rating selector
 st.markdown("**Rate us:**")
-
 rating = st.radio(
     label="",
     options=[5, 4, 3, 2, 1],
@@ -98,29 +111,31 @@ rating = st.radio(
     horizontal=True,
 )
 
+# Display description based on selected rating
 desc = rating_descriptions.get(rating, "")
 st.markdown(f"<div class='rating-desc'>{desc}</div>", unsafe_allow_html=True)
 
+# Feedback form
 with st.form("feedback_form"):
     name = st.text_input("Your name (optional)")
     feedback = st.text_area("Your feedback", placeholder="Tell us what you think...")
     submit = st.form_submit_button("Submit")
 
     if submit:
+        # Prepare new feedback row
         new_feedback = pd.DataFrame([{
             "name": name,
             "feedback": feedback,
             "rating": rating
         }])
-        
-        if not os.path.exists(FEEDBACK_FILE):
-            # First submission: create file with header
-            new_feedback.to_csv(FEEDBACK_FILE, index=False)
+
+        # Save to local CSV
+        if not os.path.exists(FEEDBACK_FILE_LOCAL):
+            new_feedback.to_csv(FEEDBACK_FILE_LOCAL, index=False)
         else:
-            # Append without header
-            new_feedback.to_csv(FEEDBACK_FILE, mode='a', header=False, index=False)
-        
-        # Now push to Snowflake
+            new_feedback.to_csv(FEEDBACK_FILE_LOCAL, mode='a', header=False, index=False)
+
+        # Optional: Upload to Snowflake
         upload_feedback_to_snowflake()
-        
+
         st.success("Thank you for your feedback!")
