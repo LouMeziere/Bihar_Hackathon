@@ -170,8 +170,8 @@ def load_geojson_cached(url: str):
     return response.json()
 
 def create_map():
-    lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
-    points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
+    lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines.geojson")
+    points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points.geojson")
 
     # Add default name to missing features
     for feature in lines_data.get("features", []):
