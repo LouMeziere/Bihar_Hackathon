@@ -8,11 +8,8 @@ import toml
 import os
 import snowflake.connector
 import json
-
-import requests
-from functools import lru_cache
 import pydeck as pdk
-
+from pathlib import Path
 
 
 
@@ -161,56 +158,14 @@ def render_sidebar():
 
 
 
+def display_static_map():
+    # Construct the full image URL from the GitHub base
+    image_url = f"{GITHUB_BASE}/images/railway/railways.png"
 
-
-@lru_cache(maxsize=2)
-def load_geojson_cached(url: str):
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.json()
-
-def create_map():
-    lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines.geojson")
-    points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points.geojson")
-
-    # Add default name to missing features
-    for feature in lines_data.get("features", []):
-        if "name" not in feature.get("properties", {}) or feature["properties"]["name"] is None:
-            feature["properties"]["name"] = "No name"
-
-    for feature in points_data.get("features", []):
-        if "name" not in feature.get("properties", {}) or feature["properties"]["name"] is None:
-            feature["properties"]["name"] = "No name"
-
-    rail_layer = pdk.Layer(
-        "GeoJsonLayer",
-        data=lines_data,
-        get_line_color=[255, 0, 0],
-        get_line_width=2,
-        pickable=True
-    )
-
-    points_layer = pdk.Layer(
-        "GeoJsonLayer",
-        data=points_data,
-        get_fill_color=[52, 244, 164, 160],
-        get_radius=1000,
-        point_radius_min_pixels=2,
-        point_radius_max_pixels=10,
-        pickable=True
-    )
-
-    view_state = pdk.ViewState(
-        latitude=22.9734,
-        longitude=78.6569,
-        zoom=4,
-        pitch=0
-    )
-
-    return pdk.Deck(
-        layers=[rail_layer, points_layer],
-        initial_view_state=view_state,
-        tooltip={"html": "<b>{name}</b>", "style": {"color": "white"}},
-        map_style="mapbox://styles/mapbox/dark-v10"
-    )
-
+    # Check if the image file exists
+    if image_url.exists():
+        # Display the image with full column width
+        st.image(image_url, use_column_width=True)
+    else:
+        # Show an error message if the image isn't found
+        st.error("❌ Railway image not found.")

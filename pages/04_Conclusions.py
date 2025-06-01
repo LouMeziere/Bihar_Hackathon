@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from utils.helpers import inject_global_css, load_table
+from utils.helpers import inject_global_css, load_table, GITHUB_BASE
 from table_creation_snowflake.add_new_ratings import upload_feedback_to_snowflake
 
 inject_global_css()
@@ -64,7 +64,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-FEEDBACK_FILE = "datasets/feedback_data.csv"
+FEEDBACK_FILE = f"{GITHUB_BASE}/datasets/feedback_data.csv"
 
 # Load existing feedback if file exists; else create empty DataFrame (do NOT create file here)
 if os.path.exists(FEEDBACK_FILE):

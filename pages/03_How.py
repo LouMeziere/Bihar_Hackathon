@@ -10,11 +10,10 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 import streamlit.components.v1 as components
-from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, create_map
+from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, display_static_map
 from utils.helpers import inject_global_css
 
 
-inject_global_css()
 
 
 
@@ -22,6 +21,10 @@ inject_global_css()
 # -------------------------------
 #          Intro Section
 # -------------------------------
+
+# Add global css
+inject_global_css()
+
 
 # Display options of states and months in side bar
 selected_states, selected_months = render_sidebar()
@@ -364,16 +367,14 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 
 st.title("Railways Map")
 
-# Create map once per session and store it
-if "map_chart" not in st.session_state:
-    st.session_state.map_chart = create_map()
+# Create a centered layout using Streamlit columns
+left, center, right = st.columns([1, 6, 1])
 
-# Layout: center the map in the page
-left, center, right = st.columns([0.5, 6, 0.5])
+# Place the image in the center column
 with center:
-    st.pydeck_chart(st.session_state.map_chart)
+    display_static_map()
 
-# Optional: add some spacing below
+# Add some spacing below
 st.markdown("<br>", unsafe_allow_html=True)
 
 
@@ -698,7 +699,7 @@ else:
     </div>
     """
 
-
+    # Set for a specific height
     components.html(carousel_html, height=850)
 
 
