@@ -364,13 +364,15 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 # Only create the map once per session
 if "map_chart" not in st.session_state:
     # Center the map
-    
-    st.session_state.map_chart = create_map()
+    left, center, right = st.columns([0.5, 6, 0.5])
+    with center:
+        st.session_state.map_chart = create_map()
 
 # Use the cached chart
 # Center the map using Streamlit layout
-
-st.pydeck_chart(st.session_state.map_chart)
+left, center, right = st.columns([0.5, 6, 0.5])
+with center:
+    st.pydeck_chart(st.session_state.map_chart)
 
 # Add space
 st.markdown("</div></div>", unsafe_allow_html=True)

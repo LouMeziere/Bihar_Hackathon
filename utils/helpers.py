@@ -157,19 +157,19 @@ def render_sidebar():
 
 
 
-#@st.cache_data
-def load_geojson(url):
+@lru_cache(maxsize=2)
+def load_geojson_cached(url):
     response = requests.get(url)
-    response.raise_for_status()  # will raise an error if the download fails
+    response.raise_for_status()
     return response.json()
 
 def create_map():
-    lines_data = load_geojson(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
-    points_data = load_geojson(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
-    
+    lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
+    points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
+
     rail_layer = pdk.Layer(
         "GeoJsonLayer",
-        lines_data,
+        data=lines_data,
         get_line_color=[255, 0, 0],
         get_line_width=2,
         pickable=True
@@ -177,7 +177,7 @@ def create_map():
 
     points_layer = pdk.Layer(
         "GeoJsonLayer",
-        points_data,
+        data=points_data,
         get_fill_color=[52, 244, 164, 160],
         get_radius=1000,
         point_radius_min_pixels=2,
@@ -197,4 +197,3 @@ def create_map():
         initial_view_state=view_state,
         tooltip={"text": "{name}"}
     )
-
