@@ -10,7 +10,7 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 import streamlit.components.v1 as components
-from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, create_map, display_map
+from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, display_map
 from utils.helpers import inject_global_css
 
 
@@ -361,6 +361,29 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 # -------------------------------
 #      Train Routes Section
 # -------------------------------
+
+import streamlit as st
+import folium
+from streamlit_folium import st_folium
+import requests
+
+def create_map():
+    url = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/railway/railways_points_cleaned.geojson"
+    response = requests.get(url)
+    data = response.json()
+    
+    m = folium.Map(location=[22.9734, 78.6569], zoom_start=5)
+    folium.GeoJson(data).add_to(m)
+    return m
+
+st.title("Test Map")
+
+mymap = create_map()
+st_folium(mymap, width=700, height=500)
+
+
+
+
 
 # Only create and show the map once per session
 if "map_obj" not in st.session_state:
