@@ -367,14 +367,45 @@ import folium
 from streamlit_folium import st_folium
 import requests
 
+import pydeck as pdk
+
 def create_map():
-    url = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/railway/railways_points_cleaned.geojson"
-    response = requests.get(url)
-    data = response.json()
-    
-    m = folium.Map(location=[22.9734, 78.6569], zoom_start=5)
-    folium.GeoJson(data).add_to(m)
-    return m
+    # Minimal example GeoJSON
+    points_data = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {"name": "Test Point"},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [78.6569, 22.9734]
+                }
+            }
+        ]
+    }
+
+    points_layer = pdk.Layer(
+        "GeoJsonLayer",
+        data=points_data,
+        pickable=True,
+        get_fill_color=[255, 0, 0],
+        get_radius=1000,
+    )
+
+    view_state = pdk.ViewState(
+        latitude=22.9734,
+        longitude=78.6569,
+        zoom=6,
+        pitch=0
+    )
+
+    return pdk.Deck(
+        layers=[points_layer],
+        initial_view_state=view_state,
+        tooltip={"text": "{name}"}
+    )
+
 
 st.title("Test Map")
 
