@@ -61,7 +61,7 @@ def inject_global_css():
         </style>
     """, unsafe_allow_html=True)
 
-"""
+
 def connect_to_snowflake():
     conn_info = {
         "account": st.secrets["snowflake"]["account"],
@@ -90,7 +90,7 @@ def connect_to_snowflake():
     # Connect using the dictionary of connection parameters
     return snowflake.connector.connect(**conn_info)
 
-
+"""
 
 
 def load_table(table_name: str, schema: str = "discover_india.public") -> pd.DataFrame:
