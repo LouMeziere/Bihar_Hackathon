@@ -61,7 +61,7 @@ def inject_global_css():
         </style>
     """, unsafe_allow_html=True)
 
-
+"""
 def connect_to_snowflake():
     conn_info = {
         "account": st.secrets["snowflake"]["account"],
@@ -89,7 +89,7 @@ def connect_to_snowflake():
     
     # Connect using the dictionary of connection parameters
     return snowflake.connector.connect(**conn_info)
-"""
+
 
 
 
@@ -166,6 +166,11 @@ def load_geojson_cached(url):
     return response.json()
 
 def create_map():
+    try:
+        res = requests.get("https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/railway/railways_lines_cleaned.geojson")
+        st.write("Status Code:", res.status_code)
+    except Exception as e:
+        st.error(f"Request failed: {e}")
     lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
     points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
 
