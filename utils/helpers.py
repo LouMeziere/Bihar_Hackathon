@@ -166,11 +166,6 @@ def load_geojson_cached(url):
     return response.json()
 
 def create_map():
-    try:
-        res = requests.get("https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main/images/railway/railways_lines_cleaned.geojson")
-        st.write("Status Code:", res.status_code)
-    except Exception as e:
-        st.error(f"Request failed: {e}")
     lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
     points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
 
@@ -198,6 +193,9 @@ def create_map():
         zoom=4,
         pitch=0
     )
+    st.write("Lines data sample:", lines_data.get("features", [])[:1])
+    st.write("Points data sample:", points_data.get("features", [])[:1])
+
 
     return pdk.Deck(
         layers=[rail_layer, points_layer],
