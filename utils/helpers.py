@@ -157,7 +157,7 @@ def render_sidebar():
 
 
 
-@st.cache_data
+#@st.cache_data
 def load_geojson(url):
     response = requests.get(url)
     response.raise_for_status()  # will raise an error if the download fails
