@@ -10,7 +10,7 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 import streamlit.components.v1 as components
-from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, display_map
+from utils.helpers import render_sidebar, load_table,  month_order, GITHUB_BASE, create_map
 from utils.helpers import inject_global_css
 
 
@@ -362,78 +362,19 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 #      Train Routes Section
 # -------------------------------
 
-import streamlit as st
-import folium
-from streamlit_folium import st_folium
-import requests
+st.title("Railways Map")
 
-import pydeck as pdk
+# Create map once per session and store it
+if "map_chart" not in st.session_state:
+    st.session_state.map_chart = create_map()
 
-def create_map():
-    # Minimal example GeoJSON
-    points_data = {
-        "type": "FeatureCollection",
-        "features": [
-            {
-                "type": "Feature",
-                "properties": {"name": "Test Point"},
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [78.6569, 22.9734]
-                }
-            }
-        ]
-    }
-
-    points_layer = pdk.Layer(
-        "GeoJsonLayer",
-        data=points_data,
-        pickable=True,
-        get_fill_color=[255, 0, 0],
-        get_radius=1000,
-    )
-
-    view_state = pdk.ViewState(
-        latitude=22.9734,
-        longitude=78.6569,
-        zoom=6,
-        pitch=0
-    )
-
-    return pdk.Deck(
-        layers=[points_layer],
-        initial_view_state=view_state,
-        tooltip={"text": "{name}"}
-    )
-
-
-st.title("Test Map")
-
-mymap = create_map()
-st.pydeck_chart(mymap)
-
-
-
-
-# Only create and show the map once per session
-if "map_obj" not in st.session_state:
-    # Center the map
-    left, center, right = st.columns([0.5, 6, 0.5])
-    with center:
-        st.session_state.map_obj = create_map()
-
-# Center the map using Streamlit layout
+# Layout: center the map in the page
 left, center, right = st.columns([0.5, 6, 0.5])
 with center:
-    # Display the cached map
-    display_map(st.session_state.map_obj)
+    st.pydeck_chart(st.session_state.map_chart)
 
-
-
-# Add space
-st.markdown("</div></div>", unsafe_allow_html=True)
-
-
+# Optional: add some spacing below
+st.markdown("<br>", unsafe_allow_html=True)
 
 
 

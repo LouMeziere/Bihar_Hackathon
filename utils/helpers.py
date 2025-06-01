@@ -10,8 +10,8 @@ import snowflake.connector
 import json
 
 import requests
-import folium
-from streamlit_folium import st_folium
+from functools import lru_cache
+import pydeck as pdk
 
 
 
@@ -161,46 +161,61 @@ def render_sidebar():
 
 
 
-def load_geojson(url):
+
+# Base GitHub URL for raw files
+GITHUB_BASE = "https://raw.githubusercontent.com/LouMeziere/Bihar_Hackathon/main"
+
+@lru_cache(maxsize=2)
+def load_geojson_cached(url: str):
     response = requests.get(url)
     response.raise_for_status()
     return response.json()
 
 def create_map():
-    # Load geojson files
-    lines_data = load_geojson(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
-    points_data = load_geojson(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
-
-    # Create a Folium map centered over India
-    m = folium.Map(location=[22.9734, 78.6569], zoom_start=5)
-
-    # Add railway lines layer with red lines
-    folium.GeoJson(
-        lines_data,
-        name="Railway Lines",
-        style_function=lambda feature: {
-            'color': 'red',
-            'weight': 2
-        }
-    ).add_to(m)
-
-    # Add railway points layer with green circle markers
-    folium.GeoJson(
-        points_data,
-        name="Railway Points",
-        marker=folium.CircleMarker(
-            radius=5,
-            color='green',
-            fill=True,
-            fill_opacity=0.7
-        )
-    ).add_to(m)
-
-    # Add layer control to toggle layers on/off
-    folium.LayerControl().add_to(m)
-
-    return m
-
-def display_map(map_object):
-    # Use streamlit_folium to display the map with default size
-    return st_folium(map_object, width=700, height=500)
+    # Load GeoJSON data
+    lines_url = f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson"
+    points_url = f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson"
+    
+    lines_data = load_geojson_cached(lines_url)
+    points_data = load_geojson_cached(points_url)
+    
+    # Define line layer (Railways lines)
+    rail_layer = pdk.Layer(
+        "GeoJsonLayer",
+        data=lines_data,
+        pickable=True,
+        stroked=True,
+        filled=False,
+        get_line_color=[255, 0, 0],
+        get_line_width=2,
+    )
+    
+    # Define points layer (Railway points)
+    points_layer = pdk.Layer(
+        "GeoJsonLayer",
+        data=points_data,
+        pickable=True,
+        stroked=False,
+        filled=True,
+        get_fill_color=[52, 244, 164, 160],
+        point_radius_min_pixels=5,
+        point_radius_max_pixels=10,
+        get_radius=1000,
+    )
+    
+    # Initial camera view state centered on India approx.
+    view_state = pdk.ViewState(
+        latitude=22.9734,
+        longitude=78.6569,
+        zoom=4,
+        pitch=0,
+    )
+    
+    # Compose the Deck.gl map object
+    deck_map = pdk.Deck(
+        layers=[rail_layer, points_layer],
+        initial_view_state=view_state,
+        tooltip={"text": "{name}"},
+    )
+    
+    return deck_map
