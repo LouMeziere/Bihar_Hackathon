@@ -4,7 +4,6 @@
 
 
 import json
-
 import pydeck as pdk
 import pandas as pd
 import altair as alt

@@ -1,9 +1,22 @@
+# -------------------------------
+#           Imports
+# -------------------------------
+
+
 import streamlit as st
 import pandas as pd
 import os
 from utils.helpers import inject_global_css, load_table, GITHUB_BASE
 from table_creation_snowflake.add_new_ratings import upload_feedback_to_snowflake_param
 
+
+
+
+# -------------------------------
+#       Conclusion Section
+# -------------------------------
+
+# Add global style for page
 inject_global_css()
 
 # Title
@@ -19,13 +32,7 @@ This guide empowers you to travel not only to India but with India — supportin
 """, unsafe_allow_html=True)
 
 
-
-
-
-
-
-
-
+# Style for the page
 st.markdown("""
     <style>
 
@@ -65,6 +72,11 @@ st.markdown("""
 
 
 
+
+
+# -------------------------------
+#       Feedback Section
+# -------------------------------
 
 
 # Load feedback data directly from Snowflake
