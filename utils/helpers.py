@@ -169,48 +169,49 @@ def load_geojson_cached(url: str):
     response.raise_for_status()
     return response.json()
 
+import pydeck as pdk
+
 def create_map():
-    lines_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson")
-    points_data = load_geojson_cached(f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson")
-
-    # Add default name to missing features
-    for feature in lines_data.get("features", []):
-        if "name" not in feature.get("properties", {}) or feature["properties"]["name"] is None:
-            feature["properties"]["name"] = "No name"
-
-    for feature in points_data.get("features", []):
-        if "name" not in feature.get("properties", {}) or feature["properties"]["name"] is None:
-            feature["properties"]["name"] = "No name"
-
-    rail_layer = pdk.Layer(
-        "GeoJsonLayer",
-        data=lines_data,
-        get_line_color=[255, 0, 0],
-        get_line_width=2,
-        pickable=True
-    )
+    # Minimal example GeoJSON
+    points_data = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {"name": "Test Point"},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [78.6569, 22.9734]
+                }
+            }
+        ]
+    }
 
     points_layer = pdk.Layer(
         "GeoJsonLayer",
         data=points_data,
-        get_fill_color=[52, 244, 164, 160],
+        pickable=True,
+        get_fill_color=[255, 0, 0],
         get_radius=1000,
-        point_radius_min_pixels=2,
-        point_radius_max_pixels=10,
-        pickable=True
     )
 
     view_state = pdk.ViewState(
         latitude=22.9734,
         longitude=78.6569,
-        zoom=4,
+        zoom=6,
         pitch=0
     )
 
     return pdk.Deck(
-        layers=[rail_layer, points_layer],
+        layers=[points_layer],
         initial_view_state=view_state,
-        tooltip={"html": "<b>{name}</b>", "style": {"color": "white"}},
+        tooltip={"text": "{name}"},
         map_style="mapbox://styles/mapbox/dark-v10"
     )
-
+ 
+        
+        
+        
+        
+        
+    
