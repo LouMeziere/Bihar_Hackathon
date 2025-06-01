@@ -410,8 +410,7 @@ def create_map():
 st.title("Test Map")
 
 mymap = create_map()
-st_folium(mymap, width=700, height=500)
-
+st.pydeck_chart(mymap)
 
 
 
