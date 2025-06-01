@@ -361,6 +361,26 @@ st.markdown("<div style='height: 80px;'></div>", unsafe_allow_html=True)
 #      Train Routes Section
 # -------------------------------
 
+import requests
+import streamlit as st
+from utils.helpers import create_map, GITHUB_BASE
+
+# DEBUG: Print a small part of the GeoJSON directly
+lines_url = f"{GITHUB_BASE}/images/railway/railways_lines_cleaned.geojson"
+points_url = f"{GITHUB_BASE}/images/railway/railways_points_cleaned.geojson"
+
+try:
+    lines_data = requests.get(lines_url)
+    points_data = requests.get(points_url)
+
+    st.write("✅ Status Code (Lines):", lines_data.status_code)
+    st.write("✅ Status Code (Points):", points_data.status_code)
+
+    st.write("✅ Sample Line:", lines_data.json().get("features", [])[:1])
+    st.write("✅ Sample Point:", points_data.json().get("features", [])[:1])
+except Exception as e:
+    st.error(f"❌ Failed to load GeoJSON: {e}")
+
 
 # Only create the map once per session
 if "map_chart" not in st.session_state:
