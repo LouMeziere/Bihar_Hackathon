@@ -66,32 +66,32 @@ st.markdown("""
 
 
 
-# Define file paths
-FEEDBACK_FILE_LOCAL = "datasets/feedback_data.csv"  # Local file for reading/writing
-FEEDBACK_FILE_REMOTE = f"{GITHUB_BASE}/datasets/feedback_data.csv"  # Optional, not used for saving
 
-# Load feedback data
-if os.path.exists(FEEDBACK_FILE_LOCAL):
-    feedback_df = pd.read_csv(FEEDBACK_FILE_LOCAL)
-else:
-    # Create an empty DataFrame if no file exists yet
+# Load feedback data directly from Snowflake
+try:
+    # Replace 'YOUR_SCHEMA_NAME' with your actual Snowflake schema (e.g., 'discover_india.public')
+    feedback_df = load_table("FEEDBACK_DATA", schema="YOUR_SCHEMA_NAME")
+except Exception as e:
+    # If loading fails, display error message and create empty DataFrame with expected columns
+    st.error(f"Failed to load feedback data: {e}")
     feedback_df = pd.DataFrame(columns=["name", "feedback", "rating"])
 
-# Display current average rating
+# Display the average rating and total number of reviews if data exists
 if not feedback_df.empty:
-    avg_rating = feedback_df["rating"].mean()
-    total_ratings = feedback_df["rating"].count()
+    avg_rating = feedback_df["rating"].mean()  # Calculate average rating
+    total_ratings = feedback_df["rating"].count()  # Count total number of ratings
     st.markdown(
         f"<h2 style='color:#ffffff; padding-top:50px;'>⭐ Current Rating: {avg_rating:.0f} / 5 ({total_ratings} reviews)</h2>",
         unsafe_allow_html=True
     )
 else:
+    # Message to show if no feedback data is available yet
     st.markdown(
         "<h2 style='color:#ffffff;padding-top:50px;'>⭐ No ratings yet. Be the first to give feedback!</h2>",
         unsafe_allow_html=True
     )
 
-# Rating descriptions
+# Dictionary mapping rating values to descriptive text
 rating_descriptions = {
     1: "Poor",
     2: "Fair",
@@ -100,42 +100,30 @@ rating_descriptions = {
     5: "Excellent"
 }
 
-# Rating selector
+# Show rating options for user to select
 st.markdown("**Rate us:**")
 rating = st.radio(
-    label="",
-    options=[5, 4, 3, 2, 1],
-    index=0,
+    label="",  # Hide the label
+    options=[5, 4, 3, 2, 1],  # Ratings from 5 (best) to 1 (worst)
+    index=0,  # Default selection (5 stars)
     key="rating",
-    label_visibility="collapsed",
-    horizontal=True,
+    label_visibility="collapsed",  # Collapse label to save space
+    horizontal=True,  # Display radio buttons horizontally
 )
 
-# Display description based on selected rating
+# Display textual description for the selected rating
 desc = rating_descriptions.get(rating, "")
 st.markdown(f"<div class='rating-desc'>{desc}</div>", unsafe_allow_html=True)
 
-# Feedback form
+# Feedback submission form
 with st.form("feedback_form"):
-    name = st.text_input("Your name (optional)")
-    feedback = st.text_area("Your feedback", placeholder="Tell us what you think...")
-    submit = st.form_submit_button("Submit")
+    name = st.text_input("Your name (optional)")  # Optional name input
+    feedback = st.text_area("Your feedback", placeholder="Tell us what you think...")  # Feedback textarea
+    submit = st.form_submit_button("Submit")  # Submit button
 
     if submit:
-        # Prepare new feedback row
-        new_feedback = pd.DataFrame([{
-            "name": name,
-            "feedback": feedback,
-            "rating": rating
-        }])
-
-        # Save to local CSV
-        if not os.path.exists(FEEDBACK_FILE_LOCAL):
-            new_feedback.to_csv(FEEDBACK_FILE_LOCAL, index=False)
-        else:
-            new_feedback.to_csv(FEEDBACK_FILE_LOCAL, mode='a', header=False, index=False)
-
-        # Optional: Upload to Snowflake
-        upload_feedback_to_snowflake()
-
+        # When submitted, insert new feedback record directly into Snowflake
+        upload_feedback_to_snowflake(name, feedback, rating)
+        
+        # Show success message to user
         st.success("Thank you for your feedback!")
